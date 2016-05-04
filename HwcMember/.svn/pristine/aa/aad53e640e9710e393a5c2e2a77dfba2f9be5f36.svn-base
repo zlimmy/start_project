@@ -1,0 +1,132 @@
+package com.hwc.member.view.activity.my;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.huimodel.api.base.WithdrawApply;
+import com.hwc.member.R;
+import com.hwc.member.adapter.WithdrawalsAdapter;
+import com.hwc.member.presenter.WithdrawalsPresenter;
+import com.hwc.member.view.activity.view.IWithdrawalsView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.header.LXHeadView;
+import com.hwc.member.widget.pullrefresh.PullToRefreshBase;
+import com.hwc.member.widget.pullrefresh.PullToRefreshBase.OnRefreshListener;
+import com.hwc.member.widget.pullrefresh.PullToRefreshListView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+/**
+ * 提现申请列表
+ * @author fzh
+ * @date 2016年3月9日
+ */
+@ContentView(R.layout.activity_withdrawals_list)
+public class WithdrawalsListActivity extends BaseActivity implements IWithdrawalsView {
+	
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.withd_refres)
+	private PullToRefreshListView  withd_refres;
+	private ListView mListView;
+    private WithdrawalsAdapter withdrawalsAdapter;
+    private List<WithdrawApply> withdrawApplyList; 
+    private int mCurIndex = 1;//小标 从第一页开始
+    @ViewInject(R.id.nodata_tv)
+    private TextView nodata_tv;
+	private WithdrawalsPresenter presenter = new WithdrawalsPresenter(this);
+	@Override
+	protected void initView() {
+		// TODO Auto-generated method stub
+		  withd_refres.setPullLoadEnabled(false);
+		  withd_refres.setScrollLoadEnabled(true);
+		  withdrawApplyList = new ArrayList<WithdrawApply>();
+		  withdrawalsAdapter = new WithdrawalsAdapter(getContext(), withdrawApplyList, R.layout.item_withdrawals, bitmapUtils);
+	      mListView = withd_refres.getRefreshableView();
+	      mListView.setAdapter(withdrawalsAdapter); 
+	      withd_refres.setOnRefreshListener(new OnRefreshListener<ListView>() {
+	         @Override
+	         public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+	        	 presenter.refresh();
+	         }
+
+	        @Override
+	        public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+	        	presenter.more(mCurIndex);
+	            }
+	        });
+	        
+	        setLastUpdateTime();
+	        withd_refres.doPullRefreshing(true, 500);
+	}
+
+	
+	  private void setLastUpdateTime() {
+	        String text = formatDateTime(System.currentTimeMillis());
+	        withd_refres.setLastUpdatedLabel(text);
+	    }
+	
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+		setBack();
+	}
+
+	@Override                     
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+		VISIBLE(nodata_tv);
+		withd_refres.onPullDownRefreshComplete();
+		withd_refres.onPullUpRefreshComplete();
+		withd_refres.setHasMoreData(true);
+        setLastUpdateTime();
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+		VISIBLE(nodata_tv);
+	}
+
+	@Override
+	public void submitSuccess() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void submitFail() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void refresh(List<WithdrawApply> list) {
+		// TODO Auto-generated method stub
+		withdrawApplyList.clear();
+		withdrawApplyList.addAll(list);
+		withdrawalsAdapter.notifyDataSetChanged();
+		withd_refres.onPullDownRefreshComplete();
+		withd_refres.onPullUpRefreshComplete();
+		withd_refres.setHasMoreData(true);
+        setLastUpdateTime();
+        mCurIndex = 1;
+	}
+
+	@Override
+	public void more(List<WithdrawApply> list, boolean isEnd) {
+		// TODO Auto-generated method stub
+		mCurIndex = mCurIndex+1;
+			if(isEnd){
+				withdrawApplyList.addAll(list);
+			}
+			withdrawalsAdapter.notifyDataSetChanged();
+		withd_refres.onPullDownRefreshComplete();
+		withd_refres.onPullUpRefreshComplete();
+		withd_refres.setHasMoreData(isEnd);
+	}
+
+}

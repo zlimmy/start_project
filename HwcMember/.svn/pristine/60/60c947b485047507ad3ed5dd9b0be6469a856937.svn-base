@@ -1,0 +1,168 @@
+package com.hwc.member.view.activity.my;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.GridView;
+import android.widget.TextView;
+
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.hwc.member.R;
+import com.hwc.member.adapter.LocationListAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.bean.MLocation;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Mlocation;
+import com.hwc.member.presenter.LocationAddressPresenter;
+import com.hwc.member.util.LocationUtil;
+import com.hwc.member.util.PreferenceUtils;
+import com.hwc.member.view.activity.view.ILocationView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.XHeaderView;
+import com.hwc.member.widget.header.HeadView;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+/**
+ * Created by xtsxx on 2016/4/28.
+ */
+@ContentView(R.layout.activity_location_address)
+public class LocationAddressActivity extends BaseActivity implements ILocationView {
+    @ViewInject(R.id.header)
+    private LXHeadView header;
+    @ViewInject(R.id.city_selector)
+    private GridView city_selector;
+    @ViewInject(R.id.location_city_tv)
+    private TextView location_city_tv;
+    @ViewInject(R.id.restLocation_tv)
+    private TextView restLocation_tv;
+    private LocationAddressPresenter locationAddressPresenter = new LocationAddressPresenter(this);
+    @Override
+    protected void initView() {
+        header.setTitle("选择城市");
+        locationAddressPresenter.getAddress();
+        if ( Mlocation.getInstance().getDistrict()!=null) {
+            location_city_tv.setText(""+ Mlocation.getInstance().getDistrict());
+        }else if ( Mlocation.getInstance().getCity() != null){
+            location_city_tv.setText(""+ Mlocation.getInstance().getCity());
+        }
+    }
+
+
+    @Override
+    protected void initListener() {
+       // T("ID:"+Mlocation.getInstance().getId());
+        if(Mlocation.getInstance().getId()==0){
+            T("请先设置位置");
+
+        }else{
+            setBack();
+        }
+        city_selector.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView city_tv = (TextView) view.findViewById(R.id.city_tv);
+                city_tv.setBackgroundResource(R.drawable.bg_city_black);
+                city_tv.setTextColor(getResources().getColor(R.color.white));
+                if (locationAddressPresenter.getLocations().get(position).getDistrict() != null) {
+                    PreferenceUtils.setPrefString(App.mContext, "district", locationAddressPresenter.getLocations().get(position).getDistrict());
+                }
+                PreferenceUtils.setPrefInt(App.mContext,"Id",1);
+                PreferenceUtils.setPrefString(App.mContext, "city",locationAddressPresenter.getLocations().get(position).getCity());
+                PreferenceUtils.setPrefString(App.mContext, "latitude", locationAddressPresenter.getLocations().get(position).getLatitude());
+                PreferenceUtils.setPrefString(App.mContext, "longitude",locationAddressPresenter.getLocations().get(position).getLongitude());
+                MLocation mLocation = new MLocation();
+                mLocation.setId(1);
+                mLocation.setLatitude(locationAddressPresenter.getLocations().get(position).getLatitude());
+                mLocation.setLongitude(locationAddressPresenter.getLocations().get(position).getLongitude());
+                mLocation.setCity(locationAddressPresenter.getLocations().get(position).getCity());
+                mLocation.setDistrict(locationAddressPresenter.getLocations().get(position).getDistrict());
+                Mlocation.setMlocation(mLocation);
+
+                Intent intent = getIntent();
+                intent.putExtra("stauts","OK" );
+                LocationAddressActivity.this.setResult(Activity.RESULT_OK, intent);// 返回页面1
+                finish();
+            }
+        });
+
+    }
+
+
+    @OnClick(R.id.restLocation_tv)
+    private void restLocation_tv(View v){
+        getPosition();
+    }
+    // 定位
+    public void getPosition() {
+        LocationUtil.requestLocation(new BDLocationListener() {
+            @Override
+            public void onReceiveLocation(BDLocation arg0) {
+                LocationUtil.stop();
+                MLocation mLocation = new MLocation();
+                if(arg0.getLatitude()==4.9E-324){
+                    mLocation.setId(0);
+                  //  T("还是空1"+mLocation.getLatitude());
+                }else{
+                   // T("定位成功"+mLocation.getLatitude());
+                    mLocation.setId(1);
+                    mLocation.setCity(arg0.getAddress().city);
+                    mLocation.setDistrict(arg0.getAddress().district);
+                    mLocation.setLatitude(arg0.getLatitude() + "");
+                    mLocation.setLongitude(arg0.getLongitude() + "");
+                    if(arg0.getAddress().district==null){
+                        location_city_tv.setText(mLocation.getCity());
+                    }else{
+                        location_city_tv.setText(mLocation.getDistrict());
+                    }
+
+                    PreferenceUtils.setPrefInt(App.mContext, "Id",mLocation.getId());
+                    PreferenceUtils.setPrefString(App.mContext, "city",mLocation.getCity());
+                    PreferenceUtils.setPrefString(App.mContext, "district", mLocation.getDistrict());
+                    PreferenceUtils.setPrefString(App.mContext, "latitude", mLocation.getLatitude());
+                    PreferenceUtils.setPrefString(App.mContext, "longitude", mLocation.getLongitude());
+                    Mlocation.setMlocation(mLocation);
+                }
+
+
+            }
+
+        });
+
+    }
+
+    @Override
+    public void setLocation(LocationListAdapter locationListAdapter) {
+        city_selector.setAdapter(locationListAdapter);
+    }
+
+    @Override
+    public void clearLoadPage() {
+
+    }
+
+    @Override
+    public void showErrorPage() {
+
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+          if(Mlocation.getInstance().getId()==0){
+              T("请先设置位置");
+              return true;
+          }else{
+              finish();
+              return false;
+          }
+
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+}

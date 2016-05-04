@@ -1,0 +1,68 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bustling_rl"
+    android:layout_width="match_parent"
+    android:layout_height="115dp"
+    android:background="@color/white" >
+
+    <ImageView
+        android:id="@+id/image_iv"
+        android:layout_width="129dp"
+        android:layout_height="99dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="18dp"
+        android:padding="2dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/icon_defultbg" />
+
+    <TextView
+        android:id="@+id/title_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/image_iv"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="18dp"
+        android:layout_toRightOf="@id/image_iv"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:minHeight="30dp"
+        android:text="标题"
+        android:textColor="@color/text_important"
+        android:textSize="@dimen/text_14" />
+
+    <TextView
+        android:id="@+id/views_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/image_iv"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="18dp"
+        android:text="浏览：100"
+        android:textColor="@color/text_less_important"
+        android:textSize="@dimen/text_12" />
+
+    <TextView
+        android:id="@+id/date_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/image_iv"
+        android:layout_alignLeft="@id/title_tv"
+        android:layout_toRightOf="@id/image_iv"
+        android:text="2016.3.20"
+        android:textColor="@color/text_less_important"
+        android:textSize="@dimen/text_12" />
+
+    <TextView
+        android:id="@+id/src_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/date_tv"
+        android:layout_alignLeft="@+id/date_tv"
+        android:layout_marginBottom="2dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="万载快报"
+        android:textColor="@color/text_less_important"
+        android:textSize="@dimen/text_12" />
+
+</RelativeLayout>

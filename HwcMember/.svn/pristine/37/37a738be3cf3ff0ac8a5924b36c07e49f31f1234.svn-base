@@ -1,0 +1,67 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.request.InvitationCodeRequest;
+import com.huimodel.api.response.InvCodeListResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.MyCodeAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IMyCodeView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class MyCodePresenter {
+	
+	private IMyCodeView codeView;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public MyCodeAdapter adapter;
+	
+	public MyCodePresenter(IMyCodeView codeView){
+		this.codeView = codeView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void setData(int page){
+		InvitationCodeRequest osr = new InvitationCodeRequest();
+		osr.setUser_id_by(Member.getInstance().getUser_id());
+		osr.setPage(page);
+		osr.setPage_size(10);
+		osr.setImei(Constant.IMEI);
+		iHwcBizMainImpl.searchInvitationCode(osr, codeView.getContext(), new IResult<InvCodeListResponse>() {
+			
+			@Override
+			public void result(InvCodeListResponse obj, Code code) {
+				codeView.clearLoadPage();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						if(obj.getEntities() != null && obj.getEntities().size() >0){
+							adapter = new MyCodeAdapter(codeView.getContext(), obj.getEntities(), R.layout.item_mycode, null);
+							codeView.setList(adapter);
+						}else{
+							codeView.showErrorPage();
+						}	
+					}else{
+						SimpleHUD.showErrorMessage(codeView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showInfoMessage(codeView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+}

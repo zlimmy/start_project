@@ -1,0 +1,144 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollView1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+        
+        
+        <Button
+        android:id="@+id/pay_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="支付测试" />
+        
+         
+        
+                    
+       <Button
+        android:id="@+id/leimu_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="促销类目" />
+        
+        
+              
+       <Button
+        android:id="@+id/dialoglogin_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="弹窗形式登录界面" />
+        
+        
+        <Button
+        android:id="@+id/game_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="平台活动列表" />
+        
+        <Button
+        android:id="@+id/gameinfo_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="平台活动详情" />
+        
+        
+        
+        <Button
+        android:id="@+id/setData_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="生成数据" />
+        
+         <Button
+        android:id="@+id/getData_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="取出数据" />
+        
+        
+        <Button
+        android:id="@+id/search_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="搜索" />
+        
+        
+         <Button
+        android:id="@+id/create_but"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="创建文件" />
+    
+    <Button
+        android:id="@+id/dialog_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="普通对话框" />
+    
+    <Button
+        android:id="@+id/list_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="List对话框" />
+    
+    <Button
+        android:id="@+id/grid_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Grid对话框" />
+    
+      <Button
+        android:id="@+id/share_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="分享" />
+
+      
+        <Button
+        android:id="@+id/login_but"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="登录" />
+    
+      
+        
+      <Button
+        android:id="@+id/map_but"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="地图" />
+      
+          
+      <Button
+        android:id="@+id/notific_but"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="消息通知" />
+      
+          
+      <Button
+        android:id="@+id/open_but"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="打开activity" />
+      
+      
+        <Button
+        android:id="@+id/hc_but"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="缓存数据" />
+       
+       <Button
+        android:id="@+id/get_but"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="获取缓存数据" />
+        
+    </LinearLayout>
+
+</ScrollView>

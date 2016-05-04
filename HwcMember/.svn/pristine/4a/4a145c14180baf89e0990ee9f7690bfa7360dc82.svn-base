@@ -1,0 +1,510 @@
+package com.huimodel.api.request;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.huimodel.api.base.OrderDetails;
+import com.huimodel.api.base.OrderPayDetail;
+import com.huimodel.api.base.RequestBase;
+
+public class OrderCreateRequest extends RequestBase {
+	/**
+	 * 买家备注信息
+	 */
+	private String buyer_memo;
+
+	/**
+	 * 买家昵称
+	 */
+	private String buyer_nick;
+	/**
+	 * 买家店铺
+	 */
+	private long buyer_shop_id;
+	/**
+	 * 买家编号
+	 */
+	private Long buyer_user_id;
+	
+	/**
+	 * 购买用户标志，可以是手机号，可以是卡号
+	 */
+	private String buyer_user;
+	/**
+	 * 买家是否已评价
+	 */
+	private boolean buyer_rate;
+	/**
+	 * 卖店
+	 */
+	private long seller_shop;
+	
+	/**
+	 * 批次号
+	 */
+	private Long batchid;
+
+	/**
+	 * 收货人
+	 */
+	private String receiver_name;
+	/**
+	 * 卖家发货时间
+	 */
+	private String consign_time;
+	/**
+	 * 系统优惠金额
+	 */
+	private String discount_fee;
+	
+	/**
+	 * 商品购买数量
+	 */
+	private int num;
+	/**
+	 * 订单明细
+	 */
+	private List<OrderDetails> orderss = new ArrayList<OrderDetails>();
+	private List<OrderPayDetail>payDetails=new ArrayList<OrderPayDetail>();
+	/**
+	 * 支付时间
+	 */
+	private String pay_time;
+	/**
+	 * 实付金额
+	 */
+	private String payment;
+	/**
+	 * 邮费
+	 */
+	private String post_fee;
+	/**
+	 * 商品价格
+	 */
+	private String price;
+	/**
+	 * 支付代码
+	 */
+	private String paycode;
+	/**
+	 * 邀请代码
+	 */
+	private String invitation_code;
+	/**
+	 * 促销代码
+	 */
+	private String prom_code;
+	
+	private String message;
+	private String couponno;
+	private String cardno;
+	private Long mailing_address;
+	
+	public Long getBuyer_user_id() {
+		return buyer_user_id;
+	}
+
+	public void setBuyer_user_id(Long buyer_user_id) {
+		this.buyer_user_id = buyer_user_id;
+	}
+	
+	public String getBuyer_user() {
+		return buyer_user;
+	}
+
+	public void setBuyer_user(String buyer_user) {
+		this.buyer_user = buyer_user;
+	}
+
+	public String getInvitation_code() {
+		return invitation_code;
+	}
+
+	public void setInvitation_code(String invitation_code) {
+		this.invitation_code = invitation_code;
+	}
+
+	public String getProm_code() {
+		return prom_code;
+	}
+
+	public void setProm_code(String prom_code) {
+		this.prom_code = prom_code;
+	}
+
+	public String getPaycode() {
+		return paycode;
+	}
+
+	public void setPaycode(String paycode) {
+		this.paycode = paycode;
+	}
+
+	public long getSeller_id() {
+		return seller_id;
+	}
+
+	public void setSeller_id(long seller_id) {
+		this.seller_id = seller_id;
+	}
+	
+	
+
+	public List<OrderPayDetail> getPayDetails() {
+		return payDetails;
+	}
+
+	public void setPayDetails(List<OrderPayDetail> payDetails) {
+		this.payDetails = payDetails;
+	}
+
+	private double real_point_fee;
+
+	private String receiver_address;
+
+	private String receiver_city;
+
+	private String receiver_country;
+
+	private String receiver_district;
+
+	private String receiver_mobile;
+
+	private String receiver_phone;
+
+	private String receiver_state;
+
+	private String receiver_town;
+
+	private String receiver_zip;
+
+	private String seller_memo;
+	/*
+	 * 卖家昵称
+	 */
+	private long seller_id;
+	/*
+	 * 卖家是否已评价
+	 */
+	private boolean seller_rate;
+	/*
+	 * 创建交易时的物流方式（交易完成前，物流方式有可能改变，但系统里的这个字段一直不变）。可选值：free(卖家包邮),post(平邮),express(
+	 * 快递),ems(EMS),virtual(虚拟发货)，25(次日必达)，26(预约配送)。
+	 */
+	private String shipping_type;
+
+	private String status;
+
+	private String title;
+
+	private String total_fee;
+	/*
+	 * 交易类型列表，同时查询多种交易类型可用逗号分隔。默认同时查询guarantee_trade, auto_delivery, ec,
+	 * cod的4种交易类型的数据 可选值 fixed(一口价) auction(拍卖) guarantee_trade(一口价、拍卖)
+	 * auto_delivery(自动发货) independent_simple_trade(旺店入门版交易)
+	 * independent_shop_trade(旺店标准版交易) ec(直冲) cod(货到付款) fenxiao(分销)
+	 * game_equipment(游戏装备) shopex_trade(ShopEX交易) netcn_trade(万网交易)
+	 * external_trade(统一外部交易)o2o_offlinetrade（O2O交易）step
+	 * (万人团)nopaid(无付款订单)pre_auth_type(预授权0元购机交易)
+	 */
+	private String type;
+
+	@Override
+	public String getKey() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	public String getBuyer_memo() {
+		return buyer_memo;
+	}
+
+	public void setBuyer_memo(String buyer_memo) {
+		this.buyer_memo = buyer_memo;
+	}
+
+	public String getBuyer_nick() {
+		return buyer_nick;
+	}
+
+	public void setBuyer_nick(String buyer_nick) {
+		this.buyer_nick = buyer_nick;
+	}
+
+	public long getBuyer_shop_id() {
+		return buyer_shop_id;
+	}
+
+	public void setBuyer_shop_id(long buyer_shop_id) {
+		this.buyer_shop_id = buyer_shop_id;
+	}
+
+	public boolean isBuyer_rate() {
+		return buyer_rate;
+	}
+
+	public void setBuyer_rate(boolean buyer_rate) {
+		this.buyer_rate = buyer_rate;
+	}
+
+	public long getSeller_shop() {
+		return seller_shop;
+	}
+
+	public void setSeller_shop(long seller_shop) {
+		this.seller_shop = seller_shop;
+	}
+
+	public String getReceiver_name() {
+		return receiver_name;
+	}
+
+	public void setReceiver_name(String receiver_name) {
+		this.receiver_name = receiver_name;
+	}
+
+	public String getConsign_time() {
+		return consign_time;
+	}
+
+	public void setConsign_time(String consign_time) {
+		this.consign_time = consign_time;
+	}
+
+	public String getDiscount_fee() {
+		return discount_fee;
+	}
+
+	public void setDiscount_fee(String discount_fee) {
+		this.discount_fee = discount_fee;
+	}
+
+	public int getNum() {
+		return num;
+	}
+
+	public void setNum(int num) {
+		this.num = num;
+	}
+
+	public List<OrderDetails> getOrderss() {
+		return orderss;
+	}
+
+	public void setOrderss(List<OrderDetails> orderss) {
+		this.orderss = orderss;
+	}
+
+	public String getPay_time() {
+		return pay_time;
+	}
+
+	public void setPay_time(String pay_time) {
+		this.pay_time = pay_time;
+	}
+
+	public String getPayment() {
+		return payment;
+	}
+
+	public void setPayment(String payment) {
+		this.payment = payment;
+	}
+
+	public String getPost_fee() {
+		return post_fee;
+	}
+
+	public void setPost_fee(String post_fee) {
+		this.post_fee = post_fee;
+	}
+
+	public String getPrice() {
+		return price;
+	}
+
+	public void setPrice(String price) {
+		this.price = price;
+	}
+
+	public double getReal_point_fee() {
+		return real_point_fee;
+	}
+
+	public void setReal_point_fee(double real_point_fee) {
+		this.real_point_fee = real_point_fee;
+	}
+
+	public String getReceiver_address() {
+		return receiver_address;
+	}
+
+	public void setReceiver_address(String receiver_address) {
+		this.receiver_address = receiver_address;
+	}
+
+	public String getReceiver_city() {
+		return receiver_city;
+	}
+
+	public void setReceiver_city(String receiver_city) {
+		this.receiver_city = receiver_city;
+	}
+
+	public String getReceiver_country() {
+		return receiver_country;
+	}
+
+	public void setReceiver_country(String receiver_country) {
+		this.receiver_country = receiver_country;
+	}
+
+	public String getReceiver_district() {
+		return receiver_district;
+	}
+
+	public void setReceiver_district(String receiver_district) {
+		this.receiver_district = receiver_district;
+	}
+
+	public String getReceiver_mobile() {
+		return receiver_mobile;
+	}
+
+	public void setReceiver_mobile(String receiver_mobile) {
+		this.receiver_mobile = receiver_mobile;
+	}
+
+	public String getReceiver_phone() {
+		return receiver_phone;
+	}
+
+	public void setReceiver_phone(String receiver_phone) {
+		this.receiver_phone = receiver_phone;
+	}
+
+	public String getReceiver_state() {
+		return receiver_state;
+	}
+
+	public void setReceiver_state(String receiver_state) {
+		this.receiver_state = receiver_state;
+	}
+
+	public String getReceiver_town() {
+		return receiver_town;
+	}
+
+	public void setReceiver_town(String receiver_town) {
+		this.receiver_town = receiver_town;
+	}
+
+	public String getReceiver_zip() {
+		return receiver_zip;
+	}
+
+	public void setReceiver_zip(String receiver_zip) {
+		this.receiver_zip = receiver_zip;
+	}
+
+	public String getSeller_memo() {
+		return seller_memo;
+	}
+
+	public void setSeller_memo(String seller_memo) {
+		this.seller_memo = seller_memo;
+	}
+
+	public boolean isSeller_rate() {
+		return seller_rate;
+	}
+
+	public void setSeller_rate(boolean seller_rate) {
+		this.seller_rate = seller_rate;
+	}
+
+	public String getShipping_type() {
+		return shipping_type;
+	}
+
+	public void setShipping_type(String shipping_type) {
+		this.shipping_type = shipping_type;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getTotal_fee() {
+		return total_fee;
+	}
+
+	public void setTotal_fee(String total_fee) {
+		this.total_fee = total_fee;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public Long getBatchid() {
+		return batchid;
+	}
+
+	public void setBatchid(Long batchid) {
+		this.batchid = batchid;
+	}
+
+	public String getCouponno() {
+		return couponno;
+	}
+
+	public void setCouponno(String couponno) {
+		this.couponno = couponno;
+	}
+
+	public String getCardno() {
+		return cardno;
+	}
+
+	public void setCardno(String cardno) {
+		this.cardno = cardno;
+	}
+
+	public Long getMailing_address() {
+		return mailing_address;
+	}
+
+	public void setMailing_address(Long mailing_address) {
+		this.mailing_address = mailing_address;
+	}
+	
+	
+
+}

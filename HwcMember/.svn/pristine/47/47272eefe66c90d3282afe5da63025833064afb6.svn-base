@@ -1,0 +1,22 @@
+/**
+ * 
+ */
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+/**
+ * @author FZ
+ */
+public class AttentionShopReuqest extends RequestBase {
+	// 关注店铺Id
+	private Long attention_shop_id;
+
+	public Long getAttention_shop_id() {
+		return attention_shop_id;
+	}
+
+	public void setAttention_shop_id(Long attention_shop_id) {
+		this.attention_shop_id = attention_shop_id;
+	}
+}

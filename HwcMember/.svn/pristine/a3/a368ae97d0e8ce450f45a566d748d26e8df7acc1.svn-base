@@ -1,0 +1,20 @@
+/**
+ * 
+ */
+package com.huimodel.api.base;
+
+/**
+ * @author FZ
+ */
+public class RequestBaseEntity<T> extends RequestBase {
+	private T entity;
+
+	public T getEntity() {
+		return entity;
+	}
+
+	public void setEntity(T entity) {
+		this.entity = entity;
+	} 
+
+}

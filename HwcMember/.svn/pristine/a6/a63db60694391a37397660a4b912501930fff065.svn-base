@@ -1,0 +1,24 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+
+import com.huimodel.api.response.SmsMessageResponse;
+
+/**
+ * @author FZ
+ */
+public interface IForgetPwdView extends LoadDataView {
+
+	String getUserName();
+
+    String getPassword();
+
+    void clearEditText();
+
+    void  sendSmssuccee(SmsMessageResponse obj);
+
+    void finishView();
+	
+}

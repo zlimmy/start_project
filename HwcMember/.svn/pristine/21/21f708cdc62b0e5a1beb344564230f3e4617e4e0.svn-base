@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <com.hwc.member.widget.header.LXHeadView
+        xmlns:my="http://schemas.android.com/apk/res/com.hwc.member"
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        my:centertitle="消息"
+        my:rightImage="@drawable/icon_clear" />
+
+    <com.hwc.member.widget.MaterialRippleLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:mrl_rippleAlpha="0.2"
+        app:mrl_rippleBackground="@color/white"
+        app:mrl_rippleColor="@color/gray6"
+        app:mrl_rippleHover="true" >
+
+        <RelativeLayout
+            android:id="@+id/recommend_rl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp" >
+
+            <ImageView
+                android:id="@+id/message_iv"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                android:src="@drawable/message_1" />
+
+            <TextView
+                android:id="@+id/name_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/message_iv"
+                android:text="惠万村推荐"
+                android:textSize="@dimen/text_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/name_tv"
+                android:layout_margin="5dp"
+                android:layout_toRightOf="@id/message_iv"
+                android:maxEms="13"
+                android:text="过年淘好货，惠万村..."
+                android:textColor="@color/yellow"
+                android:textSize="@dimen/text_14" />
+
+            <ImageView
+                android:id="@+id/doinfo_iv"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/my_doinfo" />
+
+            <TextView
+                android:id="@+id/hwcnum_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@id/doinfo_iv"
+                android:background="@drawable/round_bg"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="@color/white"
+                android:visibility="invisible" />
+        </RelativeLayout>
+    </com.hwc.member.widget.MaterialRippleLayout>
+
+    <View style="@style/divider_horizontal" />
+
+    <com.hwc.member.widget.MaterialRippleLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:mrl_rippleAlpha="0.2"
+        app:mrl_rippleBackground="@color/white"
+        app:mrl_rippleColor="@color/gray6"
+        app:mrl_rippleHover="true" >
+
+        <RelativeLayout
+            android:id="@+id/promotion_rl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:padding="10dp" >
+
+            <ImageView
+                android:id="@+id/message_iv_1"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                android:src="@drawable/message_2" />
+
+            <TextView
+                android:id="@+id/name_tv_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/message_iv_1"
+                android:text="降价促销"
+                android:textSize="@dimen/text_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/name_tv_1"
+                android:layout_margin="5dp"
+                android:layout_toRightOf="@id/message_iv_1"
+                android:maxEms="13"
+                android:text="过年淘好货，惠万村..."
+                android:textColor="@color/yellow"
+                android:textSize="@dimen/text_14" />
+
+            <ImageView
+                android:id="@+id/doinfo_iv_1"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/my_doinfo" />
+
+            <TextView
+                android:id="@+id/cxnum_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@id/doinfo_iv_1"
+                android:background="@drawable/round_bg"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="@color/white"
+                android:visibility="invisible" />
+        </RelativeLayout>
+    </com.hwc.member.widget.MaterialRippleLayout>
+
+    <com.hwc.member.widget.MaterialRippleLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:mrl_rippleAlpha="0.2"
+        app:mrl_rippleBackground="@color/white"
+        app:mrl_rippleColor="@color/gray6"
+        android:visibility="gone"
+        app:mrl_rippleHover="true" >
+
+        <RelativeLayout
+            android:id="@+id/perform_rl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp" >
+
+            <ImageView
+                android:id="@+id/message_iv_2"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                android:src="@drawable/message_3" />
+
+            <TextView
+                android:id="@+id/name_tv_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/message_iv_2"
+                android:text="优惠码下单成功"
+                android:textSize="@dimen/text_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/name_tv_2"
+                android:layout_margin="5dp"
+                android:layout_toRightOf="@id/message_iv_2"
+                android:maxEms="13"
+                android:text="过年淘好货，惠万村..."
+                android:textColor="@color/yellow"
+                android:textSize="@dimen/text_14" />
+
+            <ImageView
+                android:id="@+id/doinfo_iv_2"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/my_doinfo" />
+
+            <TextView
+                android:id="@+id/xdnum_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@id/doinfo_iv_2"
+                android:background="@drawable/round_bg"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="@color/white"
+                android:visibility="invisible" />
+        </RelativeLayout>
+    </com.hwc.member.widget.MaterialRippleLayout>
+
+    <com.hwc.member.widget.MaterialRippleLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:mrl_rippleAlpha="0.2"
+        app:mrl_rippleBackground="@color/white"
+        app:mrl_rippleColor="@color/gray6"
+        android:visibility="gone"
+        app:mrl_rippleHover="true" >
+
+        <RelativeLayout
+            android:id="@+id/discount_rl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp" >
+
+            <ImageView
+                android:id="@+id/message_iv_3"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                android:src="@drawable/message_4" />
+
+            <TextView
+                android:id="@+id/name_tv_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/message_iv_3"
+                android:text="@string/YouHuiQuan"
+                android:textSize="@dimen/text_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/name_tv_3"
+                android:layout_margin="5dp"
+                android:layout_toRightOf="@id/message_iv_3"
+                android:maxEms="13"
+                android:text="过年淘好货，惠万村..."
+                android:textColor="@color/yellow"
+                android:textSize="@dimen/text_14" />
+
+            <ImageView
+                android:id="@+id/doinfo_iv_3"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/my_doinfo" />
+
+            <TextView
+                android:id="@+id/yhqnum_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@id/doinfo_iv_3"
+                android:background="@drawable/round_bg"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="@color/white"
+                android:visibility="invisible" />
+        </RelativeLayout>
+    </com.hwc.member.widget.MaterialRippleLayout>
+
+    <View style="@style/divider_horizontal" />
+
+</LinearLayout>

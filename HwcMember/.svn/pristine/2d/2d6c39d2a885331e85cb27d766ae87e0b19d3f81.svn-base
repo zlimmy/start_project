@@ -1,0 +1,246 @@
+/*
+ * 
+ */
+
+package com.hwc.member.util;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout.LayoutParams;
+
+// TODO: Auto-generated Javadoc
+
+public class ViewTransformUtil {
+
+    /**
+     * 计算适配的宽�?
+     * 
+     * @param context the context
+     * @param width the width 设计图宽
+     * @return int
+     * @Title: layoutWidth
+     * @Description: TODO
+     */
+    public static int layoutWidth(Context context, int width) {
+        if (ScreenUtil.screenWidth == 0) {
+            ScreenUtil.getInfo(context);
+        }
+        width = (int)Math.ceil(ScreenUtil.screenWidthPercentage * width);
+        return width > 0 ? width : 1;
+    }
+
+    /**
+     * 计算适配的高�?
+     * 
+     * @param context the context
+     * @param height the height 设计图高
+     * @return int
+     * @Title: layoutHeigt
+     * @Description: TODO
+     */
+    public static int layoutHeigt(Context context, int height) {
+        if (ScreenUtil.screenWidth == 0) {
+            ScreenUtil.getInfo(context);
+        }
+        height = (int)Math.ceil(ScreenUtil.screenHeightPercentage * height);
+        return height > 0 ? height : 1;
+    }
+
+    /**
+     * Layout params.
+     * 
+     * @param view the view
+     * @param layoutParams the layout params
+     * @param width the width 设计图宽
+     * @param height the height 设计图高
+     */
+    public static void layoutParams(View view, android.view.ViewGroup.LayoutParams layoutParams,
+            int width, int height) {
+        if (ScreenUtil.screenWidth == 0) {
+            ScreenUtil.getInfo(view.getContext());
+        }
+        if (width == height) {
+            int length = (int)Math.ceil(ScreenUtil.screenWidthPercentage * width);
+            layoutParams.width = length;
+            layoutParams.height = length;
+        } else {
+            if (width == android.view.ViewGroup.LayoutParams.MATCH_PARENT
+                    || width == android.view.ViewGroup.LayoutParams.WRAP_CONTENT) {
+                layoutParams.width = width;
+            } else {
+                layoutParams.width = (int)Math.ceil(ScreenUtil.screenWidthPercentage * width);
+            }
+            if (height == android.view.ViewGroup.LayoutParams.MATCH_PARENT
+                    || height == android.view.ViewGroup.LayoutParams.WRAP_CONTENT) {
+                layoutParams.height = height;
+            } else {
+                layoutParams.height = (int)Math.ceil(ScreenUtil.screenHeightPercentage * height);
+            }
+        }
+        view.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * Layout params.
+     * 
+     * @param view the view
+     * @param layoutParams the layout params
+     * @param width the width 设计图宽
+     * @param height the height 设计图高
+     */
+    public static void layoutParams(View view,
+            android.widget.AbsListView.LayoutParams layoutParams, int width, int height) {
+        if (ScreenUtil.screenWidth == 0) {
+            ScreenUtil.getInfo(view.getContext());
+        }
+        if (width == height) {
+            int length = (int)Math.ceil(ScreenUtil.screenWidthPercentage * width);
+            layoutParams.width = length;
+            layoutParams.height = length;
+        } else {
+            if (width == android.widget.AbsListView.LayoutParams.MATCH_PARENT
+                    || width == android.widget.AbsListView.LayoutParams.WRAP_CONTENT) {
+                layoutParams.width = width;
+            } else {
+                layoutParams.width = (int)Math.ceil(ScreenUtil.screenWidthPercentage * width);
+            }
+            if (height == android.widget.AbsListView.LayoutParams.MATCH_PARENT
+                    || height == android.widget.AbsListView.LayoutParams.WRAP_CONTENT) {
+                layoutParams.height = height;
+            } else {
+
+                layoutParams.height = (int)Math.ceil(ScreenUtil.screenHeightPercentage * height);
+            }
+        }
+        view.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * Layout params.
+     * 
+     * @param view the view
+     * @param layoutParams the layout params
+     * @param width the width 设计图宽
+     * @param height the height 设计图高
+     */
+    @SuppressWarnings("deprecation")
+	public static void layoutParams(View view, android.widget.Gallery.LayoutParams layoutParams,
+            int width, int height) {
+        if (ScreenUtil.screenWidth == 0) {
+            ScreenUtil.getInfo(view.getContext());
+        }
+        if (width == height) {
+            int length = (int)Math.ceil(ScreenUtil.screenWidthPercentage * width);
+            layoutParams.width = length;
+            layoutParams.height = length;
+        } else {
+            if (width == android.widget.Gallery.LayoutParams.MATCH_PARENT
+                    || width == android.widget.Gallery.LayoutParams.WRAP_CONTENT) {
+                layoutParams.width = width;
+            } else {
+                layoutParams.width = (int)Math.ceil(ScreenUtil.screenWidthPercentage * width);
+            }
+            if (height == android.widget.Gallery.LayoutParams.MATCH_PARENT
+                    || height == android.widget.Gallery.LayoutParams.WRAP_CONTENT) {
+                layoutParams.height = height;
+            } else {
+
+                layoutParams.height = (int)Math.ceil(ScreenUtil.screenHeightPercentage * height);
+            }
+        }
+        view.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * 控制ImageView布局及图片的大小，返回Bitmap用于到时候回收�?.
+     * 
+     * @param imageView the image view
+     * @param layoutParams the layout params
+     * @param resId the res id
+     * @param width the width 设计图宽
+     * @param height the height 设计图宽
+     * @return Bitmap
+     * @Title: layoutImageView
+     * @Description: TODO
+     */
+    @SuppressWarnings({ "deprecation", "unused" })
+	public static Bitmap layoutImageView(ImageView imageView,
+            android.view.ViewGroup.LayoutParams layoutParams, int resId,boolean isFrugalMemory, int width, int height) {
+        // 判断正方形的图片处理，遵从宽度�?�?
+        if (width == height) {
+            if (ScreenUtil.screenWidth == 0) {
+                ScreenUtil.getInfo(imageView.getContext());
+            }
+            int length = (int)Math.ceil(ScreenUtil.screenWidthPercentage * width);
+            layoutParams.width = length;
+            layoutParams.height = length;
+            imageView.setLayoutParams(layoutParams);
+        } else {
+            layoutParams(imageView, layoutParams, width, height);
+        }
+        int mWidth = 0, mHeight = 0;
+        if (width == LayoutParams.FILL_PARENT || width == ScreenUtil.originalImageWidth) {
+            mWidth = ScreenUtil.screenWidth;
+        } else {
+            mWidth = imageView.getLayoutParams().width;
+        }
+        if (height == LayoutParams.FILL_PARENT || height == ScreenUtil.originalImageHeight) {
+            mHeight = ScreenUtil.screenHeight;
+        } else {
+            mHeight = imageView.getLayoutParams().height;
+        }
+        Bitmap bitmap = getTransformBitmap(imageView.getContext(), resId,isFrugalMemory);
+        imageView.setImageBitmap(bitmap);
+        return bitmap;
+    }
+
+    /**
+     * Bitmap转换�?不会被剪切，可能会变形，适合应用布局适配。（圆形图片�?��证高宽一样大小）
+     * 
+     * @param context the context
+     * @param resId the res id
+     * @param isFrugalMemory 是否省内�?true可能会导致图片剪切掉,false则不�?
+     * @return Bitmap
+     * @Title: layoutImageView
+     * @Description: TODO
+     */
+    public static Bitmap getTransformBitmap(Context context, int resId, boolean isFrugalMemory) {
+        if (ScreenUtil.screenWidth == 0) {
+            ScreenUtil.getInfo(context);
+        }
+        Bitmap bitmap = ImageTools.decodeResource(context.getResources(), resId);
+        int mWidth = 0, mHeight = 0;
+        if (bitmap.getWidth() == bitmap.getHeight()) {
+            int length = (int)Math.ceil(ScreenUtil.screenWidthPercentage * bitmap.getWidth());
+            mWidth = mHeight = length;
+        } else {
+            mWidth = layoutWidth(context, bitmap.getWidth());
+            mHeight = layoutHeigt(context, bitmap.getHeight());
+        }
+        Bitmap useBitmap;
+        if (isFrugalMemory) {
+            useBitmap = ImageTools.decodeSampledBitmapFromResource(context.getResources(), resId,
+                    mWidth, mHeight);
+        } else {
+            useBitmap = Bitmap.createScaledBitmap(bitmap, mWidth, mHeight, true);
+        }
+        if (mWidth != bitmap.getWidth() || mHeight != bitmap.getHeight()) {
+            bitmap.recycle();
+        }
+        return useBitmap;
+    }
+
+    /**
+     * Gets the transform drawable.
+     * 
+     * @param context the context
+     * @param resId the res id
+     * @return the transform drawable
+     */
+    public static Drawable getTransformDrawable(Context context, int resId, boolean isFrugalMemory) {
+        return (new BitmapDrawable(context.getResources(), getTransformBitmap(context, resId,isFrugalMemory)));
+    }
+}

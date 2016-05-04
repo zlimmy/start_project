@@ -1,0 +1,60 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.request.ProductGetDetailRequest;
+import com.huimodel.api.response.MagazineResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.MagazineAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.view.activity.view.IProductImageView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class ProductImagePresenter {
+
+	private IProductImageView productImageView;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	private MagazineAdapter adapter;
+	
+	public ProductImagePresenter(IProductImageView productImageView){
+		this.productImageView = productImageView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void getData(Long pid, Long shop_id){
+		ProductGetDetailRequest p = new ProductGetDetailRequest();
+		p.setPid(pid);
+		p.setShop_id(shop_id);
+		p.setCat("MAGAZINE");
+		p.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getOneProductImages(p, productImageView.getContext(), new IResult<MagazineResponse>() {
+			
+			@Override
+			public void result(MagazineResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.getEntities() != null && obj.getEntities().size() > 0){
+						adapter = new MagazineAdapter(productImageView.getContext(), obj.getEntities(), R.layout.item_magazine, null);
+						productImageView.setList(adapter);
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(productImageView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+}

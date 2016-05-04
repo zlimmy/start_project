@@ -1,0 +1,117 @@
+package com.hwc.member.presenter;
+
+import java.util.List;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.Discovery;
+import com.huimodel.api.request.DiscoveryGetRequest;
+import com.huimodel.api.response.DiscoveryGetResponse;
+import com.huimodel.biz.IHwcBizPostImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.BustlingProductListAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IBustlingFragView;
+import com.hwc.member.widget.PullToRefreshLayout;
+import com.hwc.member.widget.SimpleHUD;
+
+public class BustlingFragPresenter {
+	
+	private IBustlingFragView bustlingFragView;
+	public BustlingProductListAdapter brlapdater;
+	private IHwcBizPostImpl bizPostImpl;
+	private List<Discovery> list1;
+	public boolean pageisover = false;
+	public int pageSize = 5;
+//	private CacheDataUtil cacheDataUtil ;
+	public Gson gson;
+	public BustlingFragPresenter(IBustlingFragView bustlingFragView){
+		this.bustlingFragView = bustlingFragView;
+		this.bizPostImpl =  IHwcBizPostImpl.getInstance(App.mContext);
+//		this.cacheDataUtil = CacheDataUtil.getInstance(App.mContext);
+		this.gson = new Gson();
+	}
+	
+	
+	
+	//加载
+	public void setProstProductListImg(final int page, final PullToRefreshLayout pullToRefreshLayout){
+		
+//	String caheJosn = cacheDataUtil.getStringByKey("ProstProductList");
+//		if(caheJosn==null){//如果缓存数据为空	
+//		
+		DiscoveryGetRequest dgr = new DiscoveryGetRequest();
+		dgr.setLatitude(Constant.latitude);
+		dgr.setLongitude(Constant.longitude);
+		dgr.setPage(page);
+		dgr.setUser_id_by(Member.getInstance().getUser_id());
+		dgr.setPage_size(pageSize);
+		dgr.setImei(Constant.IMEI);
+		bizPostImpl.getPostList(dgr, bustlingFragView.getContext(), new IResult<DiscoveryGetResponse>() {
+			@Override
+			public void result(DiscoveryGetResponse obj, Code code) {
+				if(pullToRefreshLayout != null){
+					pullToRefreshLayout.refreshFinish(PullToRefreshLayout.SUCCEED);
+				}
+				switch (code) {
+				case OK:				
+					if(obj.getDiscoverys() != null && obj.getDiscoverys().size() > 0){
+						list1 = obj.getDiscoverys();
+						brlapdater = new BustlingProductListAdapter(bustlingFragView.getContext(), list1, R.layout.item_bustlingproduct, null);
+						bustlingFragView.setPostProdct(brlapdater);
+//						cacheDataUtil.saveJson("ProstProductList", obj, Constant.CACHETIME);
+					}else{
+						bustlingFragView.showErrorPage();
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(bustlingFragView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+//		}else{
+//			DiscoveryGetResponse obj  = gson.fromJson(cacheDataUtil.getStringByKey("ProstProductList"), DiscoveryGetResponse.class);
+//			list1 = obj.getDiscoverys();
+//			brlapdater = new BustlingProductListAdapter(bustlingFragView.getContext(), list1, R.layout.item_bustlingproduct, App.bitmapUtils);
+//			bustlingFragView.setPostProdct(brlapdater);
+//			
+//		}
+	}
+	
+	
+	//加载更多
+	public void setMoreProstProductListImg(final int page, final PullToRefreshLayout pullToRefreshLayout){
+		DiscoveryGetRequest dgr = new DiscoveryGetRequest();
+		dgr.setLatitude(Constant.latitude);
+		dgr.setLongitude(Constant.longitude);
+		dgr.setPage(page);
+		dgr.setPage_size(pageSize);
+		dgr.setImei(Constant.IMEI);
+		bizPostImpl.getPostList(dgr, bustlingFragView.getContext(), new IResult<DiscoveryGetResponse>() {	
+			@Override
+			public void result(DiscoveryGetResponse obj, Code code) {
+				pullToRefreshLayout.loadmoreFinish(PullToRefreshLayout.SUCCEED);
+				switch (code) {
+				case OK:
+					
+					if(obj.getDiscoverys()!=null&&obj.getDiscoverys().size()>0){
+						list1.addAll(obj.getDiscoverys());
+						brlapdater.notifyDataSetChanged();
+					}else{
+						bustlingFragView.refreshEnd(); 
+					}
+					break;
+				default:
+					SimpleHUD.showErrorMessage(bustlingFragView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+}

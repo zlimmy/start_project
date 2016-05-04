@@ -1,0 +1,79 @@
+/**
+ * 
+ */
+package com.huimodel.api.base;
+
+/**
+ * @author FZ
+ */
+public class PointExchangeDetail {
+
+	private Long did;
+	private DPrize shopPrize;
+	private PlatformPrize platformPrize;
+	private Integer num;
+	private Double use_point;
+	/**
+	 * @return the did
+	 */
+	public Long getDid() {
+		return did;
+	}
+	/**
+	 * @param did the did to set
+	 */
+	public void setDid(Long did) {
+		this.did = did;
+	}
+	/**
+	 * @return the shopPrize
+	 */
+	public DPrize getShopPrize() {
+		return shopPrize;
+	}
+	/**
+	 * @param shopPrize the shopPrize to set
+	 */
+	public void setShopPrize(DPrize shopPrize) {
+		this.shopPrize = shopPrize;
+	}
+	/**
+	 * @return the platformPrize
+	 */
+	public PlatformPrize getPlatformPrize() {
+		return platformPrize;
+	}
+	/**
+	 * @param platformPrize the platformPrize to set
+	 */
+	public void setPlatformPrize(PlatformPrize platformPrize) {
+		this.platformPrize = platformPrize;
+	}
+	/**
+	 * @return the num
+	 */
+	public Integer getNum() {
+		return num;
+	}
+	/**
+	 * @param num the num to set
+	 */
+	public void setNum(Integer num) {
+		this.num = num;
+	}
+	/**
+	 * @return the use_point
+	 */
+	public Double getUse_point() {
+		return use_point;
+	}
+	/**
+	 * @param use_point the use_point to set
+	 */
+	public void setUse_point(Double use_point) {
+		this.use_point = use_point;
+	}
+	
+	
+	
+}

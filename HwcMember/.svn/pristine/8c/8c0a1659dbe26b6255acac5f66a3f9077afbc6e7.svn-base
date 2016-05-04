@@ -1,0 +1,402 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.huimodel.api.base.Cart;
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.ProductProperty;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.CartRequest;
+import com.huimodel.api.request.CollectionsRequest;
+import com.huimodel.api.request.InvitationCodeRequest;
+import com.huimodel.api.request.ProductGetDetailRequest;
+import com.huimodel.api.request.ProductSuiteGetRequest;
+import com.huimodel.api.request.ShopInfoRequest;
+import com.huimodel.api.response.MagazineResponse;
+import com.huimodel.api.response.ProductSuiteGetResponse;
+import com.huimodel.api.response.ShopInfoResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.ProductInfoAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.util.ToastUtil;
+import com.hwc.member.view.activity.view.IProductInfoView;
+import com.hwc.member.widget.SimpleHUD;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+
+/**
+ * @author FZ
+ */
+public class ProductInfoPresenter {
+
+	private IProductInfoView productInfoView;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	private List<String> list = new ArrayList<String>();
+	
+	private ProductInfoAdapter adapter;
+	
+	private List<ProductProperty> pvlist = new ArrayList<ProductProperty>();
+	
+	public ProductInfoPresenter(IProductInfoView productInfoView){
+		this.productInfoView = productInfoView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void setImg(DProduct obj){
+		if(obj.getProduct_prop_imgs() != null && obj.getProduct_prop_imgs().size() > 0){
+			list.clear();
+			for (int i = 0; i < obj.getProduct_prop_imgs().size(); i++) {
+				if(obj.getProduct_prop_imgs().get(i).getCat().equals("PRE")){
+					list.add(obj.getProduct_prop_imgs().get(i).getUrl());
+				}			
+			}
+			if(list == null || list.size() == 0){
+				return;
+			}
+			productInfoView.setAdGalleryImg(list);
+		}
+	}
+	
+	public void setGoodsInfo(Long pid, Long shop_id){
+		ProductGetDetailRequest pg = new ProductGetDetailRequest();
+		pg.setPid(pid);
+		pg.setShop_id(shop_id);
+		pg.setUser_id_by(Member.getInstance().getUser_id());
+		pg.setImei(Constant.IMEI);
+		productInfoView.showProgressDialog(null);
+		iHwcBizMainImpl.getproductbyid(pg, productInfoView.getContext(), new IResult<DProduct>() {
+			@Override
+			public void result(DProduct obj, Code code) {
+				productInfoView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.getPid() != null){
+						productInfoView.dismissProgressDialog();
+						setImg(obj);
+						productInfoView.setGoodsInfo(obj);
+						if(obj.getPvlist() != null && obj.getPvlist().size() >= 0){
+							for (int i = 0; i < obj.getPvlist().size(); i++) {
+								boolean flag = false;
+								int position = -1;
+								for (int j = 0; j < pvlist.size(); j++) {
+									long pid1 = obj.getPvlist().get(i).getPid();
+									long pid2 = pvlist.get(j).getPid();
+									if(pid1 == pid2){
+										flag = true;
+										position = j;
+									}
+								}
+								if(flag){
+									pvlist.get(position).setValue(pvlist.get(position).getValue() + "," + obj.getPvlist().get(i).getValue());
+								}else{
+									pvlist.add(obj.getPvlist().get(i));
+								}
+							}
+							adapter = new ProductInfoAdapter(productInfoView.getContext(), pvlist, R.layout.item_productinfo, null);
+							productInfoView.setList(adapter);
+						}
+						productInfoView.clearLoadPage();
+					}else{
+						productInfoView.noGoods();
+					}
+					break;
+
+				default:
+					productInfoView.showErrorPage();
+					SimpleHUD.showErrorMessage(productInfoView.getContext(), code+"");
+					break;
+				}
+				
+			}
+		});
+	}
+	
+
+	public void updateCollection(Long pid, Long shop_id){
+		CollectionsRequest cr = new CollectionsRequest();
+		cr.setShop_id(shop_id);
+		cr.setContent_id(pid);
+		cr.setUser_id_by(Member.getInstance().getUser_id());
+		cr.setCat("PRODUCT");
+		cr.setImei(Constant.IMEI);
+	
+		productInfoView.showProgressDialog(null);
+		iHwcBizMainImpl.updateCollection(cr, productInfoView.getContext(), new IResult<ResponseBase>() {
+			
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				productInfoView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+//						SimpleHUD.showSuccessMessage(productInfoView.getContext(), "关注成功！");
+						productInfoView.setAttenImg();
+					}else{
+						SimpleHUD.showInfoMessage(productInfoView.getContext(), obj.getMsg());
+						productInfoView.setAttenImg();
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(productInfoView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 获取商品套餐
+	 * @param pid
+	 * @param shop_id
+	 */
+	public void getProductSuite(Long pid, Long shop_id){
+		ProductSuiteGetRequest t = new ProductSuiteGetRequest();
+		t.setShop_id(shop_id);
+		t.setPid(pid);
+		t.setUser_id_by(Member.getInstance().getUser_id());
+		t.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getShopProductSuites(t, productInfoView.getContext(), new IResult<ProductSuiteGetResponse>() {
+			@Override
+			public void result(ProductSuiteGetResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						productInfoView.openProductSuite(obj);
+					}else{
+						SimpleHUD.showErrorMessage(productInfoView.getContext(), "程序出错,代码:"+obj.getMsg()+"");
+					}
+					break;
+					
+				default:
+					SimpleHUD.showErrorMessage(productInfoView.getContext(), code+"");
+					break;
+				}
+				
+			}
+		});
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * 获取邀请码
+	 * @param pid
+	 * @param shop_id
+	 */
+	public void createInvitationCode(Long pid, Long shop_id){
+		InvitationCodeRequest rs = new InvitationCodeRequest();
+			rs.setShop_id(shop_id);
+			rs.setUser_id_by(Member.getInstance().getUser_id());
+			rs.setPid(pid);
+			rs.setImei(Constant.IMEI);
+			productInfoView.showProgressDialog(null);	
+			iHwcBizMainImpl.createInvitationCode(rs, productInfoView.getContext(), new IResult<ResponseBase>() {
+				
+				@Override
+				public void result(ResponseBase obj, Code code) {
+					// TODO Auto-generated method stub
+					productInfoView.dismissProgressDialog();
+					switch (code) {
+					case OK:
+						productInfoView.showDisCodeDialog(obj);
+						break;
+					default:
+						SimpleHUD.showErrorMessage(productInfoView.getContext(), code+"");
+						break;
+					}
+				}
+			});	
+	}
+	
+	
+	/**
+	 * 修改下单邀请码
+	 * @param name
+	 * @param phone
+	 * @param codeid
+	 */
+	public void updateInvitationCode(String name,String phone,String codeid){
+		InvitationCodeRequest rs = new InvitationCodeRequest();
+		rs.setShop_id(Member.getInstance().getShop_id());
+		rs.setUser_id_by(Member.getInstance().getUser_id());
+		rs.setInvitation_name(name);
+		rs.setInvitation_mobile(phone);
+		rs.setId(Long.parseLong(codeid));
+		rs.setImei(Constant.IMEI);
+		iHwcBizMainImpl.updateInvitationCode(rs, productInfoView.getContext(), new IResult<ResponseBase>() {
+
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				// TODO Auto-generated method stub
+				switch (code) {
+				case OK:
+					SimpleHUD.showSuccessMessage(productInfoView.getContext(), "信息提交成功!");
+					break;
+				default:
+					SimpleHUD.showErrorMessage(productInfoView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 下单
+	 */
+	public void buy(){
+		
+	} 
+	
+	/** 获取店铺信息 **/
+	public void getShopMobile(Long shopid){
+		ShopInfoRequest sir = new ShopInfoRequest();
+		sir.setShop_id(shopid);
+		sir.setImei(Constant.IMEI);
+		sir.setLatitude(Constant.latitude);
+		sir.setLongitude(Constant.longitude);
+		iHwcBizMainImpl.searchSimpleShopInfo(sir, productInfoView.getContext(), new IResult<ShopInfoResponse>() {
+
+			@Override
+			public void result(ShopInfoResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						if(obj.getShopInfo() != null){
+							productInfoView.setMobile(obj.getShopInfo().getMobile(), obj.getShopInfo().getAddress(), obj.getShopInfo().getDistance(), obj.getShopInfo().getNick(), obj.getShopInfo().getBulletin());
+						}
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+	}
+	
+	public void delCollection(DProduct item){
+		CollectionsRequest cr = new CollectionsRequest();
+		cr.setUser_id_by(Member.getInstance().getUser_id());
+		cr.setContent_id(item.getPid());
+		cr.setCat("PRODUCT");
+		cr.setShop_id(item.getShop_id());
+		cr.setImei(Constant.IMEI);
+		productInfoView.showProgressDialog(null);
+		iHwcBizMainImpl.deleteCollection(cr, productInfoView.getContext(), new IResult<ResponseBase>() {
+
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				productInfoView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+//						SimpleHUD.showSuccessMessage(productInfoView.getContext(), "取消关注成功");
+						productInfoView.setUnAttenImg();
+						
+					}else{
+						SimpleHUD.showInfoMessage(productInfoView.getContext(), obj.getMsg());
+						productInfoView.setUnAttenImg();
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(productInfoView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	public void getMagazine(Long pid, Long shop_id){
+		ProductGetDetailRequest p = new ProductGetDetailRequest();
+		p.setPid(pid);
+		p.setShop_id(shop_id);
+		p.setCat("MAGAZINE");
+		p.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getOneProductImages(p, productInfoView.getContext(), new IResult<MagazineResponse>() {
+			
+			@Override
+			public void result(MagazineResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.getEntities() != null && obj.getEntities().size() > 0){
+						productInfoView.hideMore(false);
+					}else{
+						productInfoView.hideMore(true);
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(productInfoView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	public void addShopCart(DProduct obj,final DialogPlus dialog){
+		CartRequest request = new CartRequest();
+		Cart cart = new Cart();
+		cart.setTitle(obj.getName());
+		cart.setAction("add");
+		cart.setShop_name(obj.getShop_name());
+		cart.setUser_id(Member.getInstance().getUser_id());
+		cart.setSid(obj.getShop_id());
+		cart.setPid(obj.getPid());
+		cart.setPrice(obj.getPrice());
+		cart.setNum(obj.getSale_num());
+		if(obj.isSuite() && obj.getPsuite() != null){
+			cart.setSuite_id(obj.getPsuite().getSuite_id());
+			cart.setSuite_descript(obj.getPsuite().getDescript());
+			cart.setPrice(obj.getPsuite().getSale_price());
+		}
+		
+		if(obj.getProminfo()!=null){
+			cart.setPrice(obj.getProminfo().getProm_price());
+		}
+		
+		
+		request.setCarts(cart);
+		productInfoView.showProgressDialog("正在为您加入购物车");
+		iHwcBizMainImpl.addorupdateShoppingcart(request, productInfoView.getContext(), new IResult<ResponseBase>() {
+			
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				productInfoView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+
+						ToastUtil.show(productInfoView.getContext(), "加入购物车成功~");
+							if(dialog!=null){
+								dialog.dismiss();
+							}
+					}else{
+						SimpleHUD.showInfoMessage(productInfoView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(productInfoView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+}

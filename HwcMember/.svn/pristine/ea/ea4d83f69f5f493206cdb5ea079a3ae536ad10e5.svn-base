@@ -1,0 +1,404 @@
+package com.hwc.member.view.activity.bustling;
+
+import java.util.List;
+
+import android.annotation.SuppressLint;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.Gravity;
+import android.view.View;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebSettings.LayoutAlgorithm;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
+
+import com.huimodel.api.base.Discovery;
+import com.hwc.member.R;
+import com.hwc.member.anno.ViewTransform;
+import com.hwc.member.common.Member;
+import com.hwc.member.presenter.MakeMoenyPresenter;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.util.WeiXinShareUtil;
+import com.hwc.member.view.activity.DialogLoginActivity;
+import com.hwc.member.view.activity.view.IMakeMoenyView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.gold.FlakeView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+@ContentView(R.layout.activity_makemoeny)
+public class MakeMoneyActivity extends BaseActivity implements IMakeMoenyView {
+	@ViewInject(R.id.title_rl)
+	@ViewTransform(height = 90)
+	private RelativeLayout  title_rl;
+	@ViewInject(R.id.title_iv)
+	private  TextView title_iv;
+	@ViewInject(R.id.pb)
+	private ProgressBar progressbar;
+	@ViewInject(R.id.webView)
+	private WebView webView;
+	private String url,title,excerpt,img,nums,endtime,share_title;
+	private Long id;
+	private MakeMoenyPresenter presenter = new MakeMoenyPresenter(this);
+
+	@ViewInject(R.id.bottom_rl)
+	private RelativeLayout bottom_rl;
+	@ViewInject(R.id.pb_rl)
+	private RelativeLayout pb_rl;
+	private PopupWindow pop;
+
+	@ViewInject(R.id.receive_tv)
+	private TextView receive_tv;
+	@ViewInject(R.id.joins_tv)
+	private TextView joins_tv;
+	@ViewInject(R.id.endtime_tv)
+	private TextView endtime_tv;
+	
+	
+	@ViewInject(R.id.pb_but)
+	private ProgressBar  pb_but;
+	private int wait_time = 1;
+    private FlakeView flakeView;
+	boolean isearned = false;
+	@SuppressLint("SetJavaScriptEnabled")
+	@Override
+	protected void initView() {
+		
+		Bundle bundle = getIntent().getExtras();
+		url = bundle.getString("url");
+		id = bundle.getLong("id");
+		title = bundle.getString("title");
+		nums = bundle.getString("nums");
+		endtime = bundle.getString("endtime");	
+		share_title = bundle.getString("share_title");
+		img = bundle.getString("img");	
+		joins_tv.setText("参与:"+nums+"人");
+		endtime_tv.setText("截止日期:"+endtime);
+		
+		
+		title_iv.setText(title);	
+		presenter.getDiscoveryDetail(id);	
+		
+		progressbar.setMax(100);
+		webView.getSettings().setJavaScriptEnabled(true);
+		webView.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
+		webView.getSettings().setLoadWithOverviewMode(true);
+		webView.setWebViewClient(new WebViewClient() {    
+		    @Override  
+		    public boolean shouldOverrideUrlLoading(WebView view, String url) {  
+		        view.loadUrl(url);    
+		        return true;    
+		    }     
+		    @Override  
+		    public void onReceivedSslError(WebView view,   
+		            SslErrorHandler handler, android.net.http.SslError error) {   
+		        handler.proceed();  
+		        
+		    }  
+		    public void onReceivedError(WebView view,  
+		            int errorCode, String description, String failingUrl) {  
+		    }  
+		});
+		
+		webView.setWebChromeClient(new WebChromeClient());
+		webView.loadUrl(url);
+        if(wait_time<10){
+       	 	handler.postDelayed(runnable, 2000); 
+        }
+        
+		
+		
+		ViewTransformUtil.layoutParams(bottom_rl, bottom_rl.getLayoutParams(), LayoutParams.MATCH_PARENT, 108);		
+		ViewTransformUtil.layoutParams(pb_rl, pb_rl.getLayoutParams(),  248,70);
+		flakeView = new FlakeView(this);
+	
+	}
+	
+	 Handler handler = new Handler(); 
+	    Runnable runnable = new Runnable() { 
+	        @Override 
+	        public void run() { 
+	        	if(wait_time>=10){
+	        		receive_tv.setText("立即领取");
+	        		handler.removeCallbacks(runnable);
+	        	}else{
+	        		wait_time++; 
+	        		pb_but.setProgress(wait_time*10);
+	            	handler.postDelayed(this, 800); 
+	        	}
+	        } 
+	    }; 
+	    
+	    
+	  public class WebChromeClient extends android.webkit.WebChromeClient {
+	        @Override
+	        public void onProgressChanged(WebView view, int newProgress) {
+	        	
+
+	            if (newProgress == 100) {
+	                progressbar.setVisibility(View.GONE);
+	
+	            }else {
+	                if (progressbar.getVisibility() == View.GONE)
+	                    progressbar.setVisibility(View.VISIBLE);
+	                	progressbar.setProgress(newProgress);  
+	            }
+	            super.onProgressChanged(view, newProgress);
+	        }
+
+	    } 
+
+    /**
+     * 初始化数据
+     */
+	public void initData(){
+		//setButShow();
+		//读取状态
+		presenter.getDiscoveryDetail(id);	
+	} 
+	
+	@OnClick(R.id.wxshare_iv)
+	public void wxshare_iv(View v){
+
+		//http://dev.huiwancun.net:19090/HwcAppSupport/shareAD_IndexToJSP.shtml?post_id=4000000104&recommendcode=123
+		String shareUrl = "http://app.huiwancun.com:9080/HwcAppSupport/shareAD_IndexToJSP.shtml?post_id="+id+"&recommendcode="+Member.getInstance().getUser_id();
+	    String shareImgs = "http://hwcimg.img-cn-hangzhou.aliyuncs.com/platform_images/hui-share.jpg";
+		WeiXinShareUtil wx = new WeiXinShareUtil(mController, context, shareImgs, share_title, title, shareUrl);
+	    wx.initShare();
+	    mController.openShare(MakeMoneyActivity.this, false);
+	}
+	
+	
+	@OnClick(R.id.pb_rl)
+	private void pb_rl(View v){	
+		if(Member.isNull()){
+			//每登陆的情况下 要弹出登陆框
+			goTo(DialogLoginActivity.class);
+		}else{
+			if(!isearned&&wait_time>9){//倒计时已经过了
+				presenter.advertEarnRequest(id,v);
+			}
+		}
+
+	}
+
+	
+	  
+    @OnClick(R.id.back_iv)
+	public void back_iv(View v){
+		finish();
+	}
+    
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void advertEarnSucces(View v, String gold) {
+		// TODO Auto-generated method stub	
+		showPopWindows(v, gold, false);
+		presenter.getDiscoveryDetail(id);	
+		isearned = true;
+		
+	}
+	  
+	
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void refresh(List<Discovery> list) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void more(List<Discovery> list, boolean isEnd) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		if(!Member.isNull()){
+			initData();
+		}
+	}
+
+
+	//隐藏
+	public void setButHide(){
+		pb_but.setProgress(0);
+		receive_tv.setText("已领取");
+		handler.removeCallbacks(runnable);
+		wait_time = 10;
+		pb_rl.setFocusable(false);
+		progressbar.setProgress(0);
+	}
+	
+	
+	//显示
+	public void setButShow(){
+		
+		
+	}
+	
+
+	
+	@Override
+	public void setButIsShow(boolean earned) {
+		// TODO Auto-generated method stub
+		isearned = earned;
+		if(earned){
+			setButHide();
+		}else{
+			setButShow();
+		}
+	}
+
+	
+	   
+ 	    private PopupWindow showPopWindows(View v, String moneyStr, boolean show) {
+ 	    	bottom_rl.setBackgroundColor(getResources().getColor(R.color.white));
+	        View view = this.getLayoutInflater().inflate(R.layout.pop_gold, null);
+	        TextView tvTips = (TextView) view.findViewById(R.id.tv_tip);
+	        TextView money = (TextView) view.findViewById(R.id.tv_money);
+	        tvTips.setText("小手一抖,红包到手!\n" + "恭喜你!");
+	        money.setText(moneyStr+"元");
+	        final LinearLayout container = (LinearLayout) view.findViewById(R.id.container);
+	        //将flakeView 添加到布局中
+	        container.addView(flakeView);
+	        //设置背景
+	        this.getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+	        //设置同时出现在屏幕上的金币数量  建议64以内 过多会引起卡顿
+	        flakeView.addFlakes(16);
+	        
+	        /**
+	         * 绘制的类型
+	         * @see View.LAYER_TYPE_HARDWARE
+	         * @see View.LAYER_TYPE_SOFTWARE
+	         * @see View.LAYER_TYPE_NONE
+	         */
+	        flakeView.setLayerType(View.LAYER_TYPE_NONE, null);
+	       
+	        view.findViewById(R.id.close_iv).setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View v) {
+	                if (container!=null){
+	                    container.removeAllViews();
+	                }
+	                pop.dismiss();
+	            }
+	        });
+	        
+	        
+	        pop = new PopupWindow(view, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+	        ColorDrawable dw = new ColorDrawable(getResources().getColor(R.color.half_color));
+	        pop.setBackgroundDrawable(dw);
+	        pop.setOutsideTouchable(true);
+	        pop.setFocusable(true);
+	        pop.showAtLocation(v, Gravity.CENTER, 0, 0);
+
+	        /**
+	         * 移除动画
+	         */
+	        final Thread thread = new Thread(new Runnable() {
+	            @Override
+	            public void run() {
+	                try {
+	                    //设置2秒后
+	                    Thread.sleep(5000);
+	                    runOnUiThread(new Runnable() {
+	                        @Override
+	                        public void run() {
+	                            container.removeAllViews();
+	                            pop.dismiss();
+	                        }
+	                    });
+	                } catch (InterruptedException e) {
+	                    e.printStackTrace();
+	                }
+
+	            }
+	        });
+	        if (!show)
+	            thread.start();
+	        MediaPlayer player = MediaPlayer.create(this, R.raw.shake);
+	        player.start();
+	        return pop;
+	    }
+
+		@Override
+		public void advertEarnFail(View view) {
+			// TODO Auto-generated method stub
+			showFailPopWindows(view);
+			pb_but.setProgress(0);
+			receive_tv.setText("已被领光");
+			pb_rl.setClickable(false);
+			handler.removeCallbacks(runnable);
+			wait_time = 10;
+			pb_rl.setFocusable(false);
+			progressbar.setProgress(0);
+		}
+		
+		
+		private PopupWindow showFailPopWindows(View v) {
+ 	    	bottom_rl.setBackgroundColor(getResources().getColor(R.color.white));
+	        View view = this.getLayoutInflater().inflate(R.layout.pop_no_money, null);
+	        //设置背景
+	        this.getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+	        //设置同时出现在屏幕上的金币数量  建议64以内 过多会引起卡顿
+	        /**
+	         * 绘制的类型
+	         * @see View.LAYER_TYPE_HARDWARE
+	         * @see View.LAYER_TYPE_SOFTWARE
+	         * @see View.LAYER_TYPE_NONE
+	         */
+	       
+	        view.findViewById(R.id.close_iv).setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View v) {
+	                pop.dismiss();
+	            }
+	        });
+	        
+	        
+	        pop = new PopupWindow(view, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+	        ColorDrawable dw = new ColorDrawable(getResources().getColor(R.color.half_color));
+	        pop.setBackgroundDrawable(dw);
+	        pop.setOutsideTouchable(true);
+	        pop.setFocusable(true);
+	        if(!pop.isShowing()){
+	        	pop.showAtLocation(v, Gravity.CENTER, 0, 0);
+	        }
+	        return pop;
+	    }
+
+	
+}

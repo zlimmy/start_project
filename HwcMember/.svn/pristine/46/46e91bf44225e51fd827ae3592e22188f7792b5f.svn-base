@@ -1,0 +1,72 @@
+package com.hwc.member.view.activity.my;
+
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.GridView;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.PlayIntegralAdapter;
+import com.hwc.member.presenter.PointShopPresenter;
+import com.hwc.member.view.activity.product.ProductIntegralActivity;
+import com.hwc.member.view.activity.view.IPointShopView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.header.HeadView.Dir;
+import com.hwc.member.widget.header.HeadView.OnHeadClickListener;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnItemClick;
+
+@ContentView(R.layout.activity_point_shop)
+public class PointShopActivity extends BaseActivity implements IPointShopView {
+
+	@ViewInject(R.id.header)
+	private LXHeadView header;	
+	@ViewInject(R.id.gridview)
+	private GridView gridview;
+	
+	private PointShopPresenter presenter = new PointShopPresenter(this);
+	
+	@Override
+	protected void initView() {
+		presenter.setGridData();
+	}
+
+	@Override
+	protected void initListener() {
+		setBack();
+		header.setOnHeadClickListener(new OnHeadClickListener() {
+			
+			@Override
+			public void onHeadClick(Dir dir, View view) {
+				switch (dir) {
+				case Right:
+					goTo(PointHistoryActivity.class);
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+	}
+
+	@Override
+	public void clearLoadPage() {}
+
+	@Override
+	public void showErrorPage() {}
+
+	@Override
+	public void setGridAdapter(PlayIntegralAdapter adapter) {
+		gridview.setAdapter(adapter);
+	}
+	
+	@OnItemClick(R.id.gridview)
+	public void onGridItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		goTo(ProductIntegralActivity.class, presenter.adapter.getItem(position).getCode());
+	}
+
+	
+}

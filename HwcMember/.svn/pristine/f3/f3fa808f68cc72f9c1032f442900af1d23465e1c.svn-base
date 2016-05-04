@@ -1,0 +1,91 @@
+package com.huimodel.api.base;
+
+import java.io.Serializable;
+
+/***
+ * 商品套餐属性
+ * 
+ * @author lxk
+ */
+public class ProductSuite implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Long suite_id;
+	private String code;
+	private String descript;
+	private Integer num;
+	private Double purchase_price;
+	private Double sale_price;
+	//库存属性 标识，库存充足，库存紧张
+	private String num_flag;
+	private String op="insert";
+
+	
+	public Long getSuite_id() {
+		return suite_id;
+	}
+
+	public void setSuite_id(Long suite_id) {
+		this.suite_id = suite_id;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getDescript() {
+		return descript;
+	}
+	
+	public void setDescript(String descript) {
+		this.descript = descript;
+	}
+
+	public Integer getNum() {
+		return num;
+	}
+
+	public void setNum(Integer num) {
+		this.num = num;
+	}
+
+	public Double getPurchase_price() {
+		return purchase_price;
+	}
+
+	public void setPurchase_price(Double purchase_price) {
+		this.purchase_price = purchase_price;
+	}
+
+	public Double getSale_price() {
+		return sale_price;
+	}
+
+	public void setSale_price(Double sale_price) {
+		this.sale_price = sale_price;
+	}
+
+	public String getNum_flag() {
+		return num_flag;
+	}
+
+	public void setNum_flag(String num_flag) {
+		this.num_flag = num_flag;
+	}
+
+	public String getOp() {
+		return op;
+	}
+
+	public void setOp(String op) {
+		this.op = op;
+	}
+	
+	
+}

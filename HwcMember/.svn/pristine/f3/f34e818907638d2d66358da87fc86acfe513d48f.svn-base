@@ -1,0 +1,42 @@
+package com.hwc.member.view.activity.my;
+
+import android.support.v4.view.ViewPager;
+
+import com.hwc.member.R;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.view.fragment.CodeFragment;
+import com.hwc.member.view.fragment.OrderFragment;
+import com.hwc.member.widget.smarttablaout.SmartTabLayout;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
+
+@ContentView(R.layout.activity_my_order)
+public class MyOrderActivity extends BaseActivity {
+
+	@ViewInject(R.id.viewpager)
+	private ViewPager viewPager;
+	@ViewInject(R.id.viewpagertab)
+	private SmartTabLayout viewPagerTab;
+	
+	@Override
+	protected void initView() {
+		FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
+		        getSupportFragmentManager(), FragmentPagerItems.with(this)
+		        .add("销售单", OrderFragment.class)
+		        .add("优惠劵", CodeFragment.class)
+		        .create());
+		 
+		viewPager.setAdapter(adapter);
+		 
+		viewPagerTab.setViewPager(viewPager);
+	}
+
+	@Override
+	protected void initListener() {
+		setBack();
+	}
+
+
+}

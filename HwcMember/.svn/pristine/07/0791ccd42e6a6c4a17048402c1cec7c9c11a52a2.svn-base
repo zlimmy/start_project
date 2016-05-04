@@ -1,0 +1,62 @@
+package com.hwc.member.presenter;
+
+import com.huimodel.api.request.UserAddressGetRequest;
+import com.huimodel.api.response.UserAddressGetResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.AddressListAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IAddressView;
+import com.hwc.member.widget.SimpleHUD;
+
+public class AddressPresenter {
+	private IAddressView view;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public AddressListAdapter adapter;
+
+	public AddressPresenter(IAddressView view) {
+		this.view = view;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+
+	/**
+	 * 读取用户收货地址
+	 */
+	public void getUserAddress() {
+		UserAddressGetRequest request = new UserAddressGetRequest();
+		request.setUser_id_by(Member.getInstance().getUser_id());
+		request.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getUserAddress(request, view.getContext(),new IResult<UserAddressGetResponse>() {
+
+				@Override
+				public void result(UserAddressGetResponse obj, Code code) {
+					switch (code) {
+					case OK:
+						if(obj.getList() != null && obj.getList().size() >= 0){
+							adapter = new AddressListAdapter(view.getContext(), obj.getList(), R.layout.item_address, null);
+							view.setList(adapter);
+						}
+						break;
+
+					default:
+						SimpleHUD.showErrorMessage(view.getContext(), code+"");
+						break;
+					}
+				}
+			});
+	}
+
+	/**
+	 * 删除收货地址
+	 */
+	public void delAddress() {
+
+	}
+
+}

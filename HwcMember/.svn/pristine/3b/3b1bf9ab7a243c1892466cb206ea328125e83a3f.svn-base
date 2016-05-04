@@ -1,0 +1,249 @@
+/**
+ *
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.base.ProductItem;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.request.ProductSearchRequest;
+import com.huimodel.api.response.ProductSearchResponse;
+import com.huimodel.api.response.ShopProductItemGetResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.view.activity.view.IAllGoodsView;
+import com.hwc.member.widget.SimpleHUD;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public class AllGoodsPresenter {
+
+    private IAllGoodsView allGoodsView;
+    private IHwcBizMain iHwcBizMainImpl;
+
+    //	public ProductGridAdapter adapter;
+    public List<ProductItem> items = new ArrayList<ProductItem>();
+
+//	private List<DProduct> morelist = new ArrayList<DProduct>();
+
+    private int page_size = 10;
+
+    public int totalcount;
+
+    public AllGoodsPresenter(IAllGoodsView allGoodsView) {
+        this.allGoodsView = allGoodsView;
+        this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+    }
+
+    // 获取店铺所有商品
+//	public void setData(Long sid, long cid, String order, final boolean desc, final int page, final PullToRefreshLayout pullToRefreshLayout) {
+//		if (sid == -1) {
+//			SimpleHUD.showErrorMessage(allGoodsView.getContext(), "获取门店信息失败");
+//			return;
+//		}
+//		ProductSearchRequest ps = new ProductSearchRequest();
+//		ps.setStatus("onsale");
+//		ps.setShop_id(sid);
+//		ps.setImei(Constant.IMEI);
+//		ps.setProduct_order_by(order);
+//		ps.setPage_size(page_size);
+//		ps.setPage(page);
+//		if (cid != -1) {
+//			ps.setCid(cid);
+//		}
+//		if (desc) {
+//			ps.setProduct_order_by_method("asc");
+//		}
+//		allGoodsView.setIsCanMore(false);
+//		iHwcBizMainImpl.getOneShopProduct(ps, allGoodsView.getContext(), new IResult<ProductSearchResponse>() {
+//
+//			@Override
+//			public void result(ProductSearchResponse obj, Code code) {
+//				allGoodsView.setIsCanMore(true);
+//				if (pullToRefreshLayout != null) {
+//					if (page == 1) {
+//						pullToRefreshLayout.refreshFinish(PullToRefreshLayout.SUCCEED);
+//					} else {
+//						pullToRefreshLayout.loadmoreFinish(PullToRefreshLayout.SUCCEED);
+//					}
+//				}
+//				switch (code) {
+//				case OK:
+//					totalcount = obj.getTotal_results();
+//					if (obj.getProducts() != null && obj.getProducts().size() >= 0) {
+//						if (page == 1) {
+//							morelist.clear();
+//						}
+//						if (morelist.size() > 0) {
+//							morelist.addAll(obj.getProducts());
+////							adapter.notifyDataSetChanged();
+//						} else {
+////							morelist.addAll(obj.getProducts());
+////							adapter = new ProductGridAdapter(allGoodsView.getContext(), morelist, R.layout.item_shop_product, null);
+////							allGoodsView.setGridAdapter(adapter);
+//						}
+//					} else {
+//						// SimpleHUD.showInfoMessage(allGoodsView.getContext(),
+//						// "没有更多了");
+//						allGoodsView.setIsCanMore(false);
+//					}
+//					break;
+//
+//				default:
+//					SimpleHUD.showErrorMessage(allGoodsView.getContext(), code + "");
+//					break;
+//				}
+//			}
+//		});
+//	}
+
+    /**
+     * 刷新
+     */
+    public void refresh(long sid, long cid, String order, final boolean desc, String keyWord) {
+        if (sid == -1) {
+            SimpleHUD.showErrorMessage(allGoodsView.getContext(), "获取门店信息失败");
+            return;
+        }
+        ProductSearchRequest ps = new ProductSearchRequest();
+        if (!"".equals(keyWord)) {
+            ps.setName(keyWord);
+            ps.setLatitude(Constant.latitude);
+            ps.setLongitude(Constant.longitude);
+        }
+        ps.setStatus("onsale");
+        ps.setShop_id(sid);
+        ps.setImei(Constant.IMEI);
+        ps.setProduct_order_by(order);
+        ps.setPage_size(page_size);
+        ps.setPage(1);
+        if (cid != -1) {
+            ps.setCid(cid);
+        }
+        if (desc) {
+            ps.setProduct_order_by_method("asc");
+        }
+        allGoodsView.showProgressDialog(null);
+        iHwcBizMainImpl.getOneShopProduct(ps, allGoodsView.getContext(), new IResult<ProductSearchResponse>() {
+
+            @Override
+            public void result(ProductSearchResponse obj, Code code) {
+                switch (code) {
+                    case OK:
+                        allGoodsView.dismissProgressDialog();
+                        totalcount = obj.getTotal_results();
+                        if (obj.getProducts() != null) {
+                            allGoodsView.refresh(obj.getProducts());
+                        } else {
+                            allGoodsView.showErrorPage();
+                        }
+                        break;
+                    default:
+                        SimpleHUD.showErrorMessage(allGoodsView.getContext(), code + "");
+                        break;
+                }
+            }
+        });
+    }
+
+    /**
+     * 获取更多
+     *
+     * @param mCurIndex
+     */
+    public void more(long sid, long cid, String order, final boolean desc, int mCurIndex, String keyWord) {
+        if (sid == -1) {
+            SimpleHUD.showErrorMessage(allGoodsView.getContext(), "获取门店信息失败");
+            return;
+        }
+        ProductSearchRequest ps = new ProductSearchRequest();
+        if (!"".equals(keyWord)) {
+            ps.setName(keyWord);
+            ps.setLatitude(Constant.latitude);
+            ps.setLongitude(Constant.longitude);
+        }
+        ps.setStatus("onsale");
+        ps.setShop_id(sid);
+        ps.setImei(Constant.IMEI);
+        ps.setProduct_order_by(order);
+        ps.setPage_size(page_size);
+        ps.setPage(mCurIndex);
+        if (cid != -1) {
+            ps.setCid(cid);
+        }
+        if (desc) {
+            ps.setProduct_order_by_method("asc");
+        }
+        iHwcBizMainImpl.getOneShopProduct(ps, allGoodsView.getContext(), new IResult<ProductSearchResponse>() {
+
+            @Override
+            public void result(ProductSearchResponse obj, Code code) {
+                boolean isEnd = true;
+                switch (code) {
+                    case OK:
+                        allGoodsView.clearLoadPage();
+
+                        if (obj.getProducts() != null && obj.getProducts().size() < page_size) {
+
+                        } else {
+                            isEnd = false;
+                        }
+                        allGoodsView.more(obj.getProducts(), isEnd);
+                        break;
+                    default:
+                        SimpleHUD.showErrorMessage(allGoodsView.getContext(), code + "");
+                        break;
+                }
+            }
+        });
+    }
+
+    // 获取店铺类目
+    public void getShopCat(Long sid) {
+        RequestBase rb = new RequestBase();
+        rb.setShop_id(sid);
+        rb.setImei(Constant.IMEI);
+        allGoodsView.showProgressDialog(null);
+        iHwcBizMainImpl.getProductItemCat(rb, allGoodsView.getContext(), new IResult<ShopProductItemGetResponse>() {
+
+            @Override
+            public void result(ShopProductItemGetResponse obj, Code code) {
+                allGoodsView.dismissProgressDialog();
+                switch (code) {
+                    case OK:
+                        if (obj.isSuccess()) {
+                            if (obj.getItems() != null && obj.getItems().size() > 0) {
+                                for (int i = 0; i < obj.getItems().size() + 1; i++) {
+                                    if (i == 0) {
+                                        ProductItem item = new ProductItem();
+                                        item.setCid(-1l);
+                                        item.setName("全部商品");
+                                        items.add(item);
+                                    } else {
+                                        items.add(obj.getItems().get(i - 1));
+                                    }
+                                }
+                                allGoodsView.setCat(items);
+                            }
+                        }
+                        break;
+
+                    default:
+                        SimpleHUD.showErrorMessage(allGoodsView.getContext(), code + "");
+                        break;
+                }
+            }
+        });
+
+    }
+
+
+
+}

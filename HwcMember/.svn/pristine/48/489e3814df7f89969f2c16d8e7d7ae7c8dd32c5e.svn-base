@@ -1,0 +1,59 @@
+package com.huimodel.api.base;
+
+/**
+ * Created by xtsxx on 2016/4/29.
+ */
+public class ShopDeliveryStrategy {
+    /**
+     * 是否支持 送货上门
+     */
+    private String online_delivery;
+    /**
+     * 是否支持 货到付款
+     */
+    private String cod;
+    /**
+     * 邮费
+     */
+    private Double post_fee;
+    /**
+     * 满多少包邮
+     */
+    private Double spend;
+    /**
+     * 满多少包邮
+     */
+    private String halt;
+
+    public String getOnline_delivery() {
+        return online_delivery;
+    }
+    public void setOnline_delivery(String online_delivery) {
+        this.online_delivery = online_delivery;
+    }
+    public String getCod() {
+        return cod;
+    }
+    public void setCod(String cod) {
+        this.cod = cod;
+    }
+    public Double getPost_fee() {
+        return post_fee;
+    }
+    public void setPost_fee(Double post_fee) {
+        this.post_fee = post_fee;
+    }
+    public Double getSpend() {
+        return spend;
+    }
+    public void setSpend(Double spend) {
+        this.spend = spend;
+    }
+    public String getHalt() {
+        return halt;
+    }
+    public void setHalt(String halt) {
+        this.halt = halt;
+    }
+
+}

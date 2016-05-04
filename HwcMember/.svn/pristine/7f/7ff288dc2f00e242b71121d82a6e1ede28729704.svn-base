@@ -1,0 +1,57 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+
+import com.huimodel.api.base.Order;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.CommonUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class OrderAdapter extends MirAdapter<Order> {
+
+	public OrderAdapter(Context context, List<Order> mDatas, int itemLayoutId,
+			BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void convert(HolderEntity helper, Order item) {
+		helper.setText(R.id.people, item.getSeller_shop_nike());
+		helper.setText(R.id.ordernum, "订单编号："+item.getRid());
+		
+	
+		String str ="";
+		if(item.getDetails()!=null){
+			for(int i=0;i<item.getDetails().size();i++){
+				str = str +item.getDetails().get(i).getTitle()+"\t,";
+				
+			}
+			str = str.substring(0, str.length() - 1);
+		}
+		
+		if(item.getInvitation_code()!=null){
+			
+			helper.setText(R.id.code_tv, "优惠码："+item.getInvitation_code());
+		}else{
+			helper.setText(R.id.code_tv, "");
+		}
+		
+	
+		helper.setText(R.id.goodsname, str);
+		helper.setText(R.id.price, "￥"+CommonUtil.conversionDouble(Double.parseDouble(item.getTotal_fee()+"")));
+		helper.setText(R.id.salename, item.getSale_nick()==null?item.getSeller_nick():item.getSale_nick());
+		helper.setText(R.id.totalprice, item.getConsign_time()+"\t\t合计 ￥"+CommonUtil.conversionDouble(Double.parseDouble(item.getTotal_fee()+"")));
+	}
+
+}

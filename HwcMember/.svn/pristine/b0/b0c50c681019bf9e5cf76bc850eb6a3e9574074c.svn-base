@@ -1,0 +1,204 @@
+package com.hwc.member.view.activity.order;
+
+import android.view.Gravity;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.huimodel.api.base.Order;
+import com.huimodel.api.response.OrderDetailResponse;
+import com.hwc.member.R;
+import com.hwc.member.adapter.NewOrderInfoAdapter;
+import com.hwc.member.common.Constant;
+import com.hwc.member.presenter.OrderInfoPresenter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.IntentUtil;
+import com.hwc.member.view.activity.shop.ShopIndexActivity;
+import com.hwc.member.view.activity.view.IOrderInfoView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.MyListView;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+@ContentView(R.layout.activity_preferential_detail)
+public class PreferentialOrderDetailActivity extends BaseActivity implements IOrderInfoView, android.view.View.OnClickListener {
+
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.listview)
+	private MyListView listview;
+	@ViewInject(R.id.shopname_tv)
+	private TextView shopname_tv;
+
+	@ViewInject(R.id.state_tv)
+	private TextView state_tv;
+
+	@ViewInject(R.id.paycode_desc)
+	private TextView paycode_desc;
+	@ViewInject(R.id.created)
+	private TextView created;
+	@ViewInject(R.id.rid_tv)
+	private TextView rid_tv;
+	@ViewInject(R.id.dsfzf_tv)
+	private TextView dsfzf_tv;
+	@ViewInject(R.id.dsf_tv)
+	private TextView dsf_tv;
+
+	@ViewInject(R.id.contact_but)
+	private TextView contact_but;
+
+	@ViewInject(R.id.goods_iv)
+	private ImageView goods_iv;
+	@ViewInject(R.id.goodsname_tv)
+	private TextView goodsname_tv;
+	private Long sid;
+	private Long rid;
+	private Order mOrder;
+	private OrderInfoPresenter presenter = new OrderInfoPresenter(this);
+
+	@Override
+	protected void initView() {
+		// TODO Auto-generated method stub
+		rid = getIntent().getLongExtra("0", -1);
+		presenter.setData(rid);
+
+	}
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+		setBack();
+		contact_but.setOnClickListener(this);
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setList(NewOrderInfoAdapter adapter) {
+		// TODO Auto-generated method stub
+		// listview.setAdapter(adapter);
+
+	}
+
+	@Override
+	public void setOrderData(Order order) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setOrderDetail(OrderDetailResponse order) {
+		// TODO Auto-generated method stub
+		mOrder = order.getEntity();
+		sid = mOrder.getSeller_shop();
+		paycode_desc.setText(mOrder.getPaycode_desc());
+		shopname_tv.setText(mOrder.getSeller_nick());
+		goodsname_tv.setText(mOrder.getDetails().get(0).getTitle());
+		created.setText(mOrder.getCreated());
+		rid_tv.setText(mOrder.getRid() + "");
+
+		if (mOrder.getStatus().equals("N")) {
+			state_tv.setText("待付款");
+		} else if (mOrder.getStatus().equals("C")) {
+			state_tv.setText("已确认");
+		} else if (mOrder.getStatus().equals("U")) {
+			state_tv.setText("待付款");
+		} else if (mOrder.getStatus().equals("P")) {
+			state_tv.setText("已付款");
+		} else if (mOrder.getStatus().equals("D")) {
+			state_tv.setText("已发货");
+		} else if (mOrder.getStatus().equals("X")) {
+			state_tv.setText("已取消");
+		} else if (mOrder.getStatus().equals("R")) {
+			state_tv.setText("已退款");
+		} else if (mOrder.getStatus().equals("T")) {
+			state_tv.setText("已退货");
+		} else if (mOrder.getStatus().equals("O")) {
+			state_tv.setText("已完成");
+		}
+
+		if (mOrder.getPayDetails() != null) {
+			for (int i = 0; i < mOrder.getPayDetails().size(); i++) {
+				if (mOrder.getPayDetails().get(i).getPaycode().equals("ALIPAY")) {
+					dsfzf_tv.setText("支付宝支付");
+					dsf_tv.setText("￥" + CommonUtil.conversionDouble(mOrder.getPayDetails().get(i).getCredit()));
+				}
+				if (mOrder.getPayDetails().get(i).getPaycode().equals("WX")) {
+					dsfzf_tv.setText("微信支付");
+					dsf_tv.setText("￥" + CommonUtil.conversionDouble(mOrder.getPayDetails().get(i).getCredit()));
+				}
+
+			}
+		}
+
+	}
+
+	@Override
+	public void setMobile(String mobile) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void closeOrder(String str) {
+		// TODO Auto-generated method stub
+		T(str);
+		finish();
+	}
+
+	/**
+	 * 取消订单
+	 */
+	public void cancelOrder() {
+		DialogUtil.showDialog(Constant.Dialog, "订单还未完成,确定取消吗?", Gravity.CENTER, context, null, new OnClickListener() {
+
+			@Override
+			public void onClick(DialogPlus dialog, View view) {
+				switch (view.getId()) {
+				case R.id.cancel:
+					break;
+
+				case R.id.confirm:
+					presenter.cancelOrder(rid);
+					break;
+				}
+				dialog.dismiss();
+			}
+		}, null);
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch (v.getId()) {
+		case R.id.contact_but:
+			IntentUtil.toPhoneApp(context, mOrder.getShop_mobile());
+			break;
+
+		default:
+			break;
+		}
+	}
+	
+	@OnClick(R.id.order_buy_rl)
+	public void toShop(View view) {
+		goTo(ShopIndexActivity.class, sid);
+	}
+	
+
+}

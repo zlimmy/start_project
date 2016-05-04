@@ -1,0 +1,141 @@
+package com.hwc.member.view.activity.order;
+
+import android.text.Html;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.view.activity.shop.ShopIndexActivity;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+/**
+ * 支付状态界面
+ * 
+ * @author Administrator
+ * 
+ */
+@ContentView(R.layout.activity_paymentresult)
+public class PaymentResultActivity extends BaseActivity {
+
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	private Long rid, sid;
+	private String title;
+	@ViewInject(R.id.flag_tv)
+	private TextView flag_tv;
+	@ViewInject(R.id.stat_rl)
+	private RelativeLayout stat_rl;
+	@ViewInject(R.id.desc_rl)
+	private RelativeLayout desc_rl;
+	@ViewInject(R.id.num_tv)
+	private TextView num_tv;  
+	@ViewInject(R.id.state_iv)
+	private ImageView state_iv;
+
+	@ViewInject(R.id.desc_tv)
+	private TextView desc_tv;
+	private String balance;
+
+	@ViewInject(R.id.goorder_but)
+	private Button goorder_but;
+
+	@ViewInject(R.id.goshop_but)
+	private Button goshop_but;
+	private String code;
+
+	@Override
+	protected void initView() {
+		// TODO Auto-generated method stub
+		setBack();
+
+		if (OrderDetailsActivity.activity != null) {
+			OrderDetailsActivity.activity.setResult(RESULT_OK);
+		}
+
+		code = getIntent().getStringExtra("0");
+		rid = getIntent().getLongExtra("1", -1);
+		sid = getIntent().getLongExtra("2", -1);
+		title = getIntent().getStringExtra("3");
+		balance = getIntent().getStringExtra("4");
+
+		ViewTransformUtil.layoutParams(header, header.getLayoutParams(), LayoutParams.MATCH_PARENT, 100);
+		desc_tv.setText(Html.fromHtml("订单金额：<font color='red'>" + CommonUtil.conversionDouble(Double.parseDouble(balance)) + "</font>"));
+		if (rid > 0) {
+			num_tv.setText("订单编号："+rid);
+		} else {
+			num_tv.setVisibility(View.GONE);
+		}
+
+		ViewTransformUtil.layoutParams(stat_rl, stat_rl.getLayoutParams(), LayoutParams.MATCH_PARENT, 448);
+		ViewTransformUtil.layoutParams(desc_rl, desc_rl.getLayoutParams(), LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+
+		if (title.equals("success")) {
+			flag_tv.setText("支付成功");
+			ViewTransformUtil.layoutImageView(state_iv, state_iv.getLayoutParams(), R.drawable.zfcg_icon, true, 200, 200);
+		} else if (title.equals("cancel")) {
+			flag_tv.setText("支付取消");
+			ViewTransformUtil.layoutImageView(state_iv, state_iv.getLayoutParams(), R.drawable.zfsb_icon, true, 200, 200);
+		} else {// cancel
+			flag_tv.setText("支付失败");
+			goshop_but.setText("继续支付");
+			ViewTransformUtil.layoutImageView(state_iv, state_iv.getLayoutParams(), R.drawable.zfsb_icon, true, 200, 200);
+		}
+
+		ViewTransformUtil.layoutParams(goorder_but, goorder_but.getLayoutParams(), 240, 80);
+		ViewTransformUtil.layoutParams(goshop_but, goshop_but.getLayoutParams(), 240, 80);
+
+	}
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+
+	}
+ 
+	@OnClick(R.id.goorder_but)
+	public void goorder_but(View v) {
+		
+		if (rid == -1) {
+			goTo(NewOrderActivity.class, 1);
+		} else {
+			if (OrderDetailsActivity.activity != null) {
+				OrderDetailsActivity.activity.setResult(RESULT_OK);
+				OrderDetailsActivity.activity.finish();
+			}
+	
+			if(code.equals("D")){
+				goTo(OrderDetailsActivity.class, rid);
+			}else{
+				
+				goTo(PreferentialOrderDetailActivity.class, rid);
+			}
+
+		}
+
+		finish();
+	}
+
+	
+	@OnClick(R.id.goshop_but)
+	public void goshop_but(View v) {
+		if (!title.equals("success") && !title.equals("cancel")){
+			if(code.equals("D")){
+				goTo(CounterInfoActivity.class, rid, sid);
+			}
+		}else {
+			goTo(ShopIndexActivity.class, sid);
+		}
+		finish();
+	}
+
+}

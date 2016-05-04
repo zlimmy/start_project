@@ -1,0 +1,141 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.AttentionShopCancelReuqest;
+import com.huimodel.api.request.CollectionsRequest;
+import com.huimodel.api.request.ShopInfoRequest;
+import com.huimodel.api.response.ShopInfoResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.adapter.HorizontalListViewAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IContactSellerView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class ContactSellerPresenter {
+
+	private IContactSellerView contactSellerView;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public HorizontalListViewAdapter adapter;
+	
+	
+	public ContactSellerPresenter(IContactSellerView contactSellerView){
+		this.contactSellerView = contactSellerView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void setData(Long sid){
+		if(sid == -1){
+			SimpleHUD.showErrorMessage(contactSellerView.getContext(), "获取门店信息失败");
+			return;
+		}
+		ShopInfoRequest sir = new ShopInfoRequest();
+		sir.setShop_id(sid);
+		sir.setNum(0);
+		sir.setUser_id_by(Member.getInstance().getUser_id());
+		sir.setImei(Constant.IMEI);
+		contactSellerView.showProgressDialog(null);
+		iHwcBizMainImpl.searchShopInfo(sir, contactSellerView.getContext(), new IResult<ShopInfoResponse>() {
+			
+			@Override
+			public void result(ShopInfoResponse obj, Code code) {
+				contactSellerView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						contactSellerView.setAttention(obj.getShopInfo().getIs_attention());
+						contactSellerView.setShopMsg(obj);
+						contactSellerView.setShopIcon(obj.getShopInfo().getLogo_path());
+						contactSellerView.setSecondCode(obj.getShopInfo().getSid()+"");			
+					}else{
+						SimpleHUD.showErrorMessage(contactSellerView.getContext(), obj.getMsg());
+					}
+					break;
+				default:
+					SimpleHUD.showErrorMessage(contactSellerView.getContext(), code+"");
+					break;
+				}
+				
+				
+			}
+		});
+
+	}
+	
+	public void attention(Long sid){
+		CollectionsRequest cr = new CollectionsRequest();
+		cr.setShop_id(sid);
+		cr.setUser_id_by(Member.getInstance().getUser_id());
+		cr.setCat("SHOP");
+		cr.setImei(Constant.IMEI);
+		contactSellerView.showProgressDialog(null);
+		iHwcBizMainImpl.attentionShop(cr, contactSellerView.getContext(), new IResult<ResponseBase>() {
+			
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				contactSellerView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						SimpleHUD.showSuccessMessage(contactSellerView.getContext(), "关注成功！");
+						contactSellerView.setAttention(true);
+					}else{
+						SimpleHUD.showErrorMessage(contactSellerView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(contactSellerView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	public void cancelAttention(Long sid){
+		AttentionShopCancelReuqest asc = new AttentionShopCancelReuqest();
+		List<Long> list = new ArrayList<Long>();
+		list.add(sid);
+		asc.setShop_ids(list);
+		asc.setUser_id_by(Member.getInstance().getUser_id());
+		asc.setImei(Constant.IMEI);
+		contactSellerView.showProgressDialog(null);
+		iHwcBizMainImpl.cancelAttentionShop(asc, contactSellerView.getContext(), new IResult<ResponseBase>() {
+			
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				contactSellerView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						SimpleHUD.showSuccessMessage(contactSellerView.getContext(), "取消成功");
+						contactSellerView.setAttention(false);
+					}else{
+						SimpleHUD.showErrorMessage(contactSellerView.getContext(), obj.getMsg());
+					}
+					
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(contactSellerView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+}

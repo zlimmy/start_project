@@ -1,0 +1,39 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+
+import com.huimodel.api.base.OrderDetails;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.CommonUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class OrderInfoAdapter extends MirAdapter<OrderDetails> {
+	
+	public OrderInfoAdapter(Context context, List<OrderDetails> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void convert(HolderEntity helper, OrderDetails item) {
+		helper.setText(R.id.goodsname, item.getTitle());
+		helper.setText(R.id.quantity, "数量  "+item.getNum());
+		if(item.getPrice() != null){
+			helper.setText(R.id.price_tv, "￥ "+CommonUtil.conversionDouble(Double.parseDouble(item.getPrice())));
+		}else{
+			helper.setText(R.id.price_tv, "￥ "+ 0.00);
+		}
+	}
+
+}

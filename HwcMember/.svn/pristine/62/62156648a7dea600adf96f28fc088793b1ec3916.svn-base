@@ -1,0 +1,122 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.response.DiscoveryGetResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IFollowDiascoveriesView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class FollowDiascoveriesPresenter {
+
+	private IFollowDiascoveriesView view;
+	private IHwcBizMain iHwcBizMainImpl;
+	private int page_size = 10;
+
+	public FollowDiascoveriesPresenter(IFollowDiascoveriesView view) {
+		this.view = view;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+
+//	public void setListData(final PullToRefreshLayout pullToRefreshLayout) {
+//		RequestBase rb = new RequestBase();
+//		rb.setUser_id_by(Member.getInstance().getUser_id());
+//		rb.setImei(Constant.IMEI);
+//		iHwcBizMainImpl.searchCollectionDiascoveries(rb, view.getContext(), new IResult<DiscoveryGetResponse>() {
+//
+//			@Override
+//			public void result(DiscoveryGetResponse obj, Code code) {
+//				pullToRefreshLayout.refreshFinish(PullToRefreshLayout.SUCCEED);
+//				switch (code) {
+//				case OK:
+//					if (obj.getDiscoverys() != null && obj.getDiscoverys().size() > 0) {
+//						brlapdater = new BustlingProductListAdapter(view.getContext(), obj.getDiscoverys(),
+//								R.layout.item_bustlingproduct, null);
+//						view.setListAdapter(brlapdater);
+//					} else {
+//						view.showErrorPage();
+//					}
+//					break;
+//
+//				default:
+//					SimpleHUD.showErrorMessage(view.getContext(), code + "");
+//					break;
+//				}
+//			}
+//		});
+//	}
+//
+//	public Discovery getItem(int position) {
+//		Discovery d = brlapdater.getItem(position);
+//		return d;
+//	}
+
+	/**
+	 * 刷新
+	 */
+	public void refresh() {
+		RequestBase rb = new RequestBase();
+		rb.setUser_id_by(Member.getInstance().getUser_id());
+		rb.setPage(1);
+		rb.setPage_size(page_size);
+		rb.setImei(Constant.IMEI);
+		iHwcBizMainImpl.searchCollectionDiascoveries(rb, view.getContext(), new IResult<DiscoveryGetResponse>() {
+			@Override
+			public void result(DiscoveryGetResponse obj, Code code) {
+				view.dismissProgressDialog();
+				switch (code) {
+				case OK:
+						view.refresh(obj.getDiscoverys());
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code + "");
+					break;
+				}
+			}
+		});
+	}
+
+	/**
+	 * 获取更多
+	 * 
+	 * @param mCurIndex
+	 */
+	public void more(int mCurIndex) {
+		RequestBase rb = new RequestBase();
+		rb.setUser_id_by(Member.getInstance().getUser_id());
+		rb.setPage(mCurIndex);
+		rb.setPage_size(page_size);
+		rb.setImei(Constant.IMEI);
+		iHwcBizMainImpl.searchCollectionDiascoveries(rb, view.getContext(), new IResult<DiscoveryGetResponse>() {
+			@Override
+			public void result(DiscoveryGetResponse obj, Code code) {
+				boolean isEnd = true;
+				switch (code) {
+				case OK:
+					if(obj.getDiscoverys().size() < page_size){
+						isEnd = false;
+					}
+						view.more(obj.getDiscoverys(),isEnd);
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code + "");
+					break;
+				}
+			}
+		});
+	}
+
+}

@@ -1,0 +1,63 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.request.OrderSearchRequest;
+import com.huimodel.api.response.TradeSearchResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.OrderAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IMyOrderView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class MyOrderPresenter {
+	
+	private IMyOrderView orderView;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public OrderAdapter adapter;
+	
+	public MyOrderPresenter(IMyOrderView orderView){
+		this.orderView = orderView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void setData(int page){	
+		OrderSearchRequest osr = new OrderSearchRequest();
+		osr.setBegin("2015-10-10");
+		osr.setEnd("2016-10-10");
+		osr.setSaleid(Member.getInstance().getUser_id());
+		osr.setPage(page);
+		osr.setPage_size(10);
+		osr.setImei(Constant.IMEI);
+	
+		iHwcBizMainImpl.getOrders(osr, orderView.getContext(), new IResult<TradeSearchResponse>() {
+			
+			@Override
+			public void result(TradeSearchResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.getOrders() != null){
+						adapter = new OrderAdapter(orderView.getContext(), obj.getOrders(), R.layout.item_orderout_list, null);
+						orderView.setList(adapter);
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(orderView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+}

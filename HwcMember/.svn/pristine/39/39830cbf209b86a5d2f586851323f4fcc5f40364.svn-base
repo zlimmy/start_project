@@ -1,0 +1,69 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import java.util.List;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.request.ProductRecommendRequest;
+import com.huimodel.api.response.ProductRecommendResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.HorizontalListViewAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IMainPromotionView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class MainPromotionPresenter {
+	
+	private IMainPromotionView mainPromotionView;
+	
+	private List<DProduct> products;
+	public HorizontalListViewAdapter adapter;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public MainPromotionPresenter(IMainPromotionView mainPromotionView){
+		this.mainPromotionView = mainPromotionView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	
+	
+	public void setData(){
+		ProductRecommendRequest prr = new ProductRecommendRequest();
+		prr.setLatitude(Constant.latitude);
+		prr.setLongitude(Constant.longitude);
+		prr.setUser_id_by(Member.getInstance().getUser_id());
+		prr.setImei(Constant.IMEI);
+		mainPromotionView.showProgressDialog(null);
+		iHwcBizMainImpl.getMainPromotionList(prr, mainPromotionView.getContext(), new IResult<ProductRecommendResponse>() {
+			@Override
+			public void result(ProductRecommendResponse obj, Code code) {
+				mainPromotionView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					products = obj.getProducts();
+					adapter = new HorizontalListViewAdapter(mainPromotionView.getContext(), products, R.layout.item_horizontallist, null);
+					mainPromotionView.setGridAdapter(adapter);
+					break;
+
+				default:
+					SimpleHUD.showInfoMessage(mainPromotionView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+		
+
+	}
+
+}

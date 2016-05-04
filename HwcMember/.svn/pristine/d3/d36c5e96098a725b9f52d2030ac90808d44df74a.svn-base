@@ -1,0 +1,23 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBaseEntity;
+import com.huimodel.api.base.WithdrawApply;
+public class WithdrawApplyRequest  extends RequestBaseEntity<WithdrawApply> {
+	
+	private String order_by="created";
+	private String order_by_method = "desc";
+	public String getOrder_by() {
+		return order_by;
+	}
+	public void setOrder_by(String order_by) {
+		this.order_by = order_by;
+	}
+	public String getOrder_by_method() {
+		return order_by_method;
+	}
+	public void setOrder_by_method(String order_by_method) {
+		this.order_by_method = order_by_method;
+	}
+	
+	
+}

@@ -1,0 +1,9 @@
+package com.hwc.member.view.activity.view;
+
+public interface IRareProductView extends LoadDataView {
+
+	void collectionSuccess();
+	
+	void collectionFaile();
+	
+}

@@ -1,0 +1,23 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+import com.hwc.member.R;
+import com.hwc.member.view.base.FormBaseFragment;
+
+/**
+ * @author FZ
+ */
+public class WelcomeFragment3 extends FormBaseFragment {
+
+	@Override
+	protected void init() {}
+	
+	@Override
+	public int getLayoutId() {
+		return R.layout.fragment_welcome3;
+	}
+
+}
+

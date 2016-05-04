@@ -1,0 +1,348 @@
+package com.hwc.member.view.activity.order;
+
+import java.io.IOException;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.huimodel.api.ConstantApis;
+import com.hwc.member.R;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.TimeUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.pingplusplus.android.PaymentActivity;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+
+/**
+ * 优惠买单支付界面
+ * @author Administrator
+ *
+ */
+
+@ContentView(R.layout.activity_preferentialresult)
+public class PreferentialResultActivity extends BaseActivity{
+
+	
+	public static final String URL = ConstantApis.PREFERENTIA_PAY_URL;
+	private static final int REQUEST_CODE_PAYMENT = 1;
+	private static final String CHANNEL_WECHAT = "WX";
+	private static final String CHANNEL_ALIPAY = "ALIPAY";
+	private String paychannel = CHANNEL_WECHAT; 
+	@ViewInject(R.id.radioGroup)
+	private RadioGroup radioGroup;
+	@ViewInject(R.id.zfb_radio)
+	private RadioButton zfb_radio;
+	@ViewInject(R.id.wx_radio)
+	private RadioButton wx_radio;
+	
+	@ViewInject(R.id.balance_rl)
+	private RelativeLayout balance_rl;
+	
+	@ViewInject(R.id.shop_tv)
+	private TextView shop_tv;
+	@ViewInject(R.id.created_tv)
+	private TextView created_tv;
+	private String shopname;
+	private Long sid;
+	private double actualAmount;
+	@ViewInject(R.id.balance_tv)
+	private TextView balance_tv;
+	@ViewInject(R.id.pay_bt)
+	private Button pay_bt;
+	private String notparticipate_et;
+	private String moeny_et;
+	private String data;
+
+	@Override
+	protected void initView() {
+		// TODO Auto-generated method stub
+		sid = getIntent().getLongExtra("0", 0);
+		shopname = getIntent().getStringExtra("1");
+		actualAmount = getIntent().getDoubleExtra("2",0);
+		notparticipate_et = getIntent().getStringExtra("3");
+		moeny_et = getIntent().getStringExtra("4");
+		ViewTransformUtil.layoutParams(balance_rl, balance_rl.getLayoutParams(), LayoutParams.MATCH_PARENT, 150);
+		ViewTransformUtil.layoutParams(balance_rl, balance_rl.getLayoutParams(), LayoutParams.MATCH_PARENT, 150);
+		shop_tv.setText("收款门店："+shopname);
+		created_tv.setText("创建时间："+TimeUtil.getTimes());
+		balance_tv.setText(CommonUtil.conversionDouble(actualAmount)+"");
+	}
+
+	
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+		setBack(R.drawable.back, null, new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				exitClick();
+			}
+		});
+		
+		
+		radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(RadioGroup arg0, int id) {
+				// TODO Auto-generated method stub
+				switch (id) {
+				case R.id.zfb_radio:
+					paychannel = CHANNEL_ALIPAY;
+					break;
+				case R.id.wx_radio:
+					paychannel = CHANNEL_WECHAT;
+					break;
+				default:
+					break;
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 关闭界面前如果没使用本次抽奖提示用户
+	 */
+	private void exitClick() {
+			DialogUtil.showDialog(Constant.Dialog, "订单未支付完成，现在退出吗？", Gravity.CENTER, context, null, new OnClickListener() {
+				
+				@Override
+				public void onClick(DialogPlus dialog, View view) {
+					switch (view.getId()) {
+					case R.id.cancel:
+						break;
+
+					case R.id.confirm:
+						finish();	
+						break;
+					}
+					dialog.dismiss();
+				}
+			}, null);	
+		
+	}
+	
+	/**
+	 * 菜单、返回键响应
+	 */
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			exitClick();
+		}
+		return false;
+	}
+	
+	
+	@OnClick(R.id.pay_bt)
+	public void pay_bt(View v) {
+		pay_bt.setClickable(false);
+		String  notparticipate =  CommonUtil.conversionDouble(Double.parseDouble(notparticipate_et.equals("")?"0":notparticipate_et));
+		String  moeny =  CommonUtil.conversionDouble(Double.parseDouble(moeny_et.equals("")?"0":moeny_et));
+		
+		//new PaymentTask().execute(new PaymentRequest(paychannel, 0,CommonUtil.conversionDouble(Double.parseDouble(notparticipate_et.equals("")?"0":notparticipate_et)) , 
+		//CommonUtil.conversionDouble(Double.parseDouble(moeny_et)), "", "",Member.getInstance().getUser_id(),sid));
+		// 按键点击之后的禁用，防止重复点击
+//		pay_bt.setClickable(false);
+		new PaymentTask().execute(new PaymentRequest(paychannel, Double.parseDouble(moeny), Double.parseDouble(notparticipate), paychannel, Member.getInstance().getUser_id(), sid));
+	}
+
+	
+	class PaymentTask extends AsyncTask<PaymentRequest, Void, String> {
+
+
+		@Override
+		protected void onPreExecute() {
+			
+
+		}
+
+		@Override
+		protected String doInBackground(PaymentRequest... pr) {
+
+			PaymentRequest paymentRequest = pr[0];
+
+			data = null;
+			String json = new Gson().toJson(paymentRequest);
+			System.out.println("json:"+json);
+			try {
+				// 向Your Ping++ Server SDK请求数据
+				data = postJson(URL, json);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return data;
+		}
+
+		/**
+		 * 获得服务端的charge，调用ping++ sdk。
+		 */
+		@Override
+		protected void onPostExecute(String data) {
+			if (null == data) {
+				showMsg("请求出错", "请检查URL", "URL无法获取charge");
+				return;
+			}
+			Log.d("charge", data);
+			Intent intent = new Intent();
+			String packageName = getPackageName();
+			ComponentName componentName = new ComponentName(packageName,
+					packageName + ".wxapi.WXPayEntryActivity");
+			intent.setComponent(componentName);
+			intent.putExtra(PaymentActivity.EXTRA_CHARGE, data);
+			startActivityForResult(intent, REQUEST_CODE_PAYMENT);
+		}
+
+	}
+
+	/**
+	 * onActivityResult 获得支付结果，如果支付成功，服务器会收到ping++ 服务器发送的异步通知。 最终支付成功根据异步通知为准
+	 */
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// 支付页面返回处理
+		if (requestCode == REQUEST_CODE_PAYMENT) {
+			if (resultCode == Activity.RESULT_OK) {
+				String result = data.getExtras().getString("pay_result");
+				String errorMsg = data.getExtras().getString("error_msg"); // 错误信息
+				String extraMsg = data.getExtras().getString("extra_msg"); // 错误信息
+				showMsg(result, errorMsg, extraMsg);
+			}
+		}
+	}
+
+	public void showMsg(final String title, String msg1, String msg2) {
+		String str = "";
+
+		if (title.equals("success")) {
+			str = "支付成功";
+		} else if (title.equals("fail")) {
+			str = "支付失败";
+		} else if (title.equals("cancel")) {
+			str = "取消支付";
+		} else {
+			str = "系统异常";
+		}
+
+		if (null != msg1 && msg1.length() != 0) {
+			str += "\n" + msg1;
+		}
+		if (null != msg2 && msg2.length() != 0) {
+			str += "\n" + msg2;
+		}
+		
+		JSONObject object = null;
+		Long orderNo = -1l;
+		try {
+			if (data != null && data.length() > 0) {
+				object = new JSONObject(data);
+				orderNo = object.getLong("orderNo");
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		if (title.equals("success")) {
+			goTo(PaymentResultActivity.class,"YH",orderNo,sid,title,CommonUtil.conversionDouble(actualAmount)+"");
+		} else {
+			goTo(PaymentResultActivity.class,"YH",0,sid,title,CommonUtil.conversionDouble(actualAmount)+"");
+		}
+		finish();
+//		AlertDialog.Builder builder = new Builder(PreferentialResultActivity.this);
+//		builder.setMessage(str);
+//		builder.setTitle("提示");
+//		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//
+//			@Override
+//			public void onClick(DialogInterface arg0, int arg1) {
+//				JSONObject object = null;
+//				Long orderNo = -1l;
+//				try {
+//					if (data != null) {
+//						object = new JSONObject(data);
+//						orderNo = object.getLong("orderNo");
+//					}
+//				} catch (JSONException e) {
+//					e.printStackTrace();
+//				}
+//				if (title.equals("success")) {
+//					goTo(PaymentResultActivity.class,"YH",orderNo,sid,title,CommonUtil.conversionDouble(actualAmount)+"");
+//				} else {
+//					goTo(PaymentResultActivity.class,"YH",0,sid,title,CommonUtil.conversionDouble(actualAmount)+"");
+//				}
+//				finish();
+//			}
+//		});
+//		builder.create().show();
+	}
+
+	private static String postJson(String url, String json) throws IOException {
+		MediaType type = MediaType.parse("application/json; charset=utf-8");
+		RequestBody body = RequestBody.create(type, json);
+		Request request = new Request.Builder().url(url).post(body).build();
+
+		OkHttpClient client = new OkHttpClient();
+		Response response = client.newCall(request).execute();
+
+		return response.body().string();
+	}
+
+	class PaymentRequest {
+		String channel;
+		String paycode;
+		Double discount_fee;
+		Double real_point_fee;
+		String pay_channel;
+		Long user_id_by;
+        Long shop_id;
+
+		public PaymentRequest(String channel,Double discount_fee,Double real_point_fee,String pay_channel,Long user_id_by,Long shop_id) {
+			this.channel = channel;
+			this.paycode = channel;
+			this.pay_channel = pay_channel;
+			this.discount_fee = discount_fee;
+			this.real_point_fee = real_point_fee;
+			this.user_id_by = user_id_by;
+			this.shop_id = shop_id;
+		}
+
+	}
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		pay_bt.setClickable(true);
+	}
+
+}

@@ -1,0 +1,59 @@
+/**
+ * 
+ */
+package com.huimodel.api.request;
+
+import java.util.Date;
+
+import com.huimodel.api.base.DHwcpayDetail;
+import com.huimodel.api.base.RequestBaseEntity;
+
+/**
+ * @author FZ
+ */
+public class  AccountItemSearchRequest extends RequestBaseEntity<DHwcpayDetail> {
+	private Double balance_gt;
+	private Double balance_le;
+	private Date begin;
+	private Date end;
+	private String order_by="created";
+	private String order_by_method = "desc";
+	public Double getBalance_gt() {
+		return balance_gt;
+	}
+	public void setBalance_gt(Double balance_gt) {
+		this.balance_gt = balance_gt;
+	}
+	public Double getBalance_le() {
+		return balance_le;
+	}
+	public void setBalance_le(Double balance_le) {
+		this.balance_le = balance_le;
+	}
+	public Date getBegin() {
+		return begin;
+	}
+	public void setBegin(Date begin) {
+		this.begin = begin;
+	}
+	public Date getEnd() {
+		return end;
+	}
+	public void setEnd(Date end) {
+		this.end = end;
+	}
+	public String getOrder_by() {
+		return order_by;
+	}
+	public void setOrder_by(String order_by) {
+		this.order_by = order_by;
+	}
+	public String getOrder_by_method() {
+		return order_by_method;
+	}
+	public void setOrder_by_method(String order_by_method) {
+		this.order_by_method = order_by_method;
+	}
+	
+	
+}

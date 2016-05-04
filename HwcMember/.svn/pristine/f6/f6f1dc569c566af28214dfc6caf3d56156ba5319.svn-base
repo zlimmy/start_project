@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+     <View
+        style="@style/divider_horizontal"
+            android:background="@color/gray2" />
+        <RadioGroup
+            android:id="@+id/rg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/comprehensive_rt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_radio"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="综合"
+                android:textColor="@drawable/button_radio"
+                android:textSize="@dimen/text_12" />
+
+            <RadioButton
+                android:id="@+id/salesvol_rt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_radio"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="销量"
+                android:textColor="@drawable/button_radio"
+                android:textSize="@dimen/text_12" />
+
+            <RadioButton
+                android:id="@+id/price_rt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_radio"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="价格"
+                android:textColor="@drawable/button_radio"
+                android:textSize="@dimen/text_12" />
+        </RadioGroup>
+
+        <View
+            style="@style/divider_horizontal"
+            android:background="@color/gray2" />
+    
+    
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+      
+        <com.hwc.member.widget.MyGridView
+            android:id="@+id/gridview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:horizontalSpacing="2dp"
+            android:numColumns="2"
+            android:scrollbars="none"
+            android:verticalSpacing="2dp" />
+ 
+    </LinearLayout>
+
+</ScrollView>
+</LinearLayout>

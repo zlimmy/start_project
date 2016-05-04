@@ -1,0 +1,51 @@
+package com.huimodel.biz;
+import android.content.Context;
+
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.DiscoveryCollectRequest;
+import com.huimodel.api.request.DiscoveryDetailRequest;
+import com.huimodel.api.request.DiscoveryGetRequest;
+import com.huimodel.api.response.DiscoveryDetailResponse;
+import com.huimodel.api.response.DiscoveryGetResponse;
+import com.huimodel.net.IResult;
+
+
+/**
+ * 发现频道
+ * @author Administrator
+ *
+ */
+public interface IHwcBizPost  {
+
+	/**
+	 * 获取发现列表
+	 * @param r
+	 * @param context
+	 * @param result
+	 */
+	void getPostList(DiscoveryGetRequest r, Context context, IResult<DiscoveryGetResponse> result);
+	
+	/**
+	 * 获取发现文章详情
+	 * @param r
+	 * @param context
+	 * @param result
+	 */
+	void  searchDiscoveryDetail(DiscoveryDetailRequest r, Context context, IResult<DiscoveryDetailResponse> result);
+	
+	
+	/**
+	 * 收藏
+	 * @param r
+	 * @param context
+	 * @param result
+	 */
+	void  updateCollection(DiscoveryCollectRequest r, Context context, IResult<ResponseBase> result);
+	
+	
+	
+	
+	
+	
+	
+}

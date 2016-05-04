@@ -1,0 +1,24 @@
+/**
+ * 
+ */
+package com.huimodel.api.base;
+
+/**
+ * @author FZ
+ */
+public class ResponseBaseEntity<T> extends ResponseBase {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3914254466316338344L;
+	
+	public T entity;
+
+	public T getEntity() {
+		return entity;
+	}
+
+	public void setEntity(T entity) {
+		this.entity = entity;
+	}
+}

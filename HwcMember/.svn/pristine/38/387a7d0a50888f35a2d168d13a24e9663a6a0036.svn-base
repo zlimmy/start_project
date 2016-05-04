@@ -1,0 +1,35 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import java.util.List;
+
+import com.huimodel.api.base.DShop;
+import com.hwc.member.adapter.ProductCategoryAdapter;
+import com.hwc.member.adapter.ShopListAdapter;
+
+/**
+ * @author FZ
+ */
+public interface IShopListView extends LoadDataView {
+
+	void setListAdapter(ShopListAdapter adapter);
+
+	void loadEdn();
+	
+	void closeActivity();
+	
+	void setCatAdapter(ProductCategoryAdapter adapter);
+	
+	void notFind();
+	
+	
+	//刷新
+	 void refresh(List<DShop> list);
+		
+	//加载
+	 void more(List<DShop> list,boolean isEnd);
+	 
+	
+}

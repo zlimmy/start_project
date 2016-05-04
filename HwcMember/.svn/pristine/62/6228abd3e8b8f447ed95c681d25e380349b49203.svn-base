@@ -1,0 +1,23 @@
+package com.huimodel.api.request;
+
+import java.util.List;
+
+import com.huimodel.api.base.Cart;
+import com.huimodel.api.base.RequestBase;
+
+public class ClearShoppingCartRequest extends RequestBase {
+
+	/**
+	 * 
+	 */
+
+	private List<Cart> carts;
+
+	public List<Cart> getCarts() {
+		return carts;
+	}
+
+	public void setCarts(List<Cart> carts) {
+		this.carts = carts;
+	}
+}

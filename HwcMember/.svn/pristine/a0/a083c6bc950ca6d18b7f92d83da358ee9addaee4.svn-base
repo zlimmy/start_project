@@ -1,0 +1,33 @@
+package com.hwc.member.util;
+
+import android.util.Log;
+
+public class LogsUtil {
+
+	
+	public static boolean isdegbug = true;
+	
+	
+	public static void i(String tag,String msg){
+		if(isdegbug){
+			Log.i(tag, msg);
+		}
+		
+	}
+	
+	
+	public static void d(String tag,String msg){
+		if(isdegbug){
+			Log.d(tag, msg);
+		}
+		
+	}
+	
+	
+	public static void e(String tag,String msg,Throwable e){
+		if(isdegbug){
+			Log.e(tag, msg,e);
+		}
+		
+	}
+}

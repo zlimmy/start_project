@@ -1,0 +1,33 @@
+package com.huimodel.api.base;
+
+import java.io.Serializable;
+
+public class ProductPropertyVal implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private long vid;
+	private String name;
+	private int sort_order;
+	public long getVid() {
+		return vid;
+	}
+	public void setVid(long vid) {
+		this.vid = vid;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getSort_order() {
+		return sort_order;
+	}
+	public void setSort_order(int sort_order) {
+		this.sort_order = sort_order;
+	}
+}

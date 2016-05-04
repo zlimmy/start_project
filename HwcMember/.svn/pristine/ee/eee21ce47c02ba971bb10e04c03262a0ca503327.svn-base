@@ -1,0 +1,48 @@
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
+
+import com.huimodel.api.base.SearchHistory;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.common.Constant;
+import com.lidroid.xutils.BitmapUtils;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.exception.DbException;
+
+public class SearchAdapter extends MirAdapter<SearchHistory> {
+
+	public SearchAdapter(Context context, List<SearchHistory> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, final SearchHistory item) {
+		helper.setText(R.id.search_tv, item.getName());
+
+		ImageView img = helper.getView(R.id.remove_iv);
+		if (null != img) {
+			img.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					mDatas.remove(item);
+					notifyDataSetChanged();
+					try {
+						DbUtils dbUtils = DbUtils.create(mContext,Constant.dbName);
+						dbUtils.delete(item);
+					} catch (DbException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}
+	}
+}

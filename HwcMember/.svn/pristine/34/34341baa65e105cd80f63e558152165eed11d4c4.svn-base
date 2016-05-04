@@ -1,0 +1,26 @@
+package com.hwc.member.view.activity.shop;
+
+import com.hwc.member.view.base.BaseActivity;
+
+/**
+ * 店铺内的商品列表 （可能会用tabhost搞）
+ * @author Administrator
+ *
+ */
+public class ShopProductActivity extends BaseActivity{
+
+	@Override
+	protected void initView() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+	
+}

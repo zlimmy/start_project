@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/head_ll"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/head_height"
+        android:background="@color/main_color">
+
+        <EditText
+            android:id="@+id/search_et"
+            android:layout_width="160dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/select_tv"
+            android:background="@drawable/shape_search"
+            android:drawableLeft="@drawable/search"
+            android:ems="10"
+            android:hint=" 搜索附近店铺"
+            android:imeOptions="actionSearch"
+            android:paddingLeft="20dp"
+            android:singleLine="true"
+            android:textColor="@color/text_less_important"
+            android:textColorHint="@color/text_less_important"
+            android:textSize="@dimen/text_14" />
+
+        <TextView
+            android:id="@+id/select_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="2dp"
+            android:drawableRight="@drawable/select_iv"
+            android:gravity="center"
+            android:minWidth="75dp"
+            android:padding="4dp"
+            android:text="全部"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_16" />
+
+        <ImageView
+            android:id="@+id/search_but"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:padding="8dp"
+            android:src="@drawable/iconfont_sousuo" />
+    </RelativeLayout>
+
+    <in.srain.cube.views.ptr.PtrFrameLayout
+        android:id="@+id/load_more_list_view_ptr_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/head_ll"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include
+                android:id="@+id/nodata_page"
+                layout="@layout/load_nodata_gray_page"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <in.srain.cube.views.loadmore.LoadMoreListViewContainer
+                android:id="@+id/load_more_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/shop_background">
+
+                <ListView
+                    android:id="@+id/listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:divider="@color/shop_background"
+                    android:dividerHeight="@dimen/text_10"
+                    android:footerDividersEnabled="false"
+                    android:listSelector="@android:color/transparent"
+                    android:scrollbars="none" />
+            </in.srain.cube.views.loadmore.LoadMoreListViewContainer>
+
+        </RelativeLayout>
+
+
+    </in.srain.cube.views.ptr.PtrFrameLayout>
+
+</RelativeLayout>

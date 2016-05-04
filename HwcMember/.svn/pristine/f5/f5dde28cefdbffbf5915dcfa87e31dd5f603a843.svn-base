@@ -1,0 +1,160 @@
+package com.hwc.member.view.activity.shop;
+
+import java.util.List;
+
+import android.os.Handler;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DShop;
+import com.hwc.member.R;
+import com.hwc.member.adapter.ProductCategoryAdapter;
+import com.hwc.member.adapter.ShopListAdapter;
+import com.hwc.member.presenter.ShopListPresenter;
+import com.hwc.member.util.MyRefreshListener;
+import com.hwc.member.util.MyRefreshListener.Callback;
+import com.hwc.member.util.ToastUtil;
+import com.hwc.member.view.activity.view.IShopListView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.PullToRefreshLayout;
+import com.hwc.member.widget.PullableListView;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnItemClick;
+ 
+/**
+ * 店铺列表
+ * @author Administrator
+ *
+ */
+@ContentView(R.layout.activity_shoplist)
+public class ShopListActivity extends BaseActivity implements IShopListView {
+
+	@ViewInject(R.id.listview)
+	private PullableListView listview;
+	@ViewInject(R.id.refresh_view)
+	private PullToRefreshLayout refresh_view;
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	
+    private int mIndex = 0;
+    private int mRefreshIndex = 1;
+	private ShopListPresenter presenter = new ShopListPresenter(this);
+	
+	private Long cid;
+	private String name;
+	private boolean isFirstIn = true;
+	private MyRefreshListener myRefreshListener;
+	
+	@ViewInject(R.id.nodata_page)
+	private View nodata_page;
+	@ViewInject(R.id.nodata_tv)
+	private TextView nodata_tv;
+	@ViewInject(R.id.nodata_but)
+	private Button nodata_but;
+	
+	@Override
+	protected void initView() {	
+		cid = getIntent().getLongExtra("0", -1);
+		name = getIntent().getStringExtra("1");
+		header.setTitle(name);
+	}
+	
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus){
+		super.onWindowFocusChanged(hasFocus);
+		// 第一次进入自动刷新
+		if (isFirstIn){
+			refresh_view.autoRefresh();
+			isFirstIn = false;
+		}
+	}
+
+	@Override
+	protected void initListener() {
+		setBack();
+		myRefreshListener = new MyRefreshListener(ShopListActivity.this, new Callback() {
+			
+			@Override
+			public void refresh(PullToRefreshLayout pullToRefreshLayout) {
+				//presenter.setData(cid,pullToRefreshLayout,"");
+			}
+			
+			@Override
+			public void loadMore(PullToRefreshLayout pullToRefreshLayout) {
+				mIndex = ++mRefreshIndex;
+				//presenter.addMoreData(mIndex, pullToRefreshLayout,"");
+			}
+		});
+		refresh_view.setOnRefreshListener(myRefreshListener);
+	}
+
+	@Override
+	public void setListAdapter(ShopListAdapter adapter) {
+		listview.setAdapter(adapter);
+	}
+	
+	@OnItemClick(R.id.listview)
+	public void onListItemClick(AdapterView<?> parent, View view,
+			int position, long id) {
+		//goTo(NewShopInfoActivity.class, presenter.adapter.getItem(position).getSid());
+	}
+
+	
+	
+    
+
+	@Override
+	public void clearLoadPage() {}
+
+	@Override
+	public void showErrorPage() {
+		VISIBLE(nodata_page);
+		nodata_tv.setText("该分类下暂无店铺！");
+		INVISIBLE(nodata_but);
+	}
+
+	@Override
+	public void loadEdn() {
+		ToastUtil.show("没有更多了");
+	}
+
+	@Override
+	public void closeActivity() {
+		// TODO Auto-generated method stub
+		
+		 new Handler().postDelayed(new Runnable(){  
+		     public void run() {  
+		    	 finish();  
+		     }  
+		  }, 2000); 
+	}
+
+	@Override
+	public void setCatAdapter(ProductCategoryAdapter adapter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notFind() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void refresh(List<DShop> list) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void more(List<DShop> list, boolean isEnd) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

@@ -1,0 +1,40 @@
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.ResponseBase;
+
+public class ProfitInfoGetResponse extends ResponseBase{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Double rebate_tl;
+	private Double rebate;
+	private Double rebate_left;
+	private Long member_count;
+	public Double getRebate_tl() {
+		return rebate_tl;
+	}
+	public void setRebate_tl(Double rebate_tl) {
+		this.rebate_tl = rebate_tl;
+	}
+	public Double getRebate() {
+		return rebate;
+	}
+	public void setRebate(Double rebate) {
+		this.rebate = rebate;
+	}
+	public Double getRebate_left() {
+		return rebate_left;
+	}
+	public void setRebate_left(Double rebate_left) {
+		this.rebate_left = rebate_left;
+	}
+	public Long getMember_count() {
+		return member_count;
+	}
+	public void setMember_count(Long member_count) {
+		this.member_count = member_count;
+	}
+	
+	
+}

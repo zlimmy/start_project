@@ -1,0 +1,38 @@
+package com.hwc.member.view.activity.my;
+
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.widget.ImageView;
+
+import com.hwc.member.R;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.view.base.BaseActivity;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+/**
+ * Created by Azeng on 2016/4/21.
+ */
+
+@ContentView(R.layout.activity_play_rule)
+public class PlayIntegralRuleActivity extends BaseActivity {
+
+
+    @ViewInject(R.id.webView)
+    private WebView webView;
+    @Override
+    protected void initView() {
+
+
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.loadUrl("http://app.huiwancun.com:9080/HwcAppSupport/rule.html");
+
+    }
+
+    @Override
+    protected void initListener() {
+        setBack();
+    }
+}

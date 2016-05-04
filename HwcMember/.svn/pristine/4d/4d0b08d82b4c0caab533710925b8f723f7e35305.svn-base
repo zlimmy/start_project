@@ -1,0 +1,24 @@
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.Advert;
+import com.huimodel.api.base.ResponseBase;
+
+import java.util.List;
+public class SubjectProductReponse extends ResponseBase {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private List<Advert> subject;
+
+	public List<Advert> getSubject() {
+		return subject;
+	}
+
+	public void setSubject(List<Advert> subject) {
+		this.subject = subject;
+	}
+
+}

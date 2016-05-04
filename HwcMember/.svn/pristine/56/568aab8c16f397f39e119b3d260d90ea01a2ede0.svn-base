@@ -1,0 +1,25 @@
+package com.hwc.member.view.activity.view;
+
+import android.content.Context;
+
+import com.hwc.member.adapter.HotSearchAdapter;
+import com.hwc.member.adapter.ProductGridAdapter;
+import com.hwc.member.adapter.SearchAdapter;
+import com.hwc.member.adapter.SearchGoodsAdapter;
+
+
+public interface ISearchView extends LoadDataView {
+	
+	void setHotSearchAdapter(HotSearchAdapter adapter);
+	
+	void setGridAdapter2(SearchAdapter adapter);
+	
+	Context getContext();
+	
+	void getListSuccess(SearchGoodsAdapter adapter);
+	
+	void setShopGrid(ProductGridAdapter adapter);
+	
+	void setIsCanMore(boolean b);
+	
+}

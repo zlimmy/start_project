@@ -1,0 +1,132 @@
+package com.hwc.member.adapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+import com.hwc.member.util.ImageTools;
+
+public class MyFragmentAdapter extends BaseAdapter{
+	
+
+    private LayoutInflater inflater; 
+    private List<Picture> pictures; 
+    private Context mContext;
+    public void PictureAdapter(String[] titles, List<Bitmap> images, Context context) 
+    { 
+    	this.mContext = context;
+        pictures = new ArrayList<Picture>(); 
+        inflater = LayoutInflater.from(context); 
+        for (int i = 0; i < images.size(); i++) 
+        { 
+            Picture picture = new Picture(titles[i], images.get(i)); 
+            pictures.add(picture); 
+        } 
+    } 
+ 
+    @Override
+    public int getCount() 
+    { 
+        if (null != pictures) 
+        { 
+            return pictures.size(); 
+        } else
+        { 
+            return 0; 
+        } 
+    } 
+ 
+    @Override
+    public Object getItem(int position) 
+    { 
+        return pictures.get(position); 
+    } 
+ 
+    @Override
+    public long getItemId(int position) 
+    { 
+        return position; 
+    } 
+ 
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) 
+    { 
+        ViewHolder viewHolder; 
+        if (convertView == null) 
+        { 
+            convertView = inflater.inflate(R.layout.item_my_grid, null); 
+            viewHolder = new ViewHolder(); 
+            viewHolder.title = (TextView) convertView.findViewById(R.id.my_tv); 
+            viewHolder.image = (ImageView) convertView.findViewById(R.id.my_iv); 
+            convertView.setTag(viewHolder); 
+        } else
+        { 
+            viewHolder = (ViewHolder) convertView.getTag(); 
+        } 
+        viewHolder.title.setText(pictures.get(position).getTitle()); 
+        viewHolder.image.setImageBitmap(pictures.get(position).getImageId());
+        return convertView; 
+    } 
+    
+   class ViewHolder{
+	   public TextView title;
+	   public ImageView image;
+   }
+   class Picture 
+   { 
+       private String title; 
+       private Bitmap imageId; 
+    
+       public Picture() 
+       { 
+           super(); 
+       } 
+    
+       public Picture(String title, Bitmap imageId) 
+       { 
+           super(); 
+           this.title = title; 
+           this.imageId = imageId; 
+       } 
+    
+       public String getTitle() 
+       { 
+           return title; 
+       } 
+    
+       public void setTitle(String title) 
+       { 
+           this.title = title; 
+       } 
+    
+       public Bitmap getImageId() 
+       { 
+           return imageId; 
+       } 
+    
+       public void setImageId(Bitmap imageId) 
+       { 
+           this.imageId = imageId; 
+       } 
+   }
+   
+   
+	public void setImageBitmap(String nums){
+		if(!nums.equals("0")){
+			pictures.get(5).setImageId(ImageTools.picText(BitmapFactory.decodeResource(this.mContext.getResources(), R.drawable.my_message), nums, 0.5, 1));
+		}else{
+			pictures.get(5).setImageId(BitmapFactory.decodeResource(this.mContext.getResources(), R.drawable.my_message));
+		}
+		notifyDataSetChanged();
+	}
+}

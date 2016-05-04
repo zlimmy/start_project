@@ -1,0 +1,52 @@
+package com.hwc.member.adapter;
+import java.util.List;
+
+import android.content.Context;
+import android.widget.ImageView;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
+
+import com.huimodel.api.base.Discovery;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.ViewTransformUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+public class BustlingProductListAdapter extends MirAdapter<Discovery> {
+
+	public BustlingProductListAdapter(Context context,List<Discovery> mDatas, int itemLayoutId,BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, Discovery item) {
+		// TODO Auto-generated method stub
+		helper.setText(R.id.title_tv,item.getTitle());
+//		helper.setText(R.id.collections_tv, "关注：" + item.getCollections());
+		
+		if(item.getViews()==null){
+			helper.setText(R.id.views_tv, "浏览:0");
+		}else{
+			helper.setText(R.id.views_tv, "浏览:" + item.getViews());
+			
+		}
+
+		ImageView iv = helper.getView(R.id.image_iv);
+		RelativeLayout rl = helper.getView(R.id.bustling_rl);
+		ViewTransformUtil.layoutParams(rl, rl.getLayoutParams(), LayoutParams.MATCH_PARENT, 220);
+		ViewTransformUtil.layoutParams(iv, iv.getLayoutParams(),250, 188);
+		helper.setText(R.id.date_tv,item.getCreated());
+		helper.setText(R.id.src_tv,item.getAuthor()==null?"":item.getAuthor());
+		
+		
+		if(item.getPics() != null && item.getPics().size() > 0){
+			bitmapUtils.display(iv, item.getPics().get(0).getUrl());
+		}else{
+			//防止ListView滚动后复用已存在的item造成图片错位
+			iv.setImageResource(R.drawable.icon_defultbg);
+		}
+	}
+
+}
+

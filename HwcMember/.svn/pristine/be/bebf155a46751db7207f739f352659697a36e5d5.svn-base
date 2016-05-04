@@ -1,0 +1,412 @@
+package com.huimodel.api.base;
+
+
+
+public class UserBean extends HwcObject {
+	 
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 412947395599611803L;
+
+	private FileItem image;
+
+	private String birthday;
+
+	private String email;
+
+	private String mobile;
+
+	private String nick;
+
+	private String phone;
+	/*
+	 * 有无实名认证
+	 */
+	private String promoted_type;
+
+	private String real_name;
+	private String avatar;
+
+	private String sex;
+
+	private String type;
+
+	private String address;
+
+	private String city;
+
+	private String country;
+
+	private String district;
+
+	private String state;
+
+	private String zip;
+	
+	private String role;
+	
+	private String rolename;
+	
+	private String status;
+
+	private String vip_info;
+	/*
+	 * 证件类型
+	 */
+	private String idcls;
+	/*
+	 * 证件号码
+	 */
+	private String ident;
+
+	private Long shop_id;
+
+	private Long user_id;
+	
+	private Long orders_count;
+	
+	private Long views_count;
+	
+	private Long collections_shop_count;
+	
+	private Long collections_product_count;
+	
+	private String changed;
+	
+	private String pwd;
+
+	private String pay_type;
+	private String payaccount;
+	private String created;
+	private Long recommend;
+	private Long recommend_shop;
+	
+	private String recommend_nick;
+	private String recommend_mobile;
+	private String recommend_shop_nick;
+	
+	private Double rebate;
+	
+	public Long getShop_id() {
+		return shop_id;
+	}
+
+	public void setShop_id(Long shop_id) {
+		this.shop_id = shop_id;
+	}
+
+	public Long getUser_id() {
+		return user_id;
+	}
+
+	public void setUser_id(Long user_id) {
+		this.user_id = user_id;
+	}
+
+	public FileItem getImage() {
+		return image;
+	}
+
+	public void setImage(FileItem image) {
+		this.image = image;
+	}
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+
+	public String getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(String birthday) {
+		this.birthday = birthday;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public String getRolename() {
+		return rolename;
+	}
+
+	public void setRolename(String rolename) {
+		this.rolename = rolename;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getNick() {
+		return nick;
+	}
+
+	public void setNick(String nick) {
+		this.nick = nick;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getPromoted_type() {
+		return promoted_type;
+	}
+
+	public void setPromoted_type(String promoted_type) {
+		this.promoted_type = promoted_type;
+	}
+
+	public String getReal_name() {
+		return real_name;
+	}
+
+	public void setReal_name(String real_name) {
+		this.real_name = real_name;
+	}
+
+	public String getSex() {
+		return sex;
+	}
+
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getZip() {
+		return zip;
+	}
+
+	public void setZip(String zip) {
+		this.zip = zip;
+	}
+
+	public String getVip_info() {
+		return vip_info;
+	}
+
+	public void setVip_info(String vip_info) {
+		this.vip_info = vip_info;
+	}
+
+	public String getIdcls() {
+		return idcls;
+	}
+
+	public void setIdcls(String idcls) {
+		this.idcls = idcls;
+	}
+
+	public String getIdent() {
+		return ident;
+	}
+
+	public void setIdent(String ident) {
+		this.ident = ident;
+	}
+
+	public Long getOrders_count() {
+		return orders_count;
+	}
+
+	public void setOrders_count(Long orders_count) {
+		this.orders_count = orders_count;
+	}
+
+	public String getChanged() {
+		return changed;
+	}
+
+	public void setChanged(String changed) {
+		this.changed = changed;
+	}
+
+	public String getPwd() {
+		return pwd;
+	}
+
+	public void setPwd(String pwd) {
+		this.pwd = pwd;
+	}
+
+	public Long getViews_count() {
+		return views_count;
+	}
+
+	public void setViews_count(Long views_count) {
+		this.views_count = views_count;
+	}
+
+	public Long getCollections_shop_count() {
+		return collections_shop_count;
+	}
+
+	public void setCollections_shop_count(Long collections_shop_count) {
+		this.collections_shop_count = collections_shop_count;
+	}
+
+	public Long getCollections_product_count() {
+		return collections_product_count;
+	}
+
+	public void setCollections_product_count(Long collections_product_count) {
+		this.collections_product_count = collections_product_count;
+	}
+
+	public String getPay_type() {
+		return pay_type;
+	}
+
+	public void setPay_type(String pay_type) {
+		this.pay_type = pay_type;
+	}
+
+	public String getPayaccount() {
+		return payaccount;
+	}
+
+	public void setPayaccount(String payaccount) {
+		this.payaccount = payaccount;
+	}
+
+	public String getCreated() {
+		return created;
+	}
+
+	public void setCreated(String created) {
+		this.created = created;
+	}
+
+	public Long getRecommend() {
+		return recommend;
+	}
+
+	public void setRecommend(Long recommend) {
+		this.recommend = recommend;
+	}
+
+	public Long getRecommend_shop() {
+		return recommend_shop;
+	}
+
+	public void setRecommend_shop(Long recommend_shop) {
+		this.recommend_shop = recommend_shop;
+	}
+
+	public String getRecommend_nick() {
+		return recommend_nick;
+	}
+
+	public void setRecommend_nick(String recommend_nick) {
+		this.recommend_nick = recommend_nick;
+	}
+
+	public String getRecommend_mobile() {
+		return recommend_mobile;
+	}
+
+	public void setRecommend_mobile(String recommend_mobile) {
+		this.recommend_mobile = recommend_mobile;
+	}
+
+	public String getRecommend_shop_nick() {
+		return recommend_shop_nick;
+	}
+
+	public void setRecommend_shop_nick(String recommend_shop_nick) {
+		this.recommend_shop_nick = recommend_shop_nick;
+	}
+
+	public Double getRebate() {
+		return rebate;
+	}
+
+	public void setRebate(Double rebate) {
+		this.rebate = rebate;
+	}
+
+}

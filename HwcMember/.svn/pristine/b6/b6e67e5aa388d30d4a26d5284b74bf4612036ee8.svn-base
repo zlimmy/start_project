@@ -1,0 +1,81 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.widget.ImageView;
+
+import com.huimodel.api.base.Order;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.common.Constant;
+import com.hwc.member.util.CommonUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class NewOrderAdapter extends MirAdapter<Order> {
+
+	public NewOrderAdapter(Context context, List<Order> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, Order item) {
+		if(item.getSeller_shop_nike() != null){
+			helper.setText(R.id.shopname_tv, item.getSeller_shop_nike());
+		}else{
+			helper.setText(R.id.shopname_tv, "门店进货");
+		}
+		helper.setText(R.id.time_tv, "创建时间：" + item.getCreated());
+		
+		
+		if(item.getStatus().equals("N")){
+			helper.setText(R.id.status_tv, "待付款");
+		}else if(item.getStatus().equals("C")){
+			helper.setText(R.id.status_tv, "确认订单");
+		}else if(item.getStatus().equals("U")){
+			helper.setText(R.id.status_tv, "待付款");
+		}else if(item.getStatus().equals("P")){
+			helper.setText(R.id.status_tv, "已付款");
+		}else if(item.getStatus().equals("D")){
+			helper.setText(R.id.status_tv, "已发货");
+		}else if(item.getStatus().equals("X")){
+			helper.setText(R.id.status_tv, "已取消");
+		}else if(item.getStatus().equals("R")){
+			helper.setText(R.id.status_tv, "已退款");
+		}else if(item.getStatus().equals("O")){
+			helper.setText(R.id.status_tv, "交易完成");
+		}
+		
+		
+		
+		ImageView goods_iv = helper.getView(R.id.goods_iv);
+		if(item.getDetails() != null && item.getDetails().size() > 0){
+			int total = 0;
+			for (int i = 0; i < item.getDetails().size(); i++) {
+				total += item.getDetails().get(i).getNum();
+			}
+			
+			
+			bitmapUtils.display(goods_iv, item.getDetails().get(0).getImgurl()+Constant.IMAGE_SIZE_100);
+			helper.setText(R.id.goodsname_tv, item.getDetails().get(0).getTitle());
+			helper.setText(R.id.promprice_tv, "￥" + CommonUtil.conversionDouble(Double.parseDouble(item.getDetails().get(0).getPrice())));
+			helper.setText(R.id.num_tv, "x" + item.getDetails().get(0).getNum());
+			helper.setText(R.id.total_tv, "共" + total + "件商品  合计：￥" + CommonUtil.conversionDouble(Double.parseDouble(item.getTotal_fee()+"")));
+			if(item.getDetails().get(0).getSuite_descript() != null){
+				helper.setText(R.id.package_tv, item.getDetails().get(0).getSuite_descript());
+			}else{
+				helper.setText(R.id.package_tv, "");
+			}
+		}
+
+	}
+
+}

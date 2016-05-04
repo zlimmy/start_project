@@ -1,0 +1,396 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+import android.content.DialogInterface;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.Advert;
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.HomeFunction;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.request.FunctionConfigRequest;
+import com.huimodel.api.request.ProductRecommendRequest;
+import com.huimodel.api.request.ProductSearchRequest;
+import com.huimodel.api.request.PromotionADGetRequest;
+import com.huimodel.api.request.UserLoginRequest;
+import com.huimodel.api.response.FunctionConfigResponse;
+import com.huimodel.api.response.HomeResponse;
+import com.huimodel.api.response.ProductRecommendResponse;
+import com.huimodel.api.response.ProductSearchResponse;
+import com.huimodel.api.response.PromotionADGetResponse;
+import com.huimodel.api.response.UserLoginResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.MainFragAdapter;
+import com.hwc.member.adapter.ProductGridAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.bean.MLocation;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.util.CacheDataUtil;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.PreferenceUtils;
+import com.hwc.member.view.activity.view.IMainFragView;
+import com.hwc.member.widget.PullToRefreshLayout;
+import com.hwc.member.widget.SimpleHUD;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public class MainFragPresenter {
+	 
+	private IMainFragView mainFragView;	
+	public ProductGridAdapter hladapter;
+	private List<HomeFunction> list;//菜单
+	private MainFragAdapter adapter;
+	private List<DProduct> proList = new ArrayList<DProduct>();//促销商品
+	private List<Advert> adList; //广告
+	private IHwcBizMain iHwcBizMainImpl;
+	private CacheDataUtil cacheDataUtil ;
+	private Gson gson;
+	public MainFragPresenter(IMainFragView mainFragView){
+		this.mainFragView = mainFragView;
+		this.cacheDataUtil = CacheDataUtil.getInstance(App.mContext);
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		this.gson = new Gson();
+	}
+	  
+	public void getProducts(final int page, final PullToRefreshLayout pullToRefreshLayout){
+		ProductSearchRequest psr = new ProductSearchRequest();
+		psr.setLatitude(Constant.latitude);
+		psr.setLongitude(Constant.longitude);
+		psr.setPage_size(20);
+		psr.setPage(page);
+		psr.setImei(Constant.IMEI);
+		psr.setStatus("onsale");
+		psr.setProduct_order_by_method("asc");
+		psr.setProduct_order_by("distance");
+		mainFragView.setIsCanMore(false);
+		iHwcBizMainImpl.queryShopProducts(psr, mainFragView.getContext(), new IResult<ProductSearchResponse>() {
+
+			@Override
+			public void result(ProductSearchResponse obj, Code code) {
+				if(pullToRefreshLayout != null){
+					if(page == 1){
+						pullToRefreshLayout.refreshFinish(PullToRefreshLayout.SUCCEED);
+					}else{
+						pullToRefreshLayout.loadmoreFinish(PullToRefreshLayout.SUCCEED);
+					}
+				}
+				mainFragView.setIsCanMore(true);
+				switch (code) {
+				case OK:
+					if(obj.getProducts() != null && obj.getProducts().size() > 0){
+						if(page == 1){
+							proList.clear();
+							proList.addAll(obj.getProducts());
+							hladapter = new ProductGridAdapter(mainFragView.getContext(), proList, R.layout.item_shop_product, null);
+//							mainFragView.setGridAdapter(hladapter);	
+						}else{
+							proList.addAll(obj.getProducts());
+							hladapter.notifyDataSetChanged();
+						}
+										
+					}
+					mainFragView.clearLoadPage();
+					break;
+
+				default:
+					SimpleHUD.showInfoMessage(mainFragView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	
+	
+	//加载首页数据
+	public void setHomeData(){
+		RequestBase  requestBase = new RequestBase();
+		requestBase.setLatitude(Constant.latitude);
+		requestBase.setLongitude(Constant.longitude);
+		requestBase.setUser_id_by(Member.getInstance().getUser_id());
+		requestBase.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getHomeData(requestBase, mainFragView.getContext(), new IResult<HomeResponse>() {
+			@Override
+			public void result(HomeResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				switch (code) {
+				case OK:
+					//广告
+					if(obj.getPadr().getAdverts() != null && obj.getPadr().getAdverts().size() > 0){
+						adList  = obj.getPadr().getAdverts();
+						mainFragView.setPromAd(adList,null);
+					}else{
+						int[] pic = new int[]{R.drawable.icon_defultbg};
+						mainFragView.setPromAd(null,pic);
+					}
+					//菜单
+					list = 	obj.getFcr().getFuntions();
+					adapter = new MainFragAdapter(mainFragView.getContext(), list, R.layout.item_mainfm, null);
+//					mainFragView.setMenu(adapter);
+					 
+					
+					break;
+
+				default:
+					SimpleHUD.showInfoMessage(mainFragView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * 获取首页广告代码
+	 */
+	public void getPromAd(){
+		//纬度：30.22213,经度：120.183958,
+	String caheJosn = cacheDataUtil.getStringByKey("PromAd");
+	if(caheJosn==null){//如果缓存数据为空
+		PromotionADGetRequest pdr = new PromotionADGetRequest();
+		pdr.setLatitude(Constant.latitude);
+		pdr.setLongitude(Constant.longitude);
+		pdr.setUser_id_by(Member.getInstance().getUser_id());
+		System.out.println(gson.toJson(pdr));
+		iHwcBizMainImpl.getMainAd(pdr, mainFragView.getContext(), new IResult<PromotionADGetResponse>() {
+			@Override
+			public void result(PromotionADGetResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.getAdverts() != null && obj.getAdverts().size() > 0){
+						adList  = obj.getAdverts();
+						mainFragView.setPromAd(adList,null);
+					}else{
+						int[] pic = new int[]{R.drawable.icon_defultbg};
+						mainFragView.setPromAd(null,pic);
+					}
+					cacheDataUtil.saveJson("PromAd", obj, Constant.CACHETIME);
+					break;
+	
+				default:
+					mainFragView.showErrorPage();
+					SimpleHUD.showInfoMessage(mainFragView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	 }else{
+		 PromotionADGetResponse obj = gson.fromJson(cacheDataUtil.getStringByKey("PromAd"), PromotionADGetResponse.class);
+		 if(obj.getAdverts() != null && obj.getAdverts().size() > 0){
+				adList  = obj.getAdverts();
+				mainFragView.setPromAd(adList,null);
+			}else{
+				int[] pic = new int[]{R.drawable.icon_defultbg};
+				mainFragView.setPromAd(null,pic);
+			}
+	  }
+	}
+	
+	//设置首页功能菜单
+	public void setMenu(){
+	  String caheJosn = cacheDataUtil.getStringByKey("Menu");
+		if(caheJosn==null){//如果缓存数据为空
+			FunctionConfigRequest pdr = new FunctionConfigRequest();
+			pdr.setLatitude("30.22213");
+			pdr.setLongitude("120.183958");
+			pdr.setRole("");
+			iHwcBizMainImpl.getMenuList(pdr, mainFragView.getContext(), new IResult<FunctionConfigResponse>() {
+				@Override
+				public void result(FunctionConfigResponse obj, Code code) {
+					switch (code) {
+					case OK:
+						list = 	obj.getFuntions();
+						adapter = new MainFragAdapter(mainFragView.getContext(), list, R.layout.item_mainfm, null);
+//						mainFragView.setMenu(adapter);
+						cacheDataUtil.saveJson("Menu", obj, Constant.CACHETIME);
+					  break;
+
+					default:
+						mainFragView.showErrorPage();
+						SimpleHUD.showInfoMessage(mainFragView.getContext(), code+"");
+						break;
+					}
+				}
+			});	
+		}else{
+			FunctionConfigResponse obj = gson.fromJson(cacheDataUtil.getStringByKey("Menu"),FunctionConfigResponse.class);
+			list = 	obj.getFuntions();
+			adapter = new MainFragAdapter(mainFragView.getContext(), list, R.layout.item_mainfm, null);
+//			mainFragView.setMenu(adapter);
+		}
+		
+	}
+	
+	
+	
+	public void setPromtionPrductData() {
+		String caheJosn = cacheDataUtil.getStringByKey("INDEX_PromtionPrduct");
+		if (caheJosn == null) {// 如果缓存数据为空
+			ProductRecommendRequest prr = new ProductRecommendRequest();
+			prr.setLatitude(Constant.latitude);
+			prr.setLongitude(Constant.longitude);
+			prr.setUser_id_by(Member.getInstance().getUser_id());
+			iHwcBizMainImpl.getMainPromotionList(prr,
+					mainFragView.getContext(),
+					new IResult<ProductRecommendResponse>() {
+						@Override
+						public void result(ProductRecommendResponse obj,
+								Code code) {
+							switch (code) {
+							case OK:
+								proList = obj.getProducts();
+								hladapter = new ProductGridAdapter(mainFragView
+										.getContext(), proList,
+										R.layout.item_shop_product, null);
+//								mainFragView.setGridAdapter(hladapter);
+								cacheDataUtil.saveJson("INDEX_PromtionPrduct",
+										obj, Constant.CACHETIME);
+								mainFragView.clearLoadPage();
+								break;
+
+							default:
+								mainFragView.showErrorPage();
+								SimpleHUD.showInfoMessage(
+										mainFragView.getContext(), code + "");
+								break;
+							}
+						}
+					});
+		} else {
+			ProductRecommendResponse obj = gson.fromJson(caheJosn,
+					ProductRecommendResponse.class);
+			proList = obj.getProducts();
+			hladapter = new ProductGridAdapter(mainFragView.getContext(),
+					proList, R.layout.item_shop_product, null);
+//			mainFragView.setGridAdapter(hladapter);
+
+		}
+
+	}
+	
+	
+	
+	
+	public void check_Loaction(MLocation location){
+		
+		DbUtils dbUtils = DbUtils.create(mainFragView.getContext(),Constant.dbName);
+		try {
+			List<MLocation> list  = dbUtils.findAll(MLocation.class);
+			
+			if(list != null && list.size() > 0){
+				MLocation l = dbUtils.findFirst(Selector.from(MLocation.class).where("district","=", location.getDistrict()));
+				//l!=null
+				if(l != null){
+					//如果用户当前所在区在表里面有记录，取最近一条记录
+//					mainFragView.getHeader().setTitle(l.getDistrict()+l.getStreet()+l.getStreetNumber());
+					dbUtils.deleteAll(MLocation.class);
+					dbUtils.save(location);
+//					getHistoryLoaction(location);
+				}else{
+					getHistoryLoaction(location);
+				}
+
+				
+			}else{
+				//第一次登陆执行
+				dbUtils.save(location);
+			}
+			
+		} catch (DbException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+		
+		
+	}
+	
+	
+	//读取历史地理位置
+	public void getHistoryLoaction(final MLocation location){
+		final DbUtils dbUtils = DbUtils.create(mainFragView.getContext(),Constant.dbName);
+		final List<MLocation> list;
+		try {
+			
+			list = dbUtils.findAll(Selector.from(MLocation.class).orderBy("id", true));
+			DialogUtil.addressDialog(mainFragView.getContext(), location.getCity()+location.getDistrict(), 
+				new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					try {
+						dbUtils.deleteAll(MLocation.class);
+						dbUtils.save(location);
+					} catch (DbException e) {
+						e.printStackTrace();
+					}
+					dialog.dismiss();
+				}
+			}, new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if(list != null && list.size() > 0){
+						Constant.latitude = list.get(0).getLatitude();
+						Constant.longitude = list.get(0).getLongitude();
+					}
+					dialog.dismiss();
+				}
+			});
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+	
+	}
+	
+	/** 自动登录 **/
+	public void autologin() {		
+		String uname = PreferenceUtils.getPrefString(App.mContext,"name", "");
+		String upass = PreferenceUtils.getPrefString(App.mContext,"pwd", "");
+		if (!uname.equals("") && !upass.equals("")) {
+			UserLoginRequest u = new UserLoginRequest();
+			u.setAccnt(uname);
+			u.setPwd(upass);
+			iHwcBizMainImpl.login(u, mainFragView.getContext(), new IResult<UserLoginResponse>() {
+
+					@Override
+					public void result(UserLoginResponse obj, Code code) {
+						switch (code) {
+						case OK:
+							if (obj.isSuccess()) {
+								Member.setMember(obj);
+								Constant.USERIMG = "user/"  + "FACE_" + Member.getInstance().getUser_id();
+							}
+							break;
+
+						default:
+							break;
+						}
+					}
+
+				});
+		}
+		
+	}
+
+}

@@ -1,0 +1,144 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.request.UserInfoRequest;
+import com.huimodel.api.response.MemberUpdateResponse;
+import com.huimodel.api.response.PayTypeResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IUpdateInfoView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class UpdateInfoPresenter {
+
+	private IUpdateInfoView updateInfoView;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public UpdateInfoPresenter(IUpdateInfoView updateInfoView){
+		this.updateInfoView = updateInfoView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void getMember(){
+		RequestBase request = new RequestBase();
+		request.setUser_id_by(Member.getInstance().getUser_id());
+		request.setImei(Constant.IMEI);
+		updateInfoView.showProgressDialog(null);
+		iHwcBizMainImpl.searchMemberInfo(request, updateInfoView.getContext(), new IResult<MemberUpdateResponse>() {
+			
+			@Override
+			public void result(MemberUpdateResponse obj, Code code) {
+				updateInfoView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						updateInfoView.setData(obj.getUserInfo());
+					}else{
+						SimpleHUD.showErrorMessage(updateInfoView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(updateInfoView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	public void update(final String nick, final String imgUrl, final String realname, final String birthday, final String sex, final String email, final String phone, final String ident, final String address, String pay_type, String payaccount){
+		UserInfoRequest uir = new UserInfoRequest();
+		uir.setNick(nick);
+		uir.setAvatar(imgUrl);
+		uir.setUser_id_by(Member.getInstance().getUser_id());
+		uir.setImei(Constant.IMEI);
+		
+		if(!realname.equals("")){
+			uir.setReal_name(realname);
+		}
+		if(!birthday.equals("")){
+			uir.setBirthday(birthday);
+		}
+		uir.setSex(sex);
+		if(!email.equals("")){
+			uir.setEmail(email);
+		}
+		if(!phone.equals("")){
+			uir.setPhone(phone);
+		}
+		if(!ident.equals("")){
+			uir.setIdent(ident);
+		}
+		if(!address.equals("")){
+			uir.setAddress(address);
+		}
+		
+		if(pay_type != null && !payaccount.equals("")){
+			uir.setPay_type(pay_type);
+			uir.setPayaccount(payaccount);
+		}
+		
+		updateInfoView.showProgressDialog(null);
+		iHwcBizMainImpl.updateUserInfo(uir, updateInfoView.getContext(), new IResult<MemberUpdateResponse>() {
+			
+			@Override
+			public void result(MemberUpdateResponse obj, Code code) {
+				updateInfoView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						SimpleHUD.showSuccessMessage(updateInfoView.getContext(), "修改成功");
+						Member.getInstance().setAvatar(imgUrl);
+						Member.getInstance().setNick(nick);
+						updateInfoView.updataSuccess();
+					}else{
+						SimpleHUD.showErrorMessage(updateInfoView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(updateInfoView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	public void getPayWay(){
+		RequestBase request = new RequestBase();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("cat", "paytype");
+		request.setParams(map);
+		iHwcBizMainImpl.getBasecodeWithCat(request, updateInfoView.getContext(), new IResult<PayTypeResponse>() {
+			
+			@Override
+			public void result(PayTypeResponse obj, Code code) {
+				getMember();
+				switch (code) {
+				case OK:
+					updateInfoView.setRadio(obj);
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(updateInfoView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+}

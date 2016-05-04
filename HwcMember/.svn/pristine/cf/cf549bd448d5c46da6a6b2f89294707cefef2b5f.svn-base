@@ -1,0 +1,24 @@
+package com.hwc.member.view.activity.shop;
+
+import com.hwc.member.view.base.BaseActivity;
+
+/**
+ * 店铺类目
+ * @author Administrator
+ *
+ */
+public class ShopCategoryActivity extends BaseActivity{
+
+	@Override
+	protected void initView() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

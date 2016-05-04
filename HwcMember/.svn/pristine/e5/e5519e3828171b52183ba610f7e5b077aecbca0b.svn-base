@@ -1,0 +1,27 @@
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+
+import com.huimodel.api.base.HotWords;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.lidroid.xutils.BitmapUtils;
+
+public class HotSearchAdapter extends MirAdapter<HotWords>{
+
+
+
+	public HotSearchAdapter(Context context, List<HotWords> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, HotWords item) {
+		helper.setText(R.id.search_tv, item.getWord());
+	}
+
+}

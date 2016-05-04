@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    
+
+    <RelativeLayout
+        android:id="@+id/footer_rl"
+        android:layout_width="fill_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@color/white" >
+
+        <View style="@style/divider_horizontal" />
+
+        <TextView
+            android:id="@+id/state_tv"
+            android:layout_width="160dp"
+            android:layout_height="35dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/zhuanzeng"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_16"
+            android:background="@drawable/shape_bt_orange"
+            android:gravity="center"
+             />
+    </RelativeLayout>
+    
+    
+    <ScrollView
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_above="@id/footer_rl"
+         >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <RelativeLayout
+                android:id="@+id/bg_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom = "10dp"
+                android:background="@color/color_f7b72a" >
+
+                <RelativeLayout
+                    android:id="@+id/head_rl"
+                    android:layout_width="fill_parent"
+                    android:layout_height="40dp" >
+
+                    <ImageView
+                        android:id="@+id/back_iv"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:padding="10dp"
+                        android:src="@drawable/back" />
+
+                    <ImageView
+                        android:id="@+id/share_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:padding="10dp"
+                        android:src="@drawable/wxshare"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:text="优惠券详情"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_20" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/name_tv_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/head_rl"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:singleLine="true"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_40"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/price_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/name_tv_1"
+                    android:layout_centerHorizontal="true"
+                    android:textColor="@color/white"
+                     android:singleLine="true"
+                    android:textSize="@dimen/text_18" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/price_tv"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="20dp"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/shop_address_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="店铺地址："
+                        android:textColor="@color/gray5"
+                        android:textSize="@dimen/text_14" />
+
+                    <TextView
+                        android:id="@+id/shop_name_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="使用店铺："
+                        android:textColor="@color/gray5"
+                        android:textSize="@dimen/text_14" />
+
+                    <TextView
+                        android:id="@+id/data_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="有效期:"
+                        android:textColor="@color/gray5"
+                        android:textSize="@dimen/text_14" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/bg_rl"
+                android:layout_centerHorizontal="true"
+                android:orientation="vertical" >
+
+                <View style="@style/divider_horizontal" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/shop_background"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp" >
+
+                    <TextView
+                        android:id="@+id/rule_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="30dp"
+                        android:text="使用规则"
+                        android:textColor="@color/text_main"
+                        android:textSize="@dimen/text_18"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/remark_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_below="@id/rule_title"
+                        android:layout_marginLeft="30dp"
+                        android:layout_marginTop="10dp"
+                        android:lineSpacingExtra="3dp"
+                        android:text="1、实物奖品，请到店铺出示该券，领取；\n2、代金券，为惠万村平台APP下单专享，系统\n会自动抵扣；\n3、优惠券支持转赠。"
+                        android:textColor="@color/gray5"
+                        android:textSize="@dimen/text_14" />
+                    <TextView
+                        android:id="@+id/rule_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_below="@id/remark_tv"
+                        android:layout_marginLeft="30dp"
+                        android:textColor="@color/gray5"
+                        android:visibility="gone"
+                        android:textSize="@dimen/text_14" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/qrcode_iv"
+                android:layout_width="170dp"
+                android:layout_height="170dp"
+                android:layout_below="@+id/linearLayout1"
+                android:layout_centerHorizontal="true"
+                android:scaleType="fitXY"
+                android:layout_marginTop="10dp"/>
+
+            <TextView
+                android:id="@+id/join_time_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/qrcode_iv"
+                android:layout_centerHorizontal="true"
+                android:text="使用时请向商家展示"
+                android:textColor="@color/text_less_important"
+                android:textSize="@dimen/text_14" />
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

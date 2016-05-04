@@ -1,0 +1,21 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+/***
+ * 文章详细内容
+ * 
+ * @author lxk
+ *
+ */
+public class DiscoveryDetailRequest extends RequestBase {
+	private Long discovery_id;
+
+	public Long getDiscovery_id() {
+		return discovery_id;
+	}
+
+	public void setDiscovery_id(Long discovery_id) {
+		this.discovery_id = discovery_id;
+ }
+}

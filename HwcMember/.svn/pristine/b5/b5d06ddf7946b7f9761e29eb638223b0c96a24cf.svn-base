@@ -1,0 +1,24 @@
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.base.DPrizeCoupon;
+
+public interface ICouponView extends LoadDataView{
+	
+	/**
+	 * 获取优惠券详情
+	 */
+	void getCounpon();
+	 
+	 /**
+	  * 赠送优惠券
+	  */
+	 void doGive();
+
+	 /**
+	  * 设置优惠券详情
+	  * @param dPrizeCoupon
+	  */
+	 void initCounpon(DPrizeCoupon dPrizeCoupon);
+	 
+	
+}

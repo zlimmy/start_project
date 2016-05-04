@@ -1,0 +1,21 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.response.ShopInfoResponse;
+
+/**
+ * @author FZ
+ */
+public interface IContactSellerView extends LoadDataView {
+
+	void setShopMsg(ShopInfoResponse obj);
+	
+	void setShopIcon(String str);
+	
+	void setSecondCode(String shopid);
+	
+	void setAttention(boolean is_attention);
+	
+}

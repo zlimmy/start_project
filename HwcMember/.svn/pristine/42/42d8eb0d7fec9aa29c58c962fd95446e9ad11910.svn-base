@@ -1,0 +1,58 @@
+package com.hwc.member.view.activity;
+
+import android.os.Handler;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+import com.hwc.member.anno.ViewTransform;
+import com.hwc.member.application.App;
+import com.hwc.member.util.PreferenceUtils;
+import com.hwc.member.view.base.BaseActivity;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+@ContentView(R.layout.activity_satrt)
+public class SatrtActivity extends BaseActivity {
+
+	private static final int TIME = 2*1500;
+	@ViewInject(R.id.version_tv)
+	private TextView version_tv;
+	@ViewInject(R.id.start_iv)
+	@ViewTransform(width=240,height= 260)
+	private ImageView start_iv;
+	String  code ="";
+	int activity = 0; 
+
+	@Override
+	protected void initView() {
+		// TODO Auto-generated method stub
+		version_tv.setText(""+getVersion());
+		start_iv.setBackgroundResource(R.drawable.bg_logo);
+		new Handler().postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				if(PreferenceUtils.getPrefInt(App.mContext, "isfirst", -1) == -1) {
+					PreferenceUtils.setPrefInt(App.mContext, "isfirst", 1);
+					goTo(WelcomeActivity.class);
+				} else {
+					goTo(MainActivity.class);
+				}
+				finish(); 
+			}
+		}, TIME);
+	}
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	
+
+	
+	
+	
+}

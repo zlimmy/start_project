@@ -1,0 +1,304 @@
+/**
+ *
+ */
+package com.hwc.member.presenter;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.ProductItem;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.AttentionShopCancelReuqest;
+import com.huimodel.api.request.CollectionsRequest;
+import com.huimodel.api.request.ProductSearchRequest;
+import com.huimodel.api.request.ShopInfoRequest;
+import com.huimodel.api.response.ProductSearchResponse;
+import com.huimodel.api.response.ShopInfoResponse;
+import com.huimodel.api.response.ShopProductItemGetResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.common.Mlocation;
+import com.hwc.member.view.activity.view.IShopIndexView;
+import com.hwc.member.widget.SimpleHUD;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public class NewShopIndexPresenter {
+
+
+
+
+    private IShopIndexView shopIndexView;
+    private IHwcBizMain iHwcBizMainImpl;
+    public List<ProductItem> items = new ArrayList<ProductItem>();
+
+    public Gson gson;
+    private int page_size = 10;
+
+    public NewShopIndexPresenter(IShopIndexView shopIndexView) {
+        this.shopIndexView = shopIndexView;
+        this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+        this.gson = new Gson();
+    }
+
+    public void setData(Long sid) {
+        if (sid == -1) {
+            SimpleHUD.showErrorMessage(shopIndexView.getContext(), "获取门店信息失败");
+            return;
+        }
+        ShopInfoRequest sir = new ShopInfoRequest();
+        sir.setShop_id(sid);
+        sir.setNum(6);
+        sir.setUser_id_by(Member.getInstance().getUser_id());
+        sir.setImei(Constant.IMEI);
+        sir.setLatitude(Mlocation.getInstance().getLatitude());
+        sir.setLongitude(Mlocation.getInstance().getLongitude());
+        sir.setGcity(Mlocation.getInstance().getCity());
+        sir.setGdistrict(Mlocation.getInstance().getDistrict());
+        sir.setStatus("onsale");
+
+		shopIndexView.showProgressDialog(null);
+        iHwcBizMainImpl.searchShopInfo(sir, shopIndexView.getContext(), new IResult<ShopInfoResponse>() {
+
+            @Override
+            public void result(ShopInfoResponse obj, Code code) {
+                switch (code) {
+                    case OK:
+                        if (obj.isSuccess()) {
+                            shopIndexView.setAttention(obj.getShopInfo().getIs_attention());
+                            shopIndexView.setShopMsg(obj.getShopInfo().getNick(), obj.getShopInfo().getFans(), obj.getProductCount() + "",
+                                    obj.getPromotionCount() + "", obj.getShopInfo().getAddress(), obj.getShopInfo().getBulletin(), obj.getShopInfo()
+                                            .getHasFacepay(),obj.getShopInfo().getFacepay());
+                            shopIndexView.setShopIcon(obj.getShopInfo().getLogo_path(), obj.getShopInfo().getPic_path());
+                            shopIndexView.getShopInfo(obj);
+                            // if (obj.getShopInfo().getProducts() != null &&
+                            // obj.getShopInfo().getProducts().size() > 0) {
+                            // adapter = new
+                            // ProductGridAdapter(shopIndexView.getContext(),
+                            // obj.getShopInfo().getProducts(),
+                            // R.layout.item_horizontallist, null);
+                            // shopIndexView.setGridAdapter(adapter);
+                            // }
+                        } else {
+                            SimpleHUD.showErrorMessage(shopIndexView.getContext(), obj.getMsg());
+                        }
+                        break;
+
+                    default:
+                        SimpleHUD.showErrorMessage(shopIndexView.getContext(), code + "");
+                        break;
+                }
+
+            }
+        });
+
+    }
+
+    // 获取店铺所有商品
+    public void refresh(Long sid, long cid, String order, final boolean desc) {
+        if (sid == -1) {
+            SimpleHUD.showErrorMessage(shopIndexView.getContext(), "获取门店信息失败");
+            return;
+        }
+        ProductSearchRequest ps = new ProductSearchRequest();
+        ps.setStatus("onsale");
+        ps.setShop_id(sid);
+        ps.setImei(Constant.IMEI);
+        ps.setProduct_order_by(order);
+        ps.setPage_size(page_size);
+        ps.setLatitude(Mlocation.getInstance().getLatitude());
+        ps.setLongitude(Mlocation.getInstance().getLongitude());
+        ps.setGcity(Mlocation.getInstance().getCity());
+        ps.setGdistrict(Mlocation.getInstance().getDistrict());
+        ps.setPage(1);
+        if (cid != -1) {
+            ps.setCid(cid);
+        }
+        if (desc) {
+            ps.setProduct_order_by_method("asc");
+        }
+        iHwcBizMainImpl.getOneShopProduct(ps, shopIndexView.getContext(), new IResult<ProductSearchResponse>() {
+
+            @Override
+            public void result(ProductSearchResponse obj, Code code) {
+                shopIndexView.dismissProgressDialog();
+                switch (code) {
+                    case OK:
+                        shopIndexView.dismissProgressDialog();
+                        if (obj.getProducts() != null) {
+//						adapter = new ProductGridAdapter(shopIndexView.getContext(), morelist, R.layout.item_horizontallist, null);
+                            shopIndexView.refresh(obj.getProducts());
+                        }
+                        break;
+                    default:
+                        SimpleHUD.showErrorMessage(shopIndexView.getContext(), code + "");
+                        break;
+                }
+
+            }
+        });
+    }
+
+    /**
+     * 获取更多
+     *
+     * @param mCurIndex
+     */
+    public void more(long sid, long cid, String order, final boolean desc, int mCurIndex) {
+        if (sid == -1) {
+            SimpleHUD.showErrorMessage(shopIndexView.getContext(), "获取门店信息失败");
+            return;
+        }
+        ProductSearchRequest ps = new ProductSearchRequest();
+        ps.setStatus("onsale");
+        ps.setShop_id(sid);
+        ps.setImei(Constant.IMEI);
+        ps.setProduct_order_by(order);
+        ps.setPage_size(page_size);
+        ps.setPage(mCurIndex);
+        ps.setLatitude(Mlocation.getInstance().getLatitude());
+        ps.setLongitude(Mlocation.getInstance().getLongitude());
+        ps.setGcity(Mlocation.getInstance().getCity());
+        ps.setGdistrict(Mlocation.getInstance().getDistrict());
+        if (cid != -1) {
+            ps.setCid(cid);
+        }
+        if (desc) {
+            ps.setProduct_order_by_method("asc");
+        }
+        iHwcBizMainImpl.getOneShopProduct(ps, shopIndexView.getContext(), new IResult<ProductSearchResponse>() {
+
+            @Override
+            public void result(ProductSearchResponse obj, Code code) {
+                boolean isEnd = true;
+                switch (code) {
+                    case OK:
+                        shopIndexView.clearLoadPage();
+
+                        if (obj.getProducts() != null && obj.getProducts().size() < page_size) {
+                        } else {
+                            isEnd = false;
+                        }
+
+//						adapter = new ProductGridAdapter(shopIndexView.getContext(), morelist, R.layout.item_horizontallist, null);
+                        shopIndexView.more(obj.getProducts(), isEnd);
+
+
+                        break;
+                    default:
+                        SimpleHUD.showErrorMessage(shopIndexView.getContext(), code + "");
+                        break;
+                }
+            }
+        });
+    }
+
+    public void attention(Long sid) {
+        CollectionsRequest cr = new CollectionsRequest();
+        cr.setShop_id(sid);
+        cr.setUser_id_by(Member.getInstance().getUser_id());
+        cr.setCat("SHOP");
+        cr.setImei(Constant.IMEI);
+        shopIndexView.showProgressDialog(null);
+        iHwcBizMainImpl.attentionShop(cr, shopIndexView.getContext(), new IResult<ResponseBase>() {
+
+            @Override
+            public void result(ResponseBase obj, Code code) {
+                shopIndexView.dismissProgressDialog();
+                switch (code) {
+                    case OK:
+                        if (obj.isSuccess()) {
+                            SimpleHUD.showSuccessMessage(shopIndexView.getContext(), "关注成功！");
+                            shopIndexView.setAttention(true);
+                        } else {
+                            SimpleHUD.showErrorMessage(shopIndexView.getContext(), obj.getMsg());
+                        }
+                        break;
+
+                    default:
+                        SimpleHUD.showErrorMessage(shopIndexView.getContext(), code + "");
+                        break;
+                }
+            }
+        });
+    }
+
+    public void cancelAttention(Long sid) {
+        AttentionShopCancelReuqest asc = new AttentionShopCancelReuqest();
+        List<Long> list = new ArrayList<Long>();
+        list.add(sid);
+        asc.setShop_ids(list);
+        asc.setUser_id_by(Member.getInstance().getUser_id());
+        asc.setImei(Constant.IMEI);
+        shopIndexView.showProgressDialog(null);
+        iHwcBizMainImpl.cancelAttentionShop(asc, shopIndexView.getContext(), new IResult<ResponseBase>() {
+
+            @Override
+            public void result(ResponseBase obj, Code code) {
+                shopIndexView.dismissProgressDialog();
+                switch (code) {
+                    case OK:
+                        if (obj.isSuccess()) {
+                            SimpleHUD.showSuccessMessage(shopIndexView.getContext(), "取消成功");
+                            shopIndexView.setAttention(false);
+                        } else {
+                            SimpleHUD.showErrorMessage(shopIndexView.getContext(), obj.getMsg());
+                        }
+
+                        break;
+
+                    default:
+                        SimpleHUD.showErrorMessage(shopIndexView.getContext(), code + "");
+                        break;
+                }
+            }
+        });
+    }
+
+    // 获取店铺类目
+    public void getShopCat(Long sid) {
+        RequestBase rb = new RequestBase();
+        rb.setShop_id(sid);
+        rb.setImei(Constant.IMEI);
+        iHwcBizMainImpl.getProductItemCat(rb, shopIndexView.getContext(), new IResult<ShopProductItemGetResponse>() {
+            @Override
+            public void result(ShopProductItemGetResponse obj, Code code) {
+                switch (code) {
+                    case OK:
+                        if (obj.isSuccess()) {
+                            if (obj.getItems() != null && obj.getItems().size() >= 0) {
+                                for (int i = 0; i < obj.getItems().size() + 1; i++) {
+                                    if (i == 0) {
+                                        ProductItem item = new ProductItem();
+                                        item.setCid(-1l);
+                                        item.setName("全部商品");
+                                        items.add(item);
+                                    } else {
+                                        items.add(obj.getItems().get(i - 1));
+                                    }
+                                }
+                            }
+
+                            shopIndexView.setCat(items);
+
+                        }
+                        break;
+
+                    default:
+                        SimpleHUD.showErrorMessage(shopIndexView.getContext(), code + "");
+                        break;
+                }
+            }
+        });
+
+    }
+
+}

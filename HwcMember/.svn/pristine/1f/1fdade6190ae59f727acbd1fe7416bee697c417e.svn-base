@@ -1,0 +1,96 @@
+package com.hwc.member.view.activity;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTabHost;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.TabHost;
+import android.widget.Toast;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.FragmentAdapter;
+import com.hwc.member.common.Constant;
+import com.hwc.member.util.DownTimer;
+import com.hwc.member.util.UtilActivity;
+import com.hwc.member.view.base.BaseActivity;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.umeng.update.UmengUpdateAgent;
+
+@ContentView(R.layout.activity_main)
+public class MainActivity extends BaseActivity {
+
+	@ViewInject(R.id.tabHost)
+	private FragmentTabHost tabHost;
+
+	private FragmentDao fragmentDao;
+	 
+	@Override
+	protected void initView() {
+		//调用友盟自动更新
+		UmengUpdateAgent.setUpdateOnlyWifi(false);
+		UmengUpdateAgent.update(this);
+		
+		fragmentDao = new FragmentAdapter(this);
+
+		tabHost.setup(this, getSupportFragmentManager(), R.id.fragment);
+		tabHost.getTabWidget().setDividerDrawable(null);
+		int count = fragmentDao.getCount();
+		for (int i = 0; i < count; i++) {
+			TabHost.TabSpec tabSpec = tabHost.newTabSpec(i + "").setIndicator(fragmentDao.getView(i));
+			tabHost.addTab(tabSpec, fragmentDao.getFragment(i), null);
+		}
+		
+	}
+
+	@Override
+	protected void initListener() {}
+	
+	/** Fragment适配接口 **/
+	public interface FragmentDao {
+		View getView(int position);
+
+		int getCount();
+
+		Class<? extends Fragment> getFragment(int position);
+
+	}
+
+
+	/**
+	 * 菜单、返回键响应
+	 */
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			exitBy2Click(); // 调用双击退出函数
+		}
+		return false;
+	}
+	private static Boolean isExit = false;
+	protected DownTimer timer;
+	private void exitBy2Click() {
+		Timer tExit = null;
+		if (isExit == false) {
+			isExit = true; // 准备退出
+			Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+			tExit = new Timer();
+			tExit.schedule(new TimerTask() {
+				public void run() {
+					isExit = false; // 取消退出
+				}
+			}, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
+
+		} else {
+			Constant.bindAlias = false;
+			UtilActivity.finishAll();
+		}
+	}
+	
+
+	
+	
+}

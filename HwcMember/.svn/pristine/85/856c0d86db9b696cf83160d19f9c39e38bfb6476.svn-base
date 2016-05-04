@@ -1,0 +1,166 @@
+package com.hwc.member.presenter;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.CollectionsRequest;
+import com.huimodel.api.response.ProductSearchResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IFollowProductView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author qqx
+ */
+public class FollowProductPresenter {
+
+    private IFollowProductView followProductView;
+    private IHwcBizMain iHwcBizMainImpl;
+    private int page_size = 10;
+
+    public FollowProductPresenter(IFollowProductView followProductView) {
+        this.followProductView = followProductView;
+        this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+    }
+
+    // public void setListData(final PullToRefreshLayout pullToRefreshLayout){
+    // RequestBase rb = new RequestBase();
+    // rb.setUser_id_by(Member.getInstance().getUser_id());
+    // rb.setImei(Constant.IMEI);
+    // iHwcBizMainImpl.searchCollectionProducts(rb,
+    // followProductView.getContext(), new IResult<ProductSearchResponse>() {
+    // @Override
+    // public void result(ProductSearchResponse obj, Code code) {
+    // if(pullToRefreshLayout != null){
+    // pullToRefreshLayout.refreshFinish(PullToRefreshLayout.SUCCEED);
+    // }
+    // switch (code) {
+    // case OK:
+    // if(obj.getProducts() != null && obj.getProducts().size() > 0){
+    // adapter = new FollowProductAdapter(followProductView.getContext(),
+    // obj.getProducts(), R.layout.item_follow_product_list, null);
+    // followProductView.setListAdapter(adapter);
+    // adapter.registerCallback(new Callback() {
+    // @Override
+    // public void delGoods(DProduct item) {
+    // delCollection(item);
+    // }
+    // });
+    // }else{
+    // followProductView.showErrorPage();
+    // }
+    // break;
+    //
+    // default:
+    // SimpleHUD.showErrorMessage(followProductView.getContext(), code+"");
+    // break;
+    // }
+    // }
+    // });
+    // }
+
+    public void delCollection(DProduct item, final int position) {
+        CollectionsRequest cr = new CollectionsRequest();
+        cr.setUser_id_by(Member.getInstance().getUser_id());
+        cr.setContent_id(item.getPid());
+        cr.setCat("PRODUCT");
+        cr.setShop_id(item.getShop_id());
+        cr.setImei(Constant.IMEI);
+        followProductView.showProgressDialog(null);
+        iHwcBizMainImpl.deleteCollection(cr, followProductView.getContext(),
+                new IResult<ResponseBase>() {
+
+                    @Override
+                    public void result(ResponseBase obj, Code code) {
+                        followProductView.dismissProgressDialog();
+                        switch (code) {
+                            case OK:
+                                if (obj.isSuccess()) {
+                                    SimpleHUD.showSuccessMessage(
+                                            followProductView.getContext(), "删除成功");
+                                    followProductView.delItem(position);
+                                } else {
+                                    SimpleHUD.showSuccessMessage(
+                                            followProductView.getContext(), "删除失败");
+                                }
+                                break;
+
+                            default:
+                                SimpleHUD.showErrorMessage(
+                                        followProductView.getContext(), code + "");
+                                break;
+                        }
+                    }
+                });
+    }
+
+    /**
+     * 刷新
+     */
+    public void refresh() {
+        RequestBase rb = new RequestBase();
+        rb.setUser_id_by(Member.getInstance().getUser_id());
+        rb.setPage(1);
+        rb.setPage_size(page_size);
+        rb.setImei(Constant.IMEI);
+        iHwcBizMainImpl.searchCollectionProducts(rb,
+                followProductView.getContext(),
+                new IResult<ProductSearchResponse>() {
+                    @Override
+                    public void result(ProductSearchResponse obj, Code code) {
+                        followProductView.dismissProgressDialog();
+                        switch (code) {
+                            case OK:
+                                followProductView.refresh(obj.getProducts());
+                                break;
+
+                            default:
+                                SimpleHUD.showErrorMessage(
+                                        followProductView.getContext(), code + "");
+                                break;
+                        }
+                    }
+                });
+    }
+
+    /**
+     * 获取更多
+     *
+     * @param mCurIndex
+     */
+    public void more(int mCurIndex) {
+        RequestBase rb = new RequestBase();
+        rb.setUser_id_by(Member.getInstance().getUser_id());
+        rb.setPage(mCurIndex);
+        rb.setPage_size(page_size);
+        rb.setImei(Constant.IMEI);
+        iHwcBizMainImpl.searchCollectionProducts(rb,
+                followProductView.getContext(),
+                new IResult<ProductSearchResponse>() {
+                    @Override
+                    public void result(ProductSearchResponse obj, Code code) {
+                        followProductView.clearLoadPage();
+                        boolean isEnd = true;
+                        switch (code) {
+                            case OK:
+                                if (obj.getProducts().size() < page_size) {
+                                    isEnd = false;
+                                }
+                                followProductView.more(obj.getProducts(), isEnd);
+                                break;
+
+                            default:
+                                SimpleHUD.showErrorMessage(
+                                        followProductView.getContext(), code + "");
+                                break;
+                        }
+                    }
+                });
+    }
+}

@@ -1,0 +1,24 @@
+package com.hwc.member.view.activity.view;
+
+import java.util.List;
+
+import com.huimodel.api.base.UserBean;
+import com.huimodel.api.response.ProfitInfoGetResponse;
+
+public interface IMyTeamView extends LoadDataView{
+
+	//刷新
+	 void refresh(List<UserBean> list);
+		
+	//加载
+	 void more(List<UserBean> list,boolean isEnd);
+	 
+	 /**
+	  * 初始化数据
+	  * @param obj
+	  */
+	 void initData(ProfitInfoGetResponse obj);
+	 
+	 
+	
+}

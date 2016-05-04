@@ -1,0 +1,193 @@
+package com.hwc.member.view.activity.shop;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.view.View;
+import android.widget.ExpandableListView;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DProduct;
+import com.hwc.member.R;
+import com.hwc.member.adapter.ShopCarAdapter;
+import com.hwc.member.adapter.ShopCarAdapter.Callback;
+import com.hwc.member.bean.ShoppingCartBean;
+import com.hwc.member.presenter.ShopCarPresenter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.OnShoppingCartChangeListener;
+import com.hwc.member.util.ShoppingCartBiz;
+import com.hwc.member.view.activity.view.IShopCarView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+
+/**
+ * 购物车界面
+ * @author fzh
+ * @date 2016年3月9日
+ */
+@ContentView(R.layout.activity_shop_car)
+public class ShopCarActivity extends BaseActivity implements IShopCarView {
+
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.listview)
+	private ExpandableListView listview;
+	@ViewInject(R.id.countmoney_tv)
+	private TextView countmoney_tv;
+	@ViewInject(R.id.settle_bt)
+	private TextView settle_bt;
+	@ViewInject(R.id.selectall_iv)
+	private ImageView selectall_iv;
+	@ViewInject(R.id.bottombar_rl)
+	private RelativeLayout bottombar_rl;
+	@ViewInject(R.id.nodata_rr)
+	private RelativeLayout nodata_rr;
+	public static ShopCarActivity shopCarActivity;
+
+	private List<ShoppingCartBean> data = new ArrayList<ShoppingCartBean>();
+    private ShopCarAdapter adapter;
+
+    private ShopCarPresenter presenter = new ShopCarPresenter(this);
+
+	@Override
+	protected void initView() {
+		shopCarActivity = this;
+
+	}
+
+	@Override
+	protected void initListener() {
+		setBack();
+		listview.setGroupIndicator(null);
+		listview.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView expandableListView, View view, int i, long l) {
+                return true;
+            }
+        });
+	}
+
+	private void setAdapter(){
+		adapter = new ShopCarAdapter(this);
+		listview.setAdapter(adapter);
+        adapter.setOnShoppingCartChangeListener(new OnShoppingCartChangeListener() {
+            @Override
+            public void onDataChange(String selectCount, String selectMoney) {
+//                int goodsCount = ShoppingCartBiz.getGoodsCount();
+//                if (!isNetworkOk) {//网络状态判断暂时不显示
+//                }
+//                if (goodsCount == 0) {
+//                    showEmpty(true);
+//                } else {
+//                    showEmpty(false);//其实不需要做这个判断，因为没有商品的时候，必须退出去添加商品；
+//                }
+               // String countMoney = String.format("￥%s", selectMoney);
+                String countGoods = String.format("结算(%s)", selectCount);
+
+				try {
+					countmoney_tv.setText("￥"+CommonUtil.conversionDouble(Double.parseDouble(selectMoney)));
+				} catch (Exception e) {
+
+				}
+				settle_bt.setText(countGoods);
+            }
+
+            @Override
+            public void onSelectItem(boolean isSelectedAll) {
+                ShoppingCartBiz.checkItem(isSelectedAll, selectall_iv);
+            }
+        });
+        adapter.registerCallback(new Callback() {
+
+			@Override
+			public void upd(DProduct obj, String action) {
+				presenter.updateShopCart(obj, action);
+			}
+
+			@Override
+			public void del(DProduct obj, int groupPosition, int childPosition) {
+				presenter.delShopCart(obj, groupPosition, childPosition);
+			}
+		});
+        //通过监听器关联Activity和Adapter的关系，解耦；
+        View.OnClickListener listener = adapter.getAdapterListener();
+        if (listener != null) {
+            //即使换了一个新的Adapter，也要将“全选事件”传递给adapter处理；
+        	selectall_iv.setOnClickListener(adapter.getAdapterListener());
+            //结算时，一般是需要将数据传给订单界面的
+            settle_bt.setOnClickListener(adapter.getAdapterListener());
+        }
+	}
+
+    private void updateListView() {
+        adapter.setList(data);
+        adapter.notifyDataSetChanged();
+        expandAllGroup();
+    }
+
+    /**
+     * 展开所有组
+     */
+    private void expandAllGroup() {
+        for (int i = 0; i < data.size(); i++) {
+            listview.expandGroup(i);
+        }
+    }
+
+	@Override
+	public void clearLoadPage() {}
+
+	@Override
+	public void showErrorPage() {}
+
+	@Override
+	public void setShopCarData(List<ShoppingCartBean> data) {
+		this.data = data;
+
+		//System.out.println("shuj "+gson.toJson(data));
+		setAdapter();
+		updateListView();
+		clearView();
+	}
+
+	@Override
+	public void noity() {
+		adapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void delAfter(int groupPosition, int childPosition) {
+		adapter.delGoods(groupPosition, childPosition);
+		if(data.size() == 0){
+			nodata_rr.setVisibility(View.VISIBLE);
+		}
+	}
+
+	@Override
+	public void updateError(DProduct obj, String action) {
+		adapter.retureData(obj, action);
+	}
+
+	@Override
+	public void clearView() {
+		// TODO Auto-generated method stub
+		nodata_rr.setVisibility(View.GONE);
+	}
+
+
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+
+		presenter.getCartList();
+
+	}
+
+
+}

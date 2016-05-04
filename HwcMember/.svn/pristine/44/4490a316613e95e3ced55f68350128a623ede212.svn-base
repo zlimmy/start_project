@@ -1,0 +1,14 @@
+/**
+ * 
+ */
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.PointExchange;
+import com.huimodel.api.base.RequestBaseEntity;
+
+/**
+ * @author FZ
+ */
+public class PointExchangeRequest extends RequestBaseEntity<PointExchange> {
+
+}

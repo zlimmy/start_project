@@ -1,0 +1,149 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.OrderGetRequest;
+import com.huimodel.api.request.OrderUpdateRequest;
+import com.huimodel.api.request.ShopInfoRequest;
+import com.huimodel.api.response.OrderDetailResponse;
+import com.huimodel.api.response.ShopInfoResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.NewOrderInfoAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IOrderInfoView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class OrderInfoPresenter {
+
+	private IOrderInfoView orderInfoView;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	private NewOrderInfoAdapter adapter;
+	private Gson gson;
+	public OrderInfoPresenter(IOrderInfoView orderInfoView){
+		this.orderInfoView = orderInfoView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		this.gson = new Gson();
+	}
+	
+	public void setData(Long rid){
+		OrderGetRequest osr = new OrderGetRequest();
+		osr.setRid(rid);
+		osr.setUser_id_by(Member.getInstance().getUser_id());
+		osr.setImei(Constant.IMEI);
+		orderInfoView.showProgressDialog("数据加载中，请稍后...");
+		iHwcBizMainImpl.getOrderDetail(osr, orderInfoView.getContext(), new IResult<OrderDetailResponse>() {
+			
+			@Override
+			public void result(OrderDetailResponse obj, Code code) {
+				orderInfoView.dismissProgressDialog();
+				
+				System.out.println("订单数据："+gson.toJson(obj));
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						if(obj.getEntity().getDetails() != null && obj.getEntity().getDetails().size() > 0){
+							orderInfoView.setOrderDetail(obj);
+								adapter = new NewOrderInfoAdapter(orderInfoView.getContext(), obj.getEntity().getDetails(), R.layout.item_orderinfo, null);
+								orderInfoView.setList(adapter);	
+						}
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(orderInfoView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+		
+	}
+	
+	/** 获取店铺信息 **/
+	public void getShopMobile(Long shopid){
+		ShopInfoRequest sir = new ShopInfoRequest();
+		sir.setShop_id(shopid);
+		sir.setImei(Constant.IMEI);
+		iHwcBizMainImpl.searchSimpleShopInfo(sir, orderInfoView.getContext(), new IResult<ShopInfoResponse>() {
+
+			@Override
+			public void result(ShopInfoResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						orderInfoView.setMobile(obj.getShopInfo().getMobile());
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+	}
+	
+	
+	/** 取消订单 **/
+	public void cancelOrder(Long rid){
+		OrderUpdateRequest our = new OrderUpdateRequest();
+		our.setUser_id_by(Member.getInstance().getUser_id());
+		our.setShop_id(Member.getInstance().getShop_id());
+		our.setRid(rid);
+		iHwcBizMainImpl.cancelOrder(our, orderInfoView.getContext(), new IResult<ResponseBase>() {
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						orderInfoView.closeOrder("订单取消成功");
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+
+	}
+	 
+	
+	/** 确认订单 **/
+	public void confirmOrder(Long rid){
+		OrderUpdateRequest our = new OrderUpdateRequest();
+		our.setUser_id_by(Member.getInstance().getUser_id());
+		our.setShop_id(Member.getInstance().getShop_id());
+		our.setRid(rid);
+		iHwcBizMainImpl.submitOrder(our, orderInfoView.getContext(), new IResult<ResponseBase>() {
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						orderInfoView.closeOrder("已确认收货");
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+
+	}
+	
+
+	
+}

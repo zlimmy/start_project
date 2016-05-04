@@ -1,0 +1,63 @@
+package com.hwc.member.view.activity.my;
+
+import android.content.SharedPreferences;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+import com.hwc.member.common.Constant;
+import com.hwc.member.util.ACache;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+
+/**
+ * 关于我们
+ *
+ * @author Administrator
+ */
+@ContentView(R.layout.activity_about_my)
+public class AboutActivity extends BaseActivity {
+
+    @ViewInject(R.id.version_tv)
+    private TextView version_tv;
+
+    @Override
+    protected void initView() {
+        version_tv.setText(getVersion());
+    }
+
+    @Override
+    protected void initListener() {
+        setBack();
+    }
+
+    @OnClick(R.id.btn_clean)
+    public void clearCache(View view) {
+        DialogUtil.showDialog(Constant.Dialog, "是否确定要清除缓存？", Gravity.CENTER, context, null, new OnClickListener() {
+
+            @Override
+            public void onClick(DialogPlus dialog, View view) {
+                switch (view.getId()) {
+                    case R.id.cancel:
+                        break;
+
+                    case R.id.confirm:
+                        ACache.get(context).clear();
+                        bitmapUtils.clearCache();
+                        SharedPreferences sharedPreferences = getContext().getSharedPreferences("cube_ptr_classic_last_update", 0);
+                        sharedPreferences.edit().clear();
+                        T("清除成功");
+                        break;
+                }
+                dialog.dismiss();
+            }
+        }, null);
+    }
+}

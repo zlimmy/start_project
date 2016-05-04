@@ -1,0 +1,38 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+/***
+ * 广告API 基于地理位置
+ * 
+ * @author lxk
+ *
+ */
+public class PromotionADGetRequest extends RequestBase {
+
+	/*
+	 * 纬度
+	 */
+	private String latitude;
+	/*
+	 * 维度
+	 */
+	private String longitude;
+
+	public String getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+
+	public String getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+
+}

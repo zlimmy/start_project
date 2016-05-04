@@ -1,0 +1,291 @@
+package com.hwc.member.view.activity;
+
+import java.util.List;
+
+import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.huimodel.api.base.SearchHistory;
+import com.hwc.member.R;
+import com.hwc.member.adapter.HotSearchAdapter;
+import com.hwc.member.adapter.ProductGridAdapter;
+import com.hwc.member.adapter.SearchAdapter;
+import com.hwc.member.adapter.SearchGoodsAdapter;
+import com.hwc.member.anno.ViewTransform;
+import com.hwc.member.common.Constant;
+import com.hwc.member.presenter.SearchPresenter;
+import com.hwc.member.util.MyRefreshListener;
+import com.hwc.member.util.MyRefreshListener.Callback;
+import com.hwc.member.view.activity.product.NewProductInfoActivity;
+import com.hwc.member.view.activity.view.ISearchView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.PullToRefreshLayout;
+import com.hwc.member.widget.PullableListView;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.lidroid.xutils.view.annotation.event.OnItemClick;
+
+/**
+ * 搜索
+ * 
+ * @author Administrator
+ */
+@ContentView(R.layout.activity_search)
+public class SearchActivity extends BaseActivity implements ISearchView {
+
+	@ViewInject(R.id.history_listview)
+	private ListView history_listview;
+	@ViewInject(R.id.quit_bt)
+	private Button quit_bt;
+	@ViewInject(R.id.empty_tv)
+	private TextView empty_tv;
+	@ViewInject(R.id.search_et)
+	@ViewTransform(width = 180)
+	private EditText search_et;
+	@ViewInject(R.id.history_rl)
+	private RelativeLayout history_rl;
+	@ViewInject(R.id.listview)
+	private PullableListView listview;
+	@ViewInject(R.id.refresh_view)
+	private PullToRefreshLayout refresh_view;
+	
+	private int mIndex = 1;
+	
+	private MyRefreshListener myRefreshListener;
+
+	private SearchPresenter presenter = new SearchPresenter(this);
+	
+	@ViewInject(R.id.nodata_page)
+	private View nodata_page;
+	@ViewInject(R.id.nodata_tv)
+	private TextView nodata_tv;
+	@ViewInject(R.id.nodata_but)
+	private Button nodata_but;
+	@ViewInject(R.id.hot_search_gv)
+	private GridView hot_search_gv;
+	@ViewInject(R.id.hot_search_rl)
+	private RelativeLayout hot_search_rl;
+	private String query;
+	private boolean iscanmore = true;
+ 
+	@Override
+	protected void initView() {
+		presenter.setGridData2();
+		presenter.hotSearch();
+		initAdapter();
+	}
+
+	private void initAdapter() {
+//		hot_search_gv.setAdapter();
+	}
+
+	@Override
+	protected void initListener() {
+		search_et.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+			
+			@Override
+			public void afterTextChanged(Editable s) {}
+		});
+		myRefreshListener = new MyRefreshListener(SearchActivity.this, new Callback() {
+			
+			@Override
+			public void refresh(PullToRefreshLayout pullToRefreshLayout) {
+				pullToRefreshLayout.refreshFinish(PullToRefreshLayout.SUCCEED);
+			}
+			
+			@Override
+			public void loadMore(PullToRefreshLayout pullToRefreshLayout) {
+//				mIndex += 1;
+//				presenter.searchProducts(query, mIndex, pullToRefreshLayout);
+			}
+		});
+		refresh_view.setOnRefreshListener(myRefreshListener);
+		listview.setOnScrollListener(new OnScrollListener() {
+			
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {}
+			
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem,
+					int visibleItemCount, int totalItemCount) {
+				if(visibleItemCount+firstVisibleItem > totalItemCount-3){
+                	if(visibleItemCount != 0){
+                		if(iscanmore){
+                			mIndex += 1;
+            				presenter.searchProducts(query, mIndex, null);
+                		}
+                	}
+                }
+			}
+		});
+		
+		search_et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				/* 判断是否是“GO”键 */
+				if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+					/* 隐藏软键盘 */
+					InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+					if (imm.isActive()) {
+						imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+					}
+					mIndex = 1;
+					query = getViewValue(search_et);
+					presenter.searchProducts(query, mIndex, null);
+					return true;
+				}
+				return false;
+			}
+		});
+	}
+
+	// 搜索历史
+	@Override
+	public void setGridAdapter2(SearchAdapter adapter) {
+		history_listview.setAdapter(adapter);
+	}
+	
+	// 热门搜索
+	
+
+	
+	@OnItemClick(R.id.listview)
+	public void onGridItemClick(AdapterView<?> parent, View view,
+			int position, long id) {
+		goTo(NewProductInfoActivity.class, presenter.listAdapter.getItem(position).getPid(), presenter.listAdapter.getItem(position).getShop_id(), presenter.listAdapter.getItem(position).getName());
+	}
+	
+	@OnClick(R.id.back_iv)
+	public void back_iv(View v){
+		finish();
+	}
+	
+	// 搜索
+	@OnClick(R.id.quit_bt)
+	public void forgetQuit(View v) {
+		mIndex = 1;
+		query = getViewValue(search_et);
+		presenter.searchProducts(query, mIndex, null);
+
+		SearchHistory sh = new SearchHistory();
+		sh.setId(1l);
+		sh.setName(search_et.getText().toString());
+		if (!search_et.getText().toString().equals("")) {
+			try {
+				DbUtils dbUtils = DbUtils.create(getContext(), Constant.dbName);
+				//查询出数据库是否有该关键字，如果有，全部删除后添加
+				List<SearchHistory> hostory = dbUtils.findAll(Selector.from(SearchHistory.class).where(WhereBuilder.b("name", "=", sh.getName())));
+				dbUtils.deleteAll(hostory);
+				
+				dbUtils.save(sh);
+			} catch (DbException e) {
+				e.printStackTrace();
+			}
+		}
+		//获取虚拟键盘管理器
+		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		//关闭键盘
+		imm.hideSoftInputFromWindow(search_et.getWindowToken(),0);  
+	}
+
+	// 清空记录
+	@OnClick(R.id.empty_tv)
+	public void forgetEmp(View v) {
+		history_listview.setAdapter(null);
+		try {
+			DbUtils dbUtils = DbUtils.create(getContext(), Constant.dbName);
+			dbUtils.dropTable(SearchHistory.class);
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// 历史搜索
+	@OnItemClick(R.id.history_listview)
+	public void onHistoryGridItemClick2(AdapterView<?> parent, View view,
+			int position, long id) {
+		mIndex = 1;
+		query = presenter.adapter2.getItem(position).getName();
+		presenter.searchProducts(presenter.adapter2.getItem(position).getName(), mIndex, null);
+		//获取虚拟键盘管理器
+		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		//关闭键盘
+		imm.hideSoftInputFromWindow(search_et.getWindowToken(),0);
+		search_et.setText(query);
+		search_et.setSelection(query.length());
+	}
+	
+	//热门搜索
+	@OnItemClick(R.id.hot_search_gv)
+	public void onHotSearch(AdapterView<?> parent, View view,
+			int position, long id) {
+		mIndex = 1;
+		query = presenter.hotSearchAdapter.getItem(position).getWord();
+		presenter.searchProducts(query, mIndex, null);
+		//获取虚拟键盘管理器
+		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); 
+        imm.hideSoftInputFromWindow(search_et.getWindowToken(),0);  
+		search_et.setText(query);
+		search_et.setSelection(query.length());
+	}
+	
+	@Override
+	public void getListSuccess(SearchGoodsAdapter adapter) {
+		GONE(history_rl);
+		GONE(nodata_page);
+		GONE(hot_search_rl);
+		listview.setAdapter(adapter);
+	}
+
+	@Override
+	public void clearLoadPage() {
+	}
+
+	@Override
+	public void showErrorPage() {
+		VISIBLE(nodata_page);
+		nodata_tv.setText("暂无您要搜索的商品!");
+		INVISIBLE(nodata_but);
+	}
+
+	@Override
+	public void setShopGrid(ProductGridAdapter adapter) {}
+
+	@Override
+	public void setIsCanMore(boolean b) {
+		iscanmore = b;
+	}
+
+	@Override
+	public void setHotSearchAdapter(HotSearchAdapter adapter) {
+		hot_search_gv.setAdapter(adapter);
+	}
+
+}

@@ -1,0 +1,37 @@
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.base.PlatformPromLottery;
+import com.huimodel.api.response.PlatformPromLotteryDrawGetResponse;
+import com.huimodel.api.response.PromLotteryDrawResponse;
+
+public interface IPlatformPromotionView extends LoadDataView{
+
+	/**
+	 * 跳转活动
+	 * @param obj
+	 */
+	void doGame(PlatformPromLotteryDrawGetResponse obj);
+	
+	
+	/**
+	 * 初始化游戏
+	 * @param promcode
+	 */
+	void initGame(PlatformPromLottery platformPromLottery);
+	
+	
+	/**
+	 * 设置中奖奖项
+	 * @param p
+	 */
+	void setWinning(PromLotteryDrawResponse p);
+	
+	/**
+	 * 重置抽奖
+	 * @param desc
+	 */
+	void rest(String desc);
+	
+	void goLogin();
+	
+}

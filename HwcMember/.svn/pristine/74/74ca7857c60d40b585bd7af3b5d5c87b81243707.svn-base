@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray0"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/shape_ss" >
+        
+        <com.hwc.member.widget.CircleImageView
+            android:id="@+id/message_iv"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_margin="5dp"
+            android:src="@drawable/ic_launcher"
+            app:border_color="@color/gray3"
+            app:border_width="1dp" />
+
+        <TextView
+            android:id="@+id/name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/message_iv"
+            android:layout_marginTop="15dp"
+            android:layout_toRightOf="@+id/message_iv"
+            android:text="芦村小梁手机超市"
+            android:textSize="14sp" />
+
+        <View
+            android:id="@+id/message_v"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/message_iv"
+            android:background="@color/gray3" />
+
+		<TextView 
+		    android:id="@+id/content_tv"
+		    android:layout_width="match_parent"
+		    android:layout_height="50dp"
+		    android:layout_below="@id/message_v"
+		    android:layout_margin="15dp"
+		    android:text=""
+		    android:textColor="@color/gray4"/>
+        
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/data_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="2015.11.11"
+        android:textColor="@color/gray5" />
+
+</LinearLayout>

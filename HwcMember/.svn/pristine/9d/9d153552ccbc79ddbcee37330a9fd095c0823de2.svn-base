@@ -1,0 +1,61 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+
+public class UserLoginRequest extends RequestBase{
+
+	/***
+	 * 账号 手机号码/昵称
+	 */
+	private String accnt;
+	
+	private String channel;
+
+	
+	public String getAccnt() {
+		return accnt;
+	}
+
+	public void setAccnt(String accnt) {
+		this.accnt = accnt;
+	}
+
+	public String getPwd() {
+		return pwd;
+	}
+
+	public void setPwd(String pwd) {
+		this.pwd = pwd;
+	}
+
+	private String pwd;
+	
+	
+	
+	/**
+	 * @return the channel
+	 */
+	public String getChannel() {
+		return channel;
+	}
+
+	/**
+	 * @param channel the channel to set
+	 */
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
+	@Override
+	public String getKey() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+
+	
+ 
+}

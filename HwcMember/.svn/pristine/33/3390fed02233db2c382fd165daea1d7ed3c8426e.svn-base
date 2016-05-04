@@ -1,0 +1,22 @@
+package com.hwc.member.view.activity.view;
+
+import java.util.List;
+
+import com.huimodel.api.base.DShop;
+import com.hwc.member.adapter.ProductCategoryAdapter;
+
+public interface INearView  extends LoadDataView{
+	
+	//刷新
+	void refresh(List<DShop> list);
+			
+	//加载
+	void more(List<DShop> list,boolean isEnd);
+	 
+	
+	void setCatAdapter(ProductCategoryAdapter adapter);
+	
+	//找不到该类型店铺
+	void  notFind(String catname);
+		 
+}

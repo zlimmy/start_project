@@ -1,0 +1,173 @@
+package com.hwc.member.view.activity.my;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Context;
+import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DShop;
+import com.huimodel.api.base.UserBean;
+import com.huimodel.api.response.ProfitInfoGetResponse;
+import com.hwc.member.R;
+import com.hwc.member.presenter.MyTeamPresenter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.view.activity.view.IMyDataView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.view.fragment.My_ShopFragment;
+import com.hwc.member.view.fragment.My_TeamFragment;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.lidroid.xutils.view.annotation.event.OnItemClick;
+
+
+
+/**
+ * 我的团队
+ * @author fzh
+ * @date 2016年3月7日
+ */
+@ContentView(R.layout.activity_team)
+public class TeamActivity extends BaseActivity implements IMyDataView,OnCheckedChangeListener{
+	private int position;
+    private  MyTeamPresenter myteamPresenter = new MyTeamPresenter(this);
+    @ViewInject(R.id.rebate_tl)
+    private TextView rebate_tl;
+    @ViewInject(R.id.rebate)
+    private TextView rebate;
+    @ViewInject(R.id.rebate_left)
+    private TextView rebate_left;
+    @ViewInject(R.id.member_count)
+    private TextView member_count;
+    @ViewInject(R.id.quit_bt)
+    private Button quit_bt;
+    @ViewInject(R.id.search_et)
+    private TextView search_et;
+    @ViewInject(R.id.myteam_container)
+    private FrameLayout myteam_container;
+    @ViewInject(R.id.myteam_rg)
+	private RadioGroup myteam_rg;
+    
+    
+    List<Fragment> fragments = new ArrayList<Fragment>();
+	private My_TeamFragment my_TeamFragment;
+	private My_ShopFragment my_ShopFragment;
+	private int index;
+	@Override
+	protected void initView() {
+		my_TeamFragment = new My_TeamFragment();
+		my_ShopFragment = new My_ShopFragment();
+		fragments.add(my_TeamFragment);
+		fragments.add(my_ShopFragment);
+		myteam_rg.setOnCheckedChangeListener(this);
+		((RadioButton) myteam_rg.getChildAt(0)).setChecked(true);
+		myteamPresenter.initData();
+	}
+	
+	@OnClick(R.id.quit_bt)
+	public void search(View view) {
+		if (index == 0) {
+			myteamPresenter.search(getViewValue(search_et));
+		} else {
+			myteamPresenter.searchShop(getViewValue(search_et));
+		}
+		//获取虚拟键盘管理器
+		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		//关闭键盘
+		imm.hideSoftInputFromWindow(search_et.getWindowToken(),0);  
+	}
+
+	@Override
+	protected void initListener() {
+		setBack();
+		search_et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				/* 判断是否是“GO”键 */
+				if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+					/* 隐藏软键盘 */
+					InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+					if (imm.isActive()) {
+						imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+					}
+					if (index == 0) {
+						myteamPresenter.search(getViewValue(search_et));
+					} else {
+						myteamPresenter.searchShop(getViewValue(search_et));
+					}
+					return true;
+				}
+				return false;
+			}
+		});
+	}
+	
+	@OnItemClick(R.id.listview)
+	public void onListItemClick(AdapterView<?> parent, View view, int position, long id) {
+		goTo(TeamRebateActivity.class);
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void initData(ProfitInfoGetResponse obj) {
+		// TODO Auto-generated method stub
+		 rebate_tl.setText(CommonUtil.conversionDouble(obj.getRebate_tl())+""); 
+		 rebate.setText(CommonUtil.conversionDouble(obj.getRebate())+"");  
+		 rebate_left.setText(CommonUtil.conversionDouble(obj.getRebate_left())+""); 
+		 member_count.setText(CommonUtil.conversionInt(obj.getMember_count())+""); 
+	}
+
+	@Override
+	public void onCheckedChanged(RadioGroup group, int checkedId) {
+		View child = myteam_rg.findViewById(checkedId);
+		index = myteam_rg.indexOfChild(child);
+
+		Fragment fragment = fragments.get(index);
+
+		replaceFrament(fragment);
+		
+	}
+	
+	private void replaceFrament(Fragment fragment) {
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.myteam_container, fragment).commit();
+	}
+
+	@Override
+	public void refreshShop(List<UserBean> list) {
+		// TODO Auto-generated method stub
+		my_TeamFragment.refresh(list);
+	}
+
+	@Override
+	public void refreshTeam(List<DShop> list) {
+		// TODO Auto-generated method stub
+		my_ShopFragment.refresh(list);
+	}
+	
+}

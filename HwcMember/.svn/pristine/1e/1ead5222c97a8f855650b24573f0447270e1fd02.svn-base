@@ -1,0 +1,156 @@
+package com.hwc.member.view.activity.my;
+
+import android.content.Intent;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+
+import com.huimodel.api.base.Address;
+import com.hwc.member.R;
+import com.hwc.member.common.Constant;
+import com.hwc.member.presenter.UpdateAddressPresenter;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.view.activity.MapActivity;
+import com.hwc.member.view.activity.view.IUpdateAddressView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.SimpleHUD;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.hwc.member.widget.header.HeadView.Dir;
+import com.hwc.member.widget.header.HeadView.OnHeadClickListener;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+@ContentView(R.layout.activity_update_address)
+public class UpdateAddressActivity extends BaseActivity implements IUpdateAddressView {
+
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.name)
+	private EditText name_et;
+	@ViewInject(R.id.phone)
+	private EditText phone_et;
+	@ViewInject(R.id.address)
+	private EditText address_et;
+	@ViewInject(R.id.rg)
+	private RadioGroup rg;
+	@ViewInject(R.id.isdefault_rb)
+	private RadioButton isdefault_rb;
+	@ViewInject(R.id.nodefault_rb)
+	private RadioButton nodefault_rb;
+	private long id;
+	private boolean flag = true;
+	
+	private UpdateAddressPresenter presenter = new UpdateAddressPresenter(this);
+	
+	@Override
+	protected void initView() {
+		id = getIntent().getLongExtra("0", -1);
+		presenter.findAddressById(id);
+	}
+
+	@Override
+	protected void initListener() {
+		setBack();
+		header.setOnHeadClickListener(new OnHeadClickListener() {
+			
+			@Override
+			public void onHeadClick(Dir dir, View view) {
+				switch (dir) {
+				case Right:
+					DialogUtil.showDialog(Constant.Dialog, "是否要删除收货地址", Gravity.CENTER, context, null, new OnClickListener() {
+						
+						@Override
+						public void onClick(DialogPlus dialog, View view) {
+							switch (view.getId()) {
+							case R.id.cancel:
+								break;
+
+							case R.id.confirm:
+								presenter.delAddress(id);
+								break;
+							}
+							dialog.dismiss();
+						}
+					}, null);
+					
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+		rg.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				switch (checkedId) {
+				case R.id.isdefault_rb:
+					flag = true;
+					break;
+				case R.id.nodefault_rb:
+					flag = false;
+					break;
+				default:
+					break;
+				}
+			}
+		});
+	}
+
+	@OnClick(R.id.update_bt)
+	public void updateClick(View v){
+		if(isEmpty(getViewValue(name_et), getViewValue(phone_et), getViewValue(address_et))){
+			SimpleHUD.showErrorMessage(context, "请填写完收货信息");
+		}else{
+			presenter.updatelAddress(id, getViewValue(name_et), getViewValue(address_et), getViewValue(phone_et), flag);
+		}
+	}
+
+	@Override
+	public void clearLoadPage() {}
+
+	@Override
+	public void showErrorPage() {}
+
+	@Override
+	public void setAddressData(Address address) {
+		name_et.setText(address.getReceiver_name());
+		phone_et.setText(address.getReceiver_phone());
+		address_et.setText(address.getReceiver_address());
+		if(address.getIsdefault().equals("T")){
+			isdefault_rb.setChecked(true);
+		}else if(address.getIsdefault().equals("F")){
+			nodefault_rb.setChecked(true);
+		}
+	}
+
+	@Override
+	public void finishActivity() {
+		finish();
+	}
+	
+	@OnClick(R.id.map_iv)
+	public void goMap(View v){
+		Intent intent = new Intent(context, MapActivity.class);
+		startActivityForResult(intent, 100);
+	}
+	
+	@Override
+ 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {	
+ 		super.onActivityResult(requestCode, resultCode, data);
+ 		if (requestCode == 100){
+ 			if(resultCode == RESULT_OK){
+ 				String str = data.getStringExtra("addr");
+ 				address_et.setText(str);
+ 			}
+ 		}
+	}
+	
+}

@@ -1,0 +1,13 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+/**
+ * @author FZ
+ */
+public interface ICaptureView extends LoadDataView {
+
+	void Success();
+	
+}

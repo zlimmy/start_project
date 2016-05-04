@@ -1,0 +1,537 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Paint;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.huimodel.api.base.DProduct;
+import com.hwc.member.R;
+import com.hwc.member.application.App;
+import com.hwc.member.bean.ShoppingCartBean;
+import com.hwc.member.common.Constant;
+import com.hwc.member.util.DecimalUtil;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.OnShoppingCartChangeListener;
+import com.hwc.member.util.ShoppingCartBiz;
+import com.hwc.member.util.ToastUtil;
+import com.hwc.member.view.activity.order.ConfirmOrderActivity;
+import com.hwc.member.view.activity.product.NewProductInfoActivity;
+import com.hwc.member.view.activity.shop.ShopIndexActivity;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class ShopCarAdapter extends BaseExpandableListAdapter {
+
+	private Context mContext;
+	private List<ShoppingCartBean> mListGoods = new ArrayList<ShoppingCartBean>();
+	private OnShoppingCartChangeListener mChangeListener;
+	private boolean isSelectAll = false;
+	private BitmapUtils bitmapUtils;
+
+	private Callback callback;
+
+	public ShopCarAdapter(Context context) {
+		mContext = context;
+		this.bitmapUtils = App.bitmapUtils;
+	}
+
+	public void setList(List<ShoppingCartBean> mListGoods) {
+		this.mListGoods = mListGoods;
+		setSettleInfo();
+	}
+
+	public void setOnShoppingCartChangeListener(OnShoppingCartChangeListener changeListener) {
+		this.mChangeListener = changeListener;
+	}
+
+	public View.OnClickListener getAdapterListener() {
+		return listener;
+	}
+
+	@Override
+	public int getGroupCount() {
+		return mListGoods.size();
+	}
+
+	@Override
+	public int getChildrenCount(int groupPosition) {
+		return mListGoods.get(groupPosition).getGoods().size();
+	}
+
+	@Override
+	public Object getGroup(int groupPosition) {
+		return mListGoods.get(groupPosition);
+	}
+
+	@Override
+	public Object getChild(int groupPosition, int childPosition) {
+		return mListGoods.get(groupPosition).getGoods().get(childPosition);
+	}
+
+	@Override
+	public long getGroupId(int groupPosition) {
+		return groupPosition;
+	}
+
+	@Override
+	public long getChildId(int groupPosition, int childPosition) {
+		return childPosition;
+	}
+
+	@Override
+	public boolean hasStableIds() {
+		return false;
+	}
+
+	@Override
+	public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+		GroupViewHolder holder = null;
+		if (convertView == null) {
+			holder = new GroupViewHolder();
+			convertView = LayoutInflater.from(mContext).inflate(R.layout.item_elv_group_test, parent, false);
+			holder.tvGroup = (TextView) convertView.findViewById(R.id.tvShopNameGroup);
+			holder.tvEdit = (TextView) convertView.findViewById(R.id.tvEdit);
+			holder.ivCheckGroup = (ImageView) convertView.findViewById(R.id.ivCheckGroup);
+			holder.rlCheckGroup = (RelativeLayout) convertView.findViewById(R.id.rlCheckGroup);
+			convertView.setTag(holder);
+		} else {
+			holder = (GroupViewHolder) convertView.getTag();
+		}
+		if (mListGoods.get(groupPosition).getNick() == null || mListGoods.get(groupPosition).getNick().equals("")) {
+			holder.tvGroup.setText("店铺名称");
+		} else {
+			holder.tvGroup.setText(mListGoods.get(groupPosition).getNick());
+		}
+
+		ShoppingCartBiz.checkItem(mListGoods.get(groupPosition).isGroupSelected(), holder.ivCheckGroup);
+		boolean isEditing = mListGoods.get(groupPosition).isEditing();
+		if (isEditing) {
+			holder.tvEdit.setText("完成");
+		} else {
+			holder.tvEdit.setText("编辑");
+		}
+		holder.rlCheckGroup.setTag(groupPosition);
+		holder.tvGroup.setTag(mListGoods.get(groupPosition).getSid());
+		holder.rlCheckGroup.setOnClickListener(listener);
+		holder.tvEdit.setTag(groupPosition);
+		holder.tvEdit.setOnClickListener(listener);
+		holder.tvGroup.setOnClickListener(listener);
+		return convertView;
+	}
+
+	/**
+	 * child view
+	 */
+	@Override
+	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+		ChildViewHolder holder = null;
+		if (convertView == null) {
+			holder = new ChildViewHolder();
+			convertView = LayoutInflater.from(mContext).inflate(R.layout.item_elv_child_test, parent, false);
+			holder.tvChild = (TextView) convertView.findViewById(R.id.tvItemChild);
+			holder.tvDel = (TextView) convertView.findViewById(R.id.tvDel);
+			holder.ivCheckGood = (ImageView) convertView.findViewById(R.id.ivCheckGood);
+			holder.rlCheckGood = (RelativeLayout) convertView.findViewById(R.id.rlCheckGood);
+			holder.rlEditStatus = (RelativeLayout) convertView.findViewById(R.id.rlEditStatus);
+			holder.llGoodInfo = (LinearLayout) convertView.findViewById(R.id.llGoodInfo);
+			holder.ivAdd = (ImageView) convertView.findViewById(R.id.ivAdd);
+			holder.ivReduce = (ImageView) convertView.findViewById(R.id.ivReduce);
+			holder.tvGoodsParam = (TextView) convertView.findViewById(R.id.tvGoodsParam);
+			holder.tvPriceNew = (TextView) convertView.findViewById(R.id.tvPriceNew);
+			holder.tvPriceOld = (TextView) convertView.findViewById(R.id.tvPriceOld);
+			holder.tvPriceOld.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);// 数字被划掉效果
+			holder.tvNum = (TextView) convertView.findViewById(R.id.tvNum);
+			holder.tvNum2 = (TextView) convertView.findViewById(R.id.tvNum2);
+			holder.ivGoods = (ImageView) convertView.findViewById(R.id.ivGoods);
+			holder.state_tv = (TextView) convertView.findViewById(R.id.state_tv);
+			holder.state_tv.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);// 数字被划掉效果
+			convertView.setTag(holder);
+		} else {
+			holder = (ChildViewHolder) convertView.getTag();
+		}
+		DProduct goods = mListGoods.get(groupPosition).getGoods().get(childPosition);
+
+		boolean isChildSelected = mListGoods.get(groupPosition).getGoods().get(childPosition).isChildSelected();
+		boolean isEditing = goods.isEditing();
+		String imgurl = goods.getImageurl();
+		String priceNew = "";
+		String priceOld = "";
+		if (goods.getProminfo() != null) {
+			priceNew = "¥" + DecimalUtil.format(goods.getProminfo().getProm_price());
+			priceOld = "¥" + goods.getPrice();
+		} else {
+			priceNew = "¥" + DecimalUtil.format(goods.getPrice());
+			priceOld = "";
+		}
+		// String num = goods.getNumber();
+		String pdtDesc = "";
+		if (goods.getPsuite() != null) {
+			pdtDesc = goods.getPsuite().getDescript();
+		} else {
+			pdtDesc = goods.getDesc();
+		}
+
+		String goodName = mListGoods.get(groupPosition).getGoods().get(childPosition).getName();
+
+
+		try {
+			if (imgurl != null && !imgurl.equals("")) {
+				bitmapUtils.display(holder.ivGoods, imgurl + Constant.IMAGE_SIZE_100);
+			} else {
+				bitmapUtils.display(holder.ivGoods, imgurl);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		holder.rlCheckGood.setTag(groupPosition + "," + childPosition);
+		holder.tvChild.setText(goodName);
+		holder.tvPriceNew.setText(priceNew);
+		if (null == goods.getProminfo()) {
+			holder.tvPriceOld.setVisibility(View.INVISIBLE);
+		} else {
+			holder.tvPriceOld.setText(priceOld);
+		}
+		holder.tvNum.setText("X " + goods.getSale_num());
+		holder.tvNum2.setText(goods.getSale_num() + "");
+		// holder.tvNum.setText("X " + num);
+		// holder.tvNum2.setText(num);
+		holder.tvGoodsParam.setText(pdtDesc);
+
+		holder.ivAdd.setTag(goods);
+		holder.ivReduce.setTag(goods);
+		holder.llGoodInfo.setTag(goods);
+		holder.llGoodInfo.setTag(goods);
+		holder.tvDel.setTag(groupPosition + "," + childPosition);
+		holder.tvDel.setTag(groupPosition + "," + childPosition);
+
+		ShoppingCartBiz.checkItem(isChildSelected, holder.ivCheckGood);
+		if (isEditing) {
+			holder.llGoodInfo.setVisibility(View.GONE);
+			holder.rlEditStatus.setVisibility(View.VISIBLE);
+		} else {
+			holder.llGoodInfo.setVisibility(View.VISIBLE);
+			holder.rlEditStatus.setVisibility(View.GONE);
+		}
+
+		if(goods.getStatus().equals("expire")){ //商品已过期
+			holder.state_tv.setText("该商品已过期");
+		}else{
+			holder.state_tv.setVisibility(View.GONE);
+		}
+		holder.rlCheckGood.setOnClickListener(listener);
+		holder.tvDel.setOnClickListener(listener);
+		holder.ivAdd.setOnClickListener(listener);
+		holder.ivReduce.setOnClickListener(listener);
+		holder.llGoodInfo.setOnClickListener(listener);
+		return convertView;
+	}
+
+	@Override
+	public boolean isChildSelectable(int i, int i1) {
+		return false;
+	}
+
+	View.OnClickListener listener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			switch (v.getId()) {
+			// main
+			case R.id.selectall_iv:
+				isSelectAll = ShoppingCartBiz.selectAll(mListGoods, isSelectAll, (ImageView) v);
+				setSettleInfo();
+				notifyDataSetChanged();
+				break;
+			case R.id.settle_bt:
+				if (ShoppingCartBiz.hasSelectedGoods(mListGoods)) {
+					int flag = 0;
+					for (int i = 0; i < mListGoods.size(); i++) {
+						if (mListGoods.get(i).isGroupSelected()) {
+							flag += 1;
+						} else {
+							int flag2 = 0;
+							for (int j = 0; j < mListGoods.get(i).getGoods().size(); j++) {
+								if (mListGoods.get(i).getGoods().get(j).isChildSelected()) {
+									flag2 += 1;
+								}
+							}
+							if (flag2 >= 1) {
+								flag += 1;
+							}
+						}
+					}
+					if (1 == flag) {
+						List<DProduct> products = new ArrayList<DProduct>();
+						for (int k = 0; k < mListGoods.size(); k++) {
+							for (int h = 0; h < mListGoods.get(k).getGoods().size(); h++) {
+								System.out.println("cid--------" + mListGoods.get(k).getGoods().get(h).getCart_id());
+								mListGoods.get(k).setCartid(mListGoods.get(k).getGoods().get(h).getCart_id());
+								if (mListGoods.get(k).getGoods().get(h).isChildSelected()) {
+									mListGoods.get(k).getGoods().get(h).setCart_id(mListGoods.get(k).getCartid());
+									products.add(mListGoods.get(k).getGoods().get(h));
+
+								}
+							}
+						}
+						// Toast.makeText(mContext, "结算跳转," + products.size() +
+						// "件商品", Toast.LENGTH_SHORT).show();
+						Intent intent = new Intent();
+
+						intent.setClass(mContext, ConfirmOrderActivity.class);
+						intent.putExtra("0", "2");
+						intent.putExtra("1", (Serializable) products);
+						mContext.startActivity(intent);
+					} else {
+						Toast.makeText(mContext, "暂时只支持一次结算同一家店的商品", Toast.LENGTH_SHORT).show();
+					}
+
+				} else {
+					Toast.makeText(mContext, "亲，先选择商品！", Toast.LENGTH_SHORT).show();
+				}
+				// group
+				break;
+			case R.id.tvEdit:// 切换界面，属于特殊处理，假如没打算切换界面，则不需要这块代码
+				int groupPosition2 = Integer.parseInt(String.valueOf(v.getTag()));
+				boolean isEditing = !(mListGoods.get(groupPosition2).isEditing());
+				mListGoods.get(groupPosition2).setIsEditing(isEditing);
+				for (int i = 0; i < mListGoods.get(groupPosition2).getGoods().size(); i++) {
+					mListGoods.get(groupPosition2).getGoods().get(i).setIsEditing(isEditing);
+				}
+				notifyDataSetChanged();
+				break;
+			case R.id.rlCheckGroup:
+				int groupPosition3 = Integer.parseInt(String.valueOf(v.getTag()));
+				isSelectAll = ShoppingCartBiz.selectGroup(mListGoods, groupPosition3);
+				selectAll();
+				setSettleInfo();
+				notifyDataSetChanged();
+				break;
+			// child
+			case R.id.rlCheckGood:
+
+
+				String tag = String.valueOf(v.getTag());
+				if (tag.contains(",")) {
+					String s[] = tag.split(",");
+					int groupPosition = Integer.parseInt(s[0]);
+					int childPosition = Integer.parseInt(s[1]);
+				//	Toast.makeText(mContext,"选择groupPosition"+groupPosition+"--childPosition"+childPosition,111).show();
+					if(mListGoods.get(groupPosition).getGoods().get(childPosition).getStatus().equals("expire")){
+						Toast.makeText(mContext,"该商品已经过期，请重新添加!"+childPosition,111).show();
+					}else {
+						isSelectAll = ShoppingCartBiz.selectOne(mListGoods, groupPosition, childPosition);
+						selectAll();
+						setSettleInfo();
+						notifyDataSetChanged();
+					}
+
+				}
+				break;
+			case R.id.tvDel:
+				String tagPos = String.valueOf(v.getTag());
+				if (tagPos.contains(",")) {
+					String s[] = tagPos.split(",");
+					int groupPosition = Integer.parseInt(s[0]);
+					int childPosition = Integer.parseInt(s[1]);
+					showDelDialog(groupPosition, childPosition);
+				}
+				break;
+			case R.id.ivAdd:
+				DProduct dp_add = (DProduct) v.getTag();
+				dp_add.setSale_num(dp_add.getSale_num() + 1);
+				callback.upd(dp_add, "add");
+				setSettleInfo();
+				break;
+			case R.id.ivReduce:
+				DProduct dp_reduce = (DProduct) v.getTag();
+				if (dp_reduce.getSale_num() <= 1) {
+					ToastUtil.show("购物车商品不能少于1");
+				} else {
+					dp_reduce.setSale_num(dp_reduce.getSale_num() - 1);
+					callback.upd(dp_reduce, "reduce");
+					setSettleInfo();
+				}
+				break;
+			case R.id.llGoodInfo:
+				DProduct goods = (DProduct) v.getTag();
+				Intent intent = new Intent(mContext, NewProductInfoActivity.class);
+				intent.putExtra("0", goods.getPid());
+				intent.putExtra("1", goods.getShop_id());
+				intent.putExtra("2", goods.getName());
+				mContext.startActivity(intent);
+				break;
+			case R.id.tvShopNameGroup:
+				Long sid = (Long) v.getTag();
+				Intent intent2 = new Intent(mContext, ShopIndexActivity.class);
+				intent2.putExtra("0", sid);
+				mContext.startActivity(intent2);
+				break;
+			}
+		}
+	};
+
+	private void selectAll() {
+		if (mChangeListener != null) {
+			mChangeListener.onSelectItem(isSelectAll);
+		}
+	}
+
+	private void setSettleInfo() {
+		String[] infos = ShoppingCartBiz.getShoppingCount(mListGoods);
+		// 删除或者选择商品之后，需要通知结算按钮，更新自己的数据；
+		if (mChangeListener != null && infos != null) {
+			mChangeListener.onDataChange(infos[0], infos[1]);
+		}
+	}
+
+	private void showDelDialog(final int groupPosition, final int childPosition) {
+
+		DialogUtil.showRabbitCustomDialog(mContext, "狠心删除该商品？", "取消", "确定", new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				switch (which) {
+				case 1:
+					DialogUtil.dismissRabbitFragment(mContext);
+					break;
+				case 2:
+					DProduct dp = mListGoods.get(groupPosition).getGoods().get(childPosition);
+					// ShoppingCartBiz.delGood(String.valueOf(pid));
+					callback.del(dp, groupPosition, childPosition);
+					DialogUtil.dismissRabbitFragment(mContext);
+					break;
+				default:
+
+					break;
+				}
+			}
+		});
+
+//		DialogUtil.showDialog(Constant.Dialog, "确认删除该商品吗?", Gravity.CENTER, mContext, null, new OnClickListener() {
+//
+//			@Override
+//			public void onClick(DialogPlus dialog, View view) {
+//				switch (view.getId()) {
+//				case R.id.cancel:
+//					break;
+//
+//				case R.id.confirm:
+//					DProduct dp = mListGoods.get(groupPosition).getGoods().get(childPosition);
+//					// ShoppingCartBiz.delGood(String.valueOf(pid));
+//					callback.del(dp, groupPosition, childPosition);
+//					// delGoods(groupPosition, childPosition);
+//					// setSettleInfo();
+//					// notifyDataSetChanged();
+//					break;
+//				}
+//				dialog.dismiss();
+//			}
+//		}, null);
+	}
+
+	public void delGoods(int groupPosition, int childPosition) {
+		mListGoods.get(groupPosition).getGoods().remove(childPosition);
+		if (mListGoods.get(groupPosition).getGoods().size() == 0) {
+			mListGoods.remove(groupPosition);
+		}
+		setSettleInfo();
+		notifyDataSetChanged();
+	}
+
+	class GroupViewHolder {
+		TextView tvGroup;
+		TextView tvEdit;
+		ImageView ivCheckGroup;
+		RelativeLayout rlCheckGroup;
+	}
+
+	class ChildViewHolder {
+		/** 商品名称 */
+		TextView tvChild;
+		/** 商品规格 */
+		TextView tvGoodsParam;
+		/** 选中 */
+		ImageView ivCheckGood;
+		RelativeLayout rlCheckGood;
+		/** 商品图片 */
+		ImageView ivGoods;
+		/** 非编辑状态 */
+		LinearLayout llGoodInfo;
+		/** 编辑状态 */
+		RelativeLayout rlEditStatus;
+		/** +1 */
+		ImageView ivAdd;
+		/** -1 */
+		ImageView ivReduce;
+		/** 删除 */
+		TextView tvDel;
+		/** 新价格 */
+		TextView tvPriceNew;
+		/** 旧价格 */
+		TextView tvPriceOld;
+		/** 商品状态的数量 */
+		TextView tvNum;
+		/** 编辑状态的数量 */
+		TextView tvNum2;
+		TextView state_tv;
+	}
+
+	/** 回调接口 **/
+	public interface Callback {
+
+		/** 修改购物车商品 **/
+		void upd(DProduct obj, String action);
+
+		/** 删除购物车商品 **/
+		void del(DProduct obj, int groupPosition, int childPosition);
+	}
+
+	/** 注册监听接口 **/
+	public void registerCallback(Callback callback) {
+		this.callback = callback;
+	}
+
+	public void retureData(DProduct obj, String action) {
+		for (int i = 0; i < mListGoods.size(); i++) {
+			if (mListGoods.get(i).getSid() == obj.getShop_id()) {
+				for (int j = 0; j < mListGoods.get(i).getGoods().size(); j++) {
+					if (mListGoods.get(i).getGoods().get(j).getPid() == obj.getPid()) {
+						int num = 0;
+						if ("add".equals(action)) {
+							num = obj.getSale_num() - 1;
+							obj.setSale_num(num);
+							mListGoods.get(i).getGoods().set(j, obj);
+						} else if ("reduce".equals(action)) {
+							num = obj.getSale_num() + 1;
+							obj.setSale_num(num);
+							mListGoods.get(i).getGoods().set(j, obj);
+						}
+					}
+				}
+			}
+		}
+		setSettleInfo();
+		notifyDataSetChanged();
+	}
+
+}

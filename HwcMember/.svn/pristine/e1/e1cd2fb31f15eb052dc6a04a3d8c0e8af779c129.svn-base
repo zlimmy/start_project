@@ -1,0 +1,76 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.OrderDelivery;
+
+public class OrderUpdateRequest extends OrderCreateRequest {
+
+	/**
+	 * orders.rid
+	 */
+	private Long rid;
+	private OrderDelivery delivery;
+	private Boolean inStock;
+	private String client_ip;
+	private String transaction_no;
+	private String payment_no;
+	private String pay_channel;
+
+	public Long getRid() {
+		return rid;
+	}
+
+	public void setRid(Long rid) {
+		this.rid = rid;
+	}
+
+	public Boolean getInStock() {
+		return inStock;
+	}
+
+	public void setInStock(Boolean inStock) {
+		this.inStock = inStock;
+	}
+
+	public OrderDelivery getDelivery() {
+		return delivery;
+	}
+
+	public void setDelivery(OrderDelivery delivery) {
+		this.delivery = delivery;
+	}
+
+	public String getClient_ip() {
+		return client_ip;
+	}
+
+	public void setClient_ip(String client_ip) {
+		this.client_ip = client_ip;
+	}
+
+	public String getTransaction_no() {
+		return transaction_no;
+	}
+
+	public void setTransaction_no(String transaction_no) {
+		this.transaction_no = transaction_no;
+	}
+
+	public String getPayment_no() {
+		return payment_no;
+	}
+
+	public void setPayment_no(String payment_no) {
+		this.payment_no = payment_no;
+	}
+
+	public String getPay_channel() {
+		return pay_channel;
+	}
+
+	public void setPay_channel(String pay_channel) {
+		this.pay_channel = pay_channel;
+	}
+
+	 
+
+}

@@ -1,0 +1,31 @@
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.DHwcpay;
+import com.huimodel.api.base.DPrizeCoupon;
+import com.huimodel.api.base.ResponseBase;
+
+public class OrderGetPayInfoResponse  extends ResponseBase {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2093617166337330910L;
+	private List<DPrizeCoupon>coupons;
+	private DHwcpay hwcpay;
+	public List<DPrizeCoupon> getCoupons() {
+		return coupons;
+	}
+	public void setCoupons(List<DPrizeCoupon> coupons) {
+		this.coupons = coupons;
+	}
+	public DHwcpay getHwcpay() {
+		return hwcpay;
+	}
+	public void setHwcpay(DHwcpay hwcpay) {
+		this.hwcpay = hwcpay;
+	}
+	
+	
+}

@@ -1,0 +1,3 @@
+include ':baiduWalletRefactorLib'
+include ':huiModel'
+include ':hwcMember'

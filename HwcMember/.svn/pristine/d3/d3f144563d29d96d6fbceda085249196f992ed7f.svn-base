@@ -1,0 +1,20 @@
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.Discovery;
+import com.huimodel.api.base.ResponseBase;
+
+public class DiscoveryDetailResponse extends ResponseBase {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Discovery discovery;
+
+	public Discovery getDiscovery() {
+		return discovery;
+	}
+
+	public void setDiscovery(Discovery discovery) {
+		this.discovery = discovery;
+	}
+}

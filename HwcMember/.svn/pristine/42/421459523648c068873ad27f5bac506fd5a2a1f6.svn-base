@@ -1,0 +1,60 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white" >
+
+    <com.hwc.member.widget.header.LXHeadView
+        xmlns:my="http://schemas.android.com/apk/res/com.hwc.member"
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        my:centertitle="填写验证码" />
+    
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:text="我们已发送验证码短信到这个号码："
+        android:gravity="center"
+        android:textColor="@color/gray4"/>
+    
+    <TextView 
+        android:id="@+id/phone_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:text="000000000"
+        android:textSize="@dimen/text_18"
+        android:gravity="center"/>
+    
+    <com.hwc.member.widget.EditDelText 
+        android:id="@+id/code_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="请填写验证码"
+        android:inputType="number"
+        android:drawableRight="@drawable/del_edit"
+        android:layout_margin="12dp"/>
+    
+    <Button 
+        android:id="@+id/getcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_gravity="center_horizontal"
+        android:text="收不到验证码？"
+        android:textColor="@color/gray4"
+        android:textSize="@dimen/text_12"/>
+    
+    <Button 
+        android:id="@+id/bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/XiaYiBu"
+        android:textColor="@color/white"
+        android:background="@drawable/shape_bt"
+        android:layout_margin="12dp"/>
+
+</LinearLayout>

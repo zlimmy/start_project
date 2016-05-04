@@ -1,0 +1,75 @@
+/**
+ * 
+ */
+package com.huimodel.api.request;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import android.annotation.SuppressLint;
+import com.huimodel.api.base.RequestBase;
+
+/**
+ * @author FZ
+ */
+@SuppressLint("SimpleDateFormat")
+public class ShopsIndicatorsGetRequest extends RequestBase {
+	
+	private String begin = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+	private String end = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+	
+	private String indicators;
+	private List<Long>shop_ids;
+	/**
+	 * 指标单位 IndicatorsConstantsBean
+	 */
+	private String indicatorsUnit="sday";
+	
+	private boolean ignoreShop = true;
+	
+	public String getBegin() {
+		return begin;
+	}
+	public void setBegin(String begin) {
+		this.begin = begin;
+	}
+	public String getEnd() {
+		return end;
+	}
+	public void setEnd(String end) {
+		this.end = end;
+	}
+	public String getIndicators() {
+		return indicators;
+	}
+	public void setIndicators(String indicators) {
+		this.indicators = indicators;
+	}
+	public List<Long> getShop_ids() {
+		return shop_ids;
+	}
+	public void setShop_ids(List<Long> shop_ids) {
+		this.shop_ids = shop_ids;
+	}
+	public String getIndicatorsUnit() {
+		return indicatorsUnit;
+	}
+	public void setIndicatorsUnit(String indicatorsUnit) {
+		this.indicatorsUnit = indicatorsUnit;
+	}
+	/**
+	 * @return the ignoreShop
+	 */
+	public boolean isIgnoreShop() {
+		return ignoreShop;
+	}
+	/**
+	 * @param ignoreShop the ignoreShop to set
+	 */
+	public void setIgnoreShop(boolean ignoreShop) {
+		this.ignoreShop = ignoreShop;
+	}
+	
+	
+}

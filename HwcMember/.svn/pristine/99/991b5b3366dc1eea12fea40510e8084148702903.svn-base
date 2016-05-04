@@ -1,0 +1,195 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DHwcpayDetail;
+import com.huimodel.api.response.AccountItemsSearchResponse;
+import com.hwc.member.R;
+import com.hwc.member.application.App;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.view.activity.order.OrderDetailsActivity;
+import com.hwc.member.widget.CircleImageView;
+import com.lidroid.xutils.BitmapUtils;
+
+
+/**
+ * @author FZ
+ */
+public class WalletAdapter extends BaseExpandableListAdapter {
+
+	private List<AccountItemsSearchResponse> items;
+	private Context context;
+	private BitmapUtils bitmapUtils;
+	
+	public WalletAdapter(Context context, List<AccountItemsSearchResponse> items){
+		this.context = context;
+		this.bitmapUtils  = App.bitmapUtils;
+		this.items = items;
+	}
+	
+	@Override
+	public int getGroupCount() {
+		return items.size();
+	}
+
+	@Override
+	public int getChildrenCount(int groupPosition) {
+		AccountItemsSearchResponse key = items.get(groupPosition);
+        int size=key.getEntities().size();
+        return size;
+	}
+
+	@Override
+	public Object getGroup(int groupPosition) {
+		return items.get(groupPosition);
+	}
+
+	@Override
+	public Object getChild(int groupPosition, int childPosition) {
+		AccountItemsSearchResponse key = items.get(groupPosition);
+        return (key.getEntities().get(childPosition));
+	}
+
+	@Override
+	public long getGroupId(int groupPosition) {
+		return groupPosition;
+	}
+
+	@Override
+	public long getChildId(int groupPosition, int childPosition) {
+		return childPosition;
+	}
+
+	@Override
+	public boolean hasStableIds() {
+		return true;
+	}
+
+	@Override
+	public View getGroupView(int groupPosition, boolean isExpanded,
+			View convertView, ViewGroup parent) {
+		if (convertView == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.item_wallet_parent, null);
+        }
+		
+		
+        TextView tv = (TextView) convertView.findViewById(R.id.parent_tv);
+        tv.setText(items.get(groupPosition).getGroup() + "月");
+        return convertView;
+	}
+
+	@Override
+	public View getChildView(int groupPosition, int childPosition,
+			boolean isLastChild, View convertView, ViewGroup parent) {
+		AccountItemsSearchResponse key = items.get(groupPosition);
+		final DHwcpayDetail info = key.getEntities().get(childPosition);
+        if (convertView == null) {
+            LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.item_wallet_child, null);
+        }
+        
+        final RelativeLayout des_rl = (RelativeLayout)convertView.findViewById(R.id.des_rl);
+        ViewTransformUtil.layoutParams(des_rl, des_rl.getLayoutParams(),LayoutParams.MATCH_PARENT,102);
+        
+        TextView date_tv = (TextView) convertView.findViewById(R.id.date_tv);
+        TextView time_tv = (TextView) convertView.findViewById(R.id.time_tv);
+        TextView money_tv = (TextView) convertView.findViewById(R.id.money_tv);
+        TextView name_tv = (TextView) convertView.findViewById(R.id.name_tv);
+        ImageView more_iv = (ImageView) convertView.findViewById(R.id.more_iv); 
+        CircleImageView iv = (CircleImageView) convertView.findViewById(R.id.iv);
+        
+        
+        ViewTransformUtil.layoutParams(iv, iv.getLayoutParams(), 74, 74);
+//        
+//    	public  static String RB ="SP  购物";
+//    	public  static  PAYFLAG_REBATE = new FsItem("RB", "返利");
+//    	public  static  PAYFLAG_ADVERTISEMENT=new FsItem("AD", "广告");
+//    	public  static  PAYFLAG_REFUND=new FsItem("RF", "退款");
+//    	public  static  PAYFLAG_BRIBERY=new FsItem("BR", "红包");
+//    	public  static  PAYFLAG_WITHDRAWAL=new FsItem("WD", "取款");
+//    	public  static  PAYFLAG_DEPOSIT=new FsItem("DP", "储值");
+        
+        if(info.getFlag().equals("SP")){//购物
+        	iv.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_xf));
+        	more_iv.setVisibility(View.VISIBLE);
+        	des_rl.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Intent intent = new Intent(context, OrderDetailsActivity.class);
+					intent.putExtra("0", info.getTid());
+					context.startActivity(intent);
+				}
+			});
+        	
+        }else if(info.getFlag().equals("RB")){
+        	des_rl.setClickable(false);
+        	more_iv.setVisibility(View.GONE);
+        	iv.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_fl));
+        }else if(info.getFlag().equals("AD")){
+        	des_rl.setClickable(false);
+        	more_iv.setVisibility(View.GONE);
+        	iv.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_hzq));
+        }else if(info.getFlag().equals("RF")){
+        	des_rl.setClickable(false);
+        	more_iv.setVisibility(View.GONE);
+        	iv.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_tk));
+        	des_rl.setClickable(false);
+        }else if(info.getFlag().equals("WD")){
+        	more_iv.setVisibility(View.GONE);
+        	iv.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_qx));
+        	des_rl.setClickable(false);
+        }else if(info.getFlag().equals("DP")){
+        	more_iv.setVisibility(View.GONE);
+        	iv.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_cz));
+        	des_rl.setClickable(false);
+        }
+        ViewTransformUtil.layoutParams(iv, iv.getLayoutParams(),74,74);
+         
+        
+        try {
+            String time = CommonUtil.unixTimestampToDate(info.getCreated());
+            String date = time.substring(5, 10);
+            if(date.charAt(0) == '0'){
+            	date = date.substring(1);
+            }
+            date_tv.setText(date);
+            time_tv.setText(time.substring(11, 16));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+        
+        double money = info.getCredit() - info.getCharge();
+        
+        if(money>0){
+        	 money_tv.setText("+"+CommonUtil.conversionDouble(money));
+        }else{
+        	 money_tv.setText(CommonUtil.conversionDouble(money));
+        }
+       
+        name_tv.setText(info.getTitle());
+        return convertView;
+	}
+
+	@Override
+	public boolean isChildSelectable(int groupPosition, int childPosition) {
+		return true;
+	}
+
+}

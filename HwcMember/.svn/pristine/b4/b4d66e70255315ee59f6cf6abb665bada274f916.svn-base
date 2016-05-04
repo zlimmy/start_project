@@ -1,0 +1,102 @@
+package com.hwc.member.view.activity.my;
+
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.MessageAdapter;
+import com.hwc.member.common.Constant;
+import com.hwc.member.presenter.MessagePresenter;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.view.activity.view.IMessageView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.hwc.member.widget.header.HeadView.Dir;
+import com.hwc.member.widget.header.HeadView.OnHeadClickListener;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+@ContentView(R.layout.message_common)
+public class MessageCommonActivity extends BaseActivity implements IMessageView {
+
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.message_lv)
+	private ListView message_lv;
+    private int type;
+    private String title;
+	@ViewInject(R.id.load_page)
+	private View load_page;
+	@ViewInject(R.id.nodata_page)
+	private View nodata_page;
+	private MessagePresenter presenter = new MessagePresenter(this);
+	@ViewInject(R.id.nodata_tv)
+	private TextView nodata_tv;
+	@ViewInject(R.id.nodata_but)
+	private Button nodata_but;
+	@Override
+	protected void initView() {
+		setBack();
+		type = getIntent().getIntExtra("0", -1);
+		title = getIntent().getStringExtra("1");
+		presenter.setListData(type);
+		header.setTitle(title);
+		
+	}
+
+	@Override
+	protected void initListener() {
+		header.setOnHeadClickListener(new OnHeadClickListener() {
+			@Override
+			public void onHeadClick(Dir dir, View view) {
+				switch (dir) {
+				case Right:
+					DialogUtil.showDialog(Constant.Dialog, "确定清空消息吗？", Gravity.CENTER, context, null, new OnClickListener() {
+						@Override
+						public void onClick(DialogPlus dialog, View view) {
+							switch (view.getId()) {
+							case R.id.cancel:
+								break;									
+							case R.id.confirm:
+								presenter.clearData(type);
+								presenter.setListData(type);
+								break;
+							}
+							dialog.dismiss();
+						}
+					}, null);
+
+					break;
+				default:
+					break;
+				}
+			}
+		});
+	}
+
+	@Override
+	public void setListAdapter(MessageAdapter adapter) {
+		message_lv.setAdapter(adapter);
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+		GONE(load_page);
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+		
+		VISIBLE(nodata_page);
+		nodata_tv.setText("暂无消息~");
+		nodata_but.setVisibility(View.GONE);
+	}
+
+}

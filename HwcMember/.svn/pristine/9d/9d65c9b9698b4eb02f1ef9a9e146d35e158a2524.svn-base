@@ -1,0 +1,254 @@
+/**
+ * 
+ */
+package com.hwc.member.util;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.provider.MediaStore;
+
+import com.aliyun.mbaas.oss.OSSClient;
+import com.aliyun.mbaas.oss.callback.GetBytesCallback;
+import com.aliyun.mbaas.oss.callback.SaveCallback;
+import com.aliyun.mbaas.oss.model.AccessControlList;
+import com.aliyun.mbaas.oss.model.OSSException;
+import com.aliyun.mbaas.oss.model.TokenGenerator;
+import com.aliyun.mbaas.oss.storage.OSSBucket;
+import com.aliyun.mbaas.oss.storage.OSSData;
+import com.aliyun.mbaas.oss.storage.OSSFile;
+import com.aliyun.mbaas.oss.util.OSSLog;
+import com.aliyun.mbaas.oss.util.OSSToolKit;
+import com.hwc.member.common.Constant;
+
+/**
+ * @author FZ
+ * @date 2015年9月6日
+ */
+public class OSSUtil {
+
+	private static OSSUtil ossUtil;
+	private static OSSBucket sampleBucket;
+	private Callback callback;
+
+	private OSSUtil() {
+	}
+
+	/** 单例 **/
+	public static OSSUtil getInstance() {
+		if (ossUtil == null) {
+			ossUtil = new OSSUtil();
+		}
+		return ossUtil;
+	}
+
+	static {
+		OSSClient.setGlobalDefaultTokenGenerator(new TokenGenerator() { // 设置全局默认加签器
+					@Override
+					public String generateToken(String httpMethod, String md5,
+							String type, String date, String ossHeaders,
+							String resource) {
+
+						String content = httpMethod + "\n" + md5 + "\n" + type
+								+ "\n" + date + "\n" + ossHeaders + resource;
+
+						return OSSToolKit.generateToken(Constant.accessKey,
+								Constant.screctKey, content);
+					}
+				});
+		OSSClient.setGlobalDefaultACL(AccessControlList.PUBLIC_READ); // 设置全局默认bucket访问权限
+		
+//		Date d = TimeUtil.parseDate("2015-09-13 17:37:30", "yyyy-MM-dd HH:mm:ss");
+//		OSSClient.setCustomStandardTimeWithEpochSec(d.getTime()/1000);
+
+	}
+
+	@SuppressLint("HandlerLeak")
+	private Handler handler = new Handler() {
+
+		@Override
+		public void dispatchMessage(android.os.Message msg) {
+			Bundle bundle = msg.getData();
+			switch (msg.what) {
+			case 1:
+				callback.Success(bundle);
+				break;
+			case -1:
+				callback.Failure(bundle);
+				break;
+			default:
+				break;
+			}
+
+		}
+
+	};
+
+	/** 配置OSS **/
+	public void initOSS(Context context) {
+		OSSLog.enableLog(true);
+		OSSClient.setApplicationContext(context); // 传入应用程序context
+	}
+
+	/** 配置Bucket **/
+	public OSSBucket getBucket() {
+		// 开始单个Bucket的设置
+		if (sampleBucket != null) {
+			sampleBucket = null;
+		}
+		sampleBucket = new OSSBucket(Constant.bucketname);
+		sampleBucket.setBucketHostId("oss-cn-hangzhou.aliyuncs.com"); // 可以在这里设置数据中心域名或者cname域名
+		sampleBucket.setBucketACL(AccessControlList.PRIVATE);
+		sampleBucket.setBucketAccessRefer("");
+		return sampleBucket;
+
+	}
+
+	private void sendhandler(String str, String info, int what) {
+		Bundle data = new Bundle();
+		data.putString("key", str);
+		data.putString("info", info);
+		Message message = new Message();
+		message.what = what;
+		message.setData(data);
+		handler.sendMessage(message);
+	}
+
+	/** 下载 **/
+	public void doDownload(OSSBucket bucket, String imgname) throws Exception {
+		OSSData ossData = new OSSData(bucket, imgname);
+		ossData.getInBackground(new GetBytesCallback() {
+
+			@Override
+			public void onProgress(String arg0, int arg1, int arg2) {
+			}
+
+			@Override
+			public void onFailure(String arg0, OSSException arg1) {
+				sendhandler(arg0, arg1.toString(), -1);
+			}
+
+			@Override
+			public void onSuccess(String arg0, byte[] arg1) {
+				sendhandler(arg0, "", 1);
+			}
+		});
+	}
+
+	/** 字节流形式上传 **/
+	public void doUpload(OSSBucket bucket, String imgname, Bitmap bitmap)
+			throws Exception {
+		try {
+
+			OSSData ossData2 = new OSSData(bucket, imgname);
+
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+			ossData2.setData(baos.toByteArray(), "image/png");
+			ossData2.uploadInBackground(new SaveCallback() {
+				@Override
+				public void onProgress(String arg0, int arg1, int arg2) {
+				}
+
+				@Override
+				public void onFailure(String arg0, OSSException arg1) {
+					sendhandler(arg0, arg1.toString(), -1);
+				}
+
+				@Override
+				public void onSuccess(String arg0) {
+					sendhandler(arg0, "", 1);
+				}
+			});
+			baos.close();
+			bitmap.recycle();
+			bitmap = null;
+			ossData2 = null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	/** 文件形式上传 **/
+	public void doUploadFile(String url, OSSBucket bucket, String imgname)
+			throws Exception {
+		OSSFile ossFile = new OSSFile(bucket, imgname);
+
+		ossFile.setUploadFilePath(url, "image/png");
+		ossFile.uploadInBackground(new SaveCallback() {
+
+			@Override
+			public void onProgress(String arg0, int arg1, int arg2) {
+			}
+
+			@Override
+			public void onFailure(String arg0, OSSException arg1) {
+				sendhandler(arg0, arg1.toString(), -1);
+			}
+
+			@Override
+			public void onSuccess(String arg0) {
+				sendhandler(arg0, "", 1);
+			}
+		});
+		
+	}
+
+	/** 回调接口 **/
+	public interface Callback {
+
+		/** oss调用成功回调该函数 **/
+		void Success(Bundle bundle);
+
+		/** oss调用失败回调该函数 **/
+		void Failure(Bundle bundle);
+	}
+
+	/** 注册监听接口 **/
+	public void registerCallback(Callback callback) {
+		this.callback = callback;
+	}
+	
+	/** 获得上传文件路径 **/
+	public String getPath(Intent data, Context context){
+		@SuppressWarnings("unused")
+		Bitmap bm = null;
+		// 外界的程序访问ContentProvider所提供数据 可以通过ContentResolver接口
+		ContentResolver resolver = context.getContentResolver();
+		try {
+			Uri originalUri = data.getData(); // 获得图片的uri
+
+			bm = MediaStore.Images.Media.getBitmap(resolver, originalUri); // 显得到bitmap图片
+
+			String[] proj = { MediaStore.Images.Media.DATA };
+			// 好像是android多媒体数据库的封装接口，具体的看Android文档
+			@SuppressWarnings("deprecation")
+			Cursor cursor = ((Activity) context).managedQuery(originalUri, proj, null, null,
+					null);
+			// 按我个人理解 这个是获得用户选择的图片的索引值
+			int column_index = cursor
+					.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+			// 将光标移至开头 ，这个很重要，不小心很容易引起越界
+			cursor.moveToFirst();
+			// 最后根据索引值获取图片路径
+			String path = cursor.getString(column_index);
+			
+			return path;
+		} catch (IOException e) {
+
+		}
+		return null;
+	}
+}

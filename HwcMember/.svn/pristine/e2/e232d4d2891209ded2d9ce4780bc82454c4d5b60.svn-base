@@ -1,0 +1,187 @@
+package com.hwc.member.view.activity.shop;
+
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.huimodel.api.response.ShopInfoResponse;
+import com.hwc.member.R;
+import com.hwc.member.common.Member;
+import com.hwc.member.presenter.ContactSellerPresenter;
+import com.hwc.member.util.BitmapUtil;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.IntentUtil;
+import com.hwc.member.util.ScreenUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.view.activity.DialogLoginActivity;
+import com.hwc.member.view.activity.view.IContactSellerView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.CircleImageView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+@ContentView(R.layout.activity_shop_detail)
+public class NewShopDetailsActivity extends BaseActivity implements IContactSellerView {
+
+	@ViewInject(R.id.shoplogo_iv)
+	private CircleImageView shoplogo_iv;
+	@ViewInject(R.id.shopname_tv)
+	private TextView shopname_tv;
+	@ViewInject(R.id.fans_tv)
+	private TextView fans_tv;
+	@ViewInject(R.id.attentionshop_iv)
+	private ImageView attentionshop_iv;
+	@ViewInject(R.id.product_count)
+	private TextView product_count;
+	@ViewInject(R.id.board_content_tv)
+	private TextView board_content_tv;
+	@ViewInject(R.id.address_tv)
+	private TextView address_tv;
+	@ViewInject(R.id.mobile)
+	private TextView mobile;
+	@ViewInject(R.id.owner_tv)
+	private TextView owner_tv;
+	@ViewInject(R.id.qrcode_iv)
+	private ImageView qrcode_iv;
+
+	private Long sid;
+	private ShopInfoResponse shopinfo;
+
+	private boolean is_atte;
+
+	private int fans;
+
+	private boolean gua_flag = false;
+	private boolean pan_flag = false;
+	private String gua_code = null;
+	private String pan_code = null;
+	@ViewInject(R.id.gua)
+	private TextView gua;
+	@ViewInject(R.id.pan)
+	private TextView pan;
+	@ViewInject(R.id.nogame)
+	private TextView nogame;
+
+	private ContactSellerPresenter presenter = new ContactSellerPresenter(this);
+
+	@Override
+	protected void initView() {
+		// TODO Auto-generated method stub
+		sid = 6000000003L;
+		presenter.setData(sid);
+
+		ViewTransformUtil.layoutParams(qrcode_iv, qrcode_iv.getLayoutParams(), 340, 340);
+	}
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setShopMsg(ShopInfoResponse obj) {
+		// TODO Auto-generated method stub
+		shopinfo = obj;
+		fans = obj.getShopInfo().getFans();
+		shopname_tv.setText(obj.getShopInfo().getNick());
+		fans_tv.setText(obj.getShopInfo().getFans()+"");
+		product_count.setText(obj.getProductCount() + "");
+		address_tv.setText(obj.getShopInfo().getAddress());
+		mobile.setText(obj.getShopInfo().getMobile()+"");
+		owner_tv.setText(obj.getShopInfo().getOwner());
+		board_content_tv.setText(obj.getShopInfo().getBulletin());
+		setGame();
+	}
+
+	@Override
+	public void setShopIcon(String str) {
+		// TODO Auto-generated method stub
+		bitmapUtils.display(shoplogo_iv, str);
+	}
+
+	@Override
+	public void setSecondCode(String shopid) {
+		// TODO Auto-generated method stub
+		qrcode_iv.setImageBitmap(BitmapUtil.createImage("shopid" + shopid, ScreenUtil.dip2px(500)));
+	}
+
+	@Override
+	public void setAttention(boolean is_attention) {
+		// TODO Auto-generated method stub
+		is_atte = is_attention;
+		if (is_attention) {
+			attentionshop_iv.setImageResource(R.drawable.icon_iscoll);
+			fans_tv.setText("粉丝数:" + (++fans));
+		} else {
+			attentionshop_iv.setImageResource(R.drawable.icon_nocoll);
+			fans_tv.setText("粉丝数:" + (--fans));
+		}
+	}
+
+	@OnClick(R.id.call_ll)
+	public void callClick(View v) {
+		IntentUtil.toPhoneApp(context, mobile.getText().toString());
+	}
+
+	@OnClick(R.id.qrcode_iv)
+	public void showCode(View v) {
+		DialogUtil.showCancelmDialog(context, R.layout.dialog_second_code, shopinfo.getShopInfo().getNick(), shopinfo
+				.getShopInfo().getAddress(), BitmapUtil.createImage("shopid" + sid, 360));
+	}
+
+	@OnClick(R.id.attentionshop_iv)
+	public void attentionShop(View v) {
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+			// 关注店铺
+			if (is_atte) {
+				presenter.cancelAttention(sid);
+			} else {
+				presenter.attention(sid);
+			}
+		}
+
+	}
+
+	public void setGame() {
+		if (shopinfo.getPromlottery() != null && shopinfo.getPromlottery().size() > 0) {
+			for (int i = 0; i < shopinfo.getPromlottery().size(); i++) {
+				if (shopinfo.getPromlottery().get(i).getProm_cat().equals("TURN")) {
+					pan_flag = true;
+					if (pan_code == null) {
+						pan_code = shopinfo.getPromlottery().get(i).getProm_code();
+					}
+				} else if (shopinfo.getPromlottery().get(i).getProm_cat().equals("SCR")) {
+					gua_flag = true;
+					if (gua_code == null) {
+						gua_code = shopinfo.getPromlottery().get(i).getProm_code();
+					}
+				}
+			}
+			if (pan_flag) {
+				VISIBLE(pan);
+			}
+			if (gua_flag) {
+				VISIBLE(gua);
+			}
+		} else {
+			VISIBLE(nogame);
+		}
+	}
+
+}

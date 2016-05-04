@@ -1,0 +1,577 @@
+/**
+ * 
+ */
+package com.hwc.member.view.base;
+
+import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Locale;
+
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.app.Dialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.text.Html;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.TextView;
+
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.google.gson.Gson;
+import com.huimodel.log.UtilLog;
+import com.hwc.member.R;
+import com.hwc.member.anno.MirUtil;
+import com.hwc.member.application.App;
+import com.hwc.member.bean.MLocation;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Mlocation;
+import com.hwc.member.service.CheckService;
+import com.hwc.member.util.DownTimer;
+import com.hwc.member.util.LocationUtil;
+import com.hwc.member.util.NetUtils;
+import com.hwc.member.util.ToastUtil;
+import com.hwc.member.util.UtilActivity;
+import com.hwc.member.widget.MirDialog;
+import com.hwc.member.widget.header.LXHeadView;
+import com.igexin.sdk.PushManager;
+import com.lidroid.xutils.BitmapUtils;
+import com.lidroid.xutils.ViewUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.socialize.bean.SHARE_MEDIA;
+import com.umeng.socialize.controller.UMServiceFactory;
+import com.umeng.socialize.controller.UMSocialService;
+
+/**
+ * @author FZ
+ */
+public abstract class BaseActivity extends FragmentActivity {
+
+	/** 基类(Activity)所使用的TAG标签 */
+	protected String TAG = null;
+
+	private Dialog dialog;
+	protected Context context;
+	protected Animation shake;
+	protected LXHeadView header;
+	protected BitmapUtils bitmapUtils;
+	protected DownTimer timer;
+	public Gson gson;
+	private static boolean isnetwork = true;
+	protected final UMSocialService mController = UMServiceFactory.getUMSocialService("com.umeng.share");
+
+	@SuppressWarnings("deprecation")
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		prepare();
+		// 初始化布局之前的操作重写改方法
+		beforeOnCreate();
+		setContentView();
+
+		// 用于确定当前界面是属于哪个活动(Activity), 让新加入开发的人快速锁定所在的界面,不得擅自移除.
+		TAG = getClass().getSimpleName();
+		UtilLog.e("", TAG);
+
+		// 将其子activity添加到activity采集器
+		UtilActivity.addActivity(this);
+		shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+
+		initView();
+		initListener();
+		// 个推初始化
+		PushManager.getInstance().initialize(this.getApplicationContext());
+
+		MobclickAgent.updateOnlineConfig(context);
+
+		System.out.println("----------" + getDeviceInfo(context));
+
+		Intent intent = new Intent(this, CheckService.class);
+		startService(intent);
+	}
+
+	public void beforeOnCreate() {
+
+	}
+
+	/** 设置布局文件之前调用,子类可重写 **/
+	protected void prepare() {
+		gson = new Gson();
+		context = this;
+		setFinishOnTouchOutside(false);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		bitmapUtils = new BitmapUtils(context);
+		bitmapUtils.configDefaultLoadingImage(R.drawable.icon_defultbg);
+		bitmapUtils.configDefaultLoadFailedImage(R.drawable.icon_defultbg);
+		mController.getConfig().setPlatforms(SHARE_MEDIA.WEIXIN,SHARE_MEDIA.WEIXIN_CIRCLE, SHARE_MEDIA.SMS);
+		if (!NetUtils.isNetworkConnected(context)) {// 如果网络没有连接
+			if (isnetwork) {
+				setNetworkMethod(context);// 弹出网络设置提醒
+			}
+		}
+	}
+
+	/*
+	 * 打开设置网络界面
+	 */
+	public static void setNetworkMethod(final Context context) {
+		// 提示对话框
+		AlertDialog.Builder builder = new Builder(context);
+		builder.setTitle("网络设置提示")
+				.setMessage("网络还没连接上,是否立即设置?")
+				.setPositiveButton("设置", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						Intent intent = null;
+						// 判断手机系统的版本 即API大于10 就是3.0或以上版本
+						if (android.os.Build.VERSION.SDK_INT > 10) {
+							intent = new Intent(
+									android.provider.Settings.ACTION_SETTINGS);
+						} else {
+							intent = new Intent();
+							ComponentName component = new ComponentName(
+									"com.android.settings",
+									"com.android.settings.WirelessSettings");
+							intent.setComponent(component);
+							intent.setAction("android.intent.action.VIEW");
+						}
+						context.startActivity(intent);
+					}
+				})
+				.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						dialog.dismiss();
+						isnetwork = false;
+					}
+				}).show();
+	}
+
+
+	@Override
+	public Resources getResources() {
+
+		Resources res = super.getResources();
+		Configuration config=new Configuration();
+		config.setToDefaults();
+		res.updateConfiguration(config,res.getDisplayMetrics() );
+		return res;
+	}
+
+	/** 设置布局文件 **/
+	protected void setContentView() {
+		ViewUtils.inject(this);
+		MirUtil.init(this);
+		header = getView(R.id.header);
+	}
+
+	/** 初始化视图处理 **/
+	protected abstract void initView();
+
+	/** 初始化监听器处理 **/
+	protected abstract void initListener();
+
+	/** 显示Toast信息 **/
+	public void T(Object s) {
+		ToastUtil.show(App.mContext, s);
+	}
+
+	/** 获取当前时间 **/
+	protected String getTime() {
+		return new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA)
+				.format(new Date());
+	}
+
+	/** 参数传递(注：该方法为了方便传参,参数类型有局限性,传递特殊类型时单独构建Intent) **/
+	public void goTo(Class<?> goToCls, Object... values) {
+		goTo(false, goToCls, values);
+	}
+
+	/** 参数传递(注：该方法为了方便传参,参数类型有局限性,传递特殊类型时单独构建Intent) **/
+	public void goTo(boolean finish, Class<?> goToCls, Object... values) {
+		Intent intent = new Intent(this, goToCls);
+		int i = 0;
+		for (Object value : values) {
+			Class<?> cls = value.getClass();
+			String key = String.valueOf(i);
+			if (cls == String.class) {
+				intent.putExtra(key, (String) value);
+			} else if (value instanceof Serializable) {
+				intent.putExtra(key, (Serializable) value);
+			} else if (cls == int[].class) {
+				intent.putExtra(key, (int[]) value);
+			} else if (cls == long[].class) {
+				intent.putExtra(key, (long[]) value);
+			} else if (cls == boolean[].class) {
+				intent.putExtra(key, (boolean[]) value);
+			} else if (cls == float[].class) {
+				intent.putExtra(key, (float[]) value);
+			} else if (cls == double[].class) {
+				intent.putExtra(key, (double[]) value);
+			} else if (cls == char[].class) {
+				intent.putExtra(key, (char[]) value);
+			} else if (cls == String[].class) {
+				intent.putExtra(key, (String[]) value);
+			} else if (cls == Bundle.class) {
+				intent.putExtra(key, (Bundle) value);
+			} else {
+				throw new RuntimeException("不支持参数类型: " + cls.getSimpleName());
+			}
+			i++;
+		}
+		startActivity(intent);
+		if (finish) {
+			finish();
+		}
+	}
+
+	/** 参数传递(注：该方法为了方便传参,参数类型有局限性,传递特殊类型时单独构建Intent) **/
+	public void goToForResult(Class<?> goToCls, Object... values) {
+		goToForResult(false, goToCls, values);
+	}
+
+	/** 参数传递(注：该方法为了方便传参,参数类型有局限性,传递特殊类型时单独构建Intent) **/
+	public void goToForResult(boolean finish, Class<?> goToCls, Object... values) {
+		Intent intent = new Intent(this, goToCls);
+		int i = 0;
+		for (Object value : values) {
+			Class<?> cls = value.getClass();
+			String key = String.valueOf(i);
+			if (cls == String.class) {
+				intent.putExtra(key, (String) value);
+			} else if (value instanceof Serializable) {
+				intent.putExtra(key, (Serializable) value);
+			} else if (cls == int[].class) {
+				intent.putExtra(key, (int[]) value);
+			} else if (cls == long[].class) {
+				intent.putExtra(key, (long[]) value);
+			} else if (cls == boolean[].class) {
+				intent.putExtra(key, (boolean[]) value);
+			} else if (cls == float[].class) {
+				intent.putExtra(key, (float[]) value);
+			} else if (cls == double[].class) {
+				intent.putExtra(key, (double[]) value);
+			} else if (cls == char[].class) {
+				intent.putExtra(key, (char[]) value);
+			} else if (cls == String[].class) {
+				intent.putExtra(key, (String[]) value);
+			} else if (cls == Bundle.class) {
+				intent.putExtra(key, (Bundle) value);
+			} else {
+				throw new RuntimeException("不支持参数类型: " + cls.getSimpleName());
+			}
+			i++;
+		}
+		startActivityForResult(intent, 0);
+		if (finish) {
+			finish();
+		}
+	}
+
+
+	/**
+	 * 获取控件信息
+	 */
+	public String getViewValue(View view) {
+		if (view instanceof EditText) {
+			return ((EditText) view).getText().toString();
+		} else if (view instanceof TextView) {
+			return ((TextView) view).getText().toString();
+		} else if (view instanceof CheckBox) {
+			return ((CheckBox) view).getText().toString();
+		} else if (view instanceof RadioButton) {
+			return ((RadioButton) view).getText().toString();
+		} else if (view instanceof Button) {
+			return ((Button) view).getText().toString();
+		}
+		return null;
+	}
+
+	/** 非空判断 **/
+	public static boolean isEmpty(Object... objs) {
+		for (Object obj : objs) {
+			if (obj == null) {
+				return true;
+			} else if (obj instanceof String && obj.equals("")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** 得到加载对话框,子类可以重写DIY **/
+	protected Dialog getProgressDialog(String msg) {
+		if (dialog == null) {
+			dialog = new MirDialog(this, msg);
+		}
+		return dialog;
+	}
+
+	/** 显示加载对话框 **/
+	public void showProgressDialog(String msg) {
+		getProgressDialog(msg).show();
+	}
+
+	/** 取消加载对话框 **/
+	public void dismissProgressDialog() {
+		if (dialog != null && dialog.isShowing()) {
+			dialog.dismiss();
+		}
+	}
+
+	 public String formatDateTime(long time) {
+	        if (0 == time) {
+	            return "";
+	        }
+	        SimpleDateFormat mDateFormat = new SimpleDateFormat("MM-dd HH:mm");
+	        return mDateFormat.format(new Date(time));
+	   }
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		// 将其子activity从activity采集器中移除
+		UtilActivity.removeActivity(this);
+		if (timer != null) {
+			timer.cancel();
+		}
+	}
+
+	public Context getContext() {
+		return this;
+	}
+
+	// 倒计时
+	public void setDownTime(final Button btn) {
+		timer = new DownTimer();
+		timer.setTotalTime(Constant.VILIDATE_TIME);// 设置毫秒数
+		timer.setIntervalTime(1000);// 设置间隔数
+		timer.setTimerLiener(new DownTimer.TimeListener() {
+			@Override
+			public void onFinish() {
+				btn.setEnabled(true);
+				btn.setTextColor(getResources().getColor(R.color.gray4));
+				btn.setText("收不到验证码？");
+			}
+
+			@Override
+			public void onInterval(long remainTime) {
+
+				btn.setText(Html.fromHtml("大约需要<font color='red'>"
+						+ remainTime / 1000 + "</font>秒"));// 剩余多少毫秒
+				btn.setTextColor(getResources().getColor(R.color.gray4));
+				btn.setEnabled(false);
+			}
+		});
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getView(int id) {
+		return (T) findViewById(id);
+	}
+
+	/** 如果使用了LXHeadView，默认添加返回图标和结束事件 **/
+	public void setBack(int leftImage, String leftText,
+			OnClickListener clickListener) {
+		if (header == null) {
+			throw new NullPointerException("头部视图为Null");
+		}
+		if (leftImage != 0) {
+			header.setLeftImage(leftImage);
+			VISIBLE(header.leftImage());
+			header.leftImage().setOnClickListener(clickListener);
+		}
+
+		if (!isEmpty(leftText)) {
+			header.setLeftText(leftText);
+			VISIBLE(header.leftText());
+			header.leftText().setOnClickListener(clickListener);
+		}
+
+	}
+
+	/** 如果使用了LXHeadView，默认添加返回图标和结束事件 **/
+	public void setBack(int leftImage) {
+		setBack(leftImage, null, new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+
+		});
+	}
+
+	/** 如果使用了LXHeadView，默认添加返回图标和结束事件 **/
+	public void setBack(String leftText) {
+		setBack(0, leftText, new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+
+		});
+	}
+
+	/** 如果使用了LXHeadView，默认添加返回图标和结束事件 **/
+	public void setBack() {
+		setBack(R.drawable.back, null, new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+
+		});
+	}
+
+	public static void VISIBLE(View view) {
+		if (view != null) {
+			view.setVisibility(View.VISIBLE);
+		}
+	}
+
+	public static void INVISIBLE(View view) {
+		if (view != null) {
+			view.setVisibility(View.INVISIBLE);
+		}
+	}
+
+	public static void GONE(View view) {
+		if (view != null) {
+			view.setVisibility(View.GONE);
+		}
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+
+	}
+
+
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
+
+	/**
+	 * 获取版本号
+	 *
+	 * @return 当前应用的版本号
+	 */
+	public String getVersion() {
+		try {
+			PackageManager manager = this.getPackageManager();
+			PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
+			String version = info.versionName;
+			return "当前版本:" + version;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
+
+
+	/**
+	 * 获取版本号
+	 *
+	 * @return 当前应用的版本号
+	 */
+	public String getVersionForCode() {
+		try {
+			PackageManager manager = this.getPackageManager();
+			PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
+			String version = info.versionName;
+			return version;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
+
+	public static String getDeviceInfo(Context context) {
+		try {
+			org.json.JSONObject json = new org.json.JSONObject();
+			android.telephony.TelephonyManager tm = (android.telephony.TelephonyManager) context
+					.getSystemService(Context.TELEPHONY_SERVICE);
+
+			String device_id = tm.getDeviceId();
+
+			android.net.wifi.WifiManager wifi = (android.net.wifi.WifiManager) context
+					.getSystemService(Context.WIFI_SERVICE);
+
+			String mac = wifi.getConnectionInfo().getMacAddress();
+			json.put("mac", mac);
+
+			if (TextUtils.isEmpty(device_id)) {
+				device_id = mac;
+			}
+
+			if (TextUtils.isEmpty(device_id)) {
+				device_id = android.provider.Settings.Secure.getString(
+						context.getContentResolver(),
+						android.provider.Settings.Secure.ANDROID_ID);
+			}
+
+			json.put("device_id", device_id);
+
+			return json.toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String getLocalIpAddress()  {
+        try
+        {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();)
+            {
+               NetworkInterface intf = en.nextElement();
+               for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();)
+               {
+                   InetAddress inetAddress = enumIpAddr.nextElement();
+                   if (!inetAddress.isLoopbackAddress())
+                   {
+                       return inetAddress.getHostAddress().toString();
+                   }
+               }
+           }
+        }
+        catch (SocketException ex)  {
+
+        }
+        return null;
+    }
+}

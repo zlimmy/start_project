@@ -1,0 +1,33 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+
+import com.huimodel.api.base.ProductProperty;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class ProductInfoAdapter extends MirAdapter<ProductProperty> {
+
+	public ProductInfoAdapter(Context context, List<ProductProperty> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void convert(HolderEntity helper, ProductProperty item) {
+		helper.setText(R.id.value_tv, item.getValue());
+		helper.setText(R.id.name_tv, item.getName());
+	}
+
+}

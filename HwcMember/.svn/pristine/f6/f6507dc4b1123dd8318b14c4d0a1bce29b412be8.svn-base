@@ -1,0 +1,104 @@
+package com.hwc.member.presenter;
+
+import com.google.gson.Gson;
+import com.huimodel.api.request.DiscoveryGetRequest;
+import com.huimodel.api.response.DiscoveryGetResponse;
+import com.huimodel.biz.IHwcBizPostImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IFindView;
+
+public class FindFragPresenter {
+	private IFindView iFindView;
+	private IHwcBizPostImpl bizPostImpl;
+	public boolean pageisover = false;
+	public int pageSize = 5;
+	public Gson gson;
+	public FindFragPresenter(IFindView iFindView){
+		this.iFindView = iFindView;
+		this.bizPostImpl =  IHwcBizPostImpl.getInstance(App.mContext);
+		this.gson = new Gson();
+	}
+	
+	
+	/**
+	 * 刷新
+	 */
+	public void  refresh(){
+		DiscoveryGetRequest dgr = new DiscoveryGetRequest();
+		dgr.setLatitude(Constant.latitude);
+		dgr.setLongitude(Constant.longitude);
+		dgr.setPage(1);
+		dgr.setCat("TOPIC");
+		dgr.setUser_id_by(Member.getInstance().getUser_id());
+		dgr.setPage_size(pageSize);
+		dgr.setImei(Constant.IMEI);
+		
+		bizPostImpl.getPostList(dgr, iFindView.getContext(), new IResult<DiscoveryGetResponse>() {
+			
+			@Override
+			public void result(DiscoveryGetResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				iFindView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						if(obj.getDiscoverys().size()==0){
+							iFindView.showErrorPage();
+						}else{
+							iFindView.refresh(obj.getDiscoverys());
+						}
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+		
+	}
+	
+	
+	/**
+	 * 获取更多
+	 * @param mCurIndex
+	 */
+	public void  more(int mCurIndex){
+		DiscoveryGetRequest dgr = new DiscoveryGetRequest();
+		dgr.setLatitude(Constant.latitude);
+		dgr.setLongitude(Constant.longitude);
+		dgr.setPage(mCurIndex);
+		dgr.setCat("TOPIC");
+		dgr.setUser_id_by(Member.getInstance().getUser_id());
+		dgr.setPage_size(pageSize);
+		dgr.setImei(Constant.IMEI);
+		   
+		bizPostImpl.getPostList(dgr, iFindView.getContext(), new IResult<DiscoveryGetResponse>() {
+			
+			@Override
+			public void result(DiscoveryGetResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				boolean isEnd = true;
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						if(obj.getDiscoverys().size()==0){
+							isEnd = false;
+						}
+						iFindView.more(obj.getDiscoverys(),isEnd);
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+		
+	}
+	
+}

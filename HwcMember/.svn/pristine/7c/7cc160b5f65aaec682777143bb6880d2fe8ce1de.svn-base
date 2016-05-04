@@ -1,0 +1,102 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+import android.os.Handler;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.MyCodeAdapter;
+import com.hwc.member.presenter.MyCodePresenter;
+import com.hwc.member.view.activity.view.IMyCodeView;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.hwc.member.widget.XListView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+/**
+ * @author FZ
+ */
+public class CodeFragment extends FormBaseFragment implements IMyCodeView,XListView.IXListViewListener {
+
+	@ViewInject(R.id.listview)
+	private XListView listview;
+	private Handler mHandler;
+	private int mIndex = 0;
+	@ViewInject(R.id.nodata_but)
+	private Button nodata_but;
+	@ViewInject(R.id.load_page)
+	private View load_page;
+	@ViewInject(R.id.nodata_page)
+	private View nodata_page;
+	@ViewInject(R.id.nodata_tv)
+	private TextView nodata_tv;
+	
+	private MyCodePresenter presenter = new MyCodePresenter(this);
+	
+	@Override
+	protected void init() {
+		mHandler = new Handler();
+		listview.setPullRefreshEnable(true);
+		listview.setPullLoadEnable(true);
+		listview.setAutoLoadEnable(true);
+		listview.setXListViewListener(this);
+		listview.setRefreshTime(getTime());
+		presenter.setData(mIndex);
+	}
+
+	@Override
+	public int getLayoutId() {
+		return R.layout.fm_code;
+	}
+	
+	@Override
+	public void onRefresh() {
+		mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+            	presenter.setData(0);
+                onLoad();
+            }
+        }, 2500);
+	}
+
+	@Override
+	public void onLoadMore() {
+		mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mIndex += 1;
+                presenter.setData(mIndex);
+                onLoad();
+            }
+        }, 2500);
+	}
+	
+	 private void onLoad() {
+	    	listview.stopRefresh();
+	        listview.stopLoadMore();
+	        listview.setRefreshTime(getTime());
+	    }
+
+	@Override
+	public void clearLoadPage() {
+		GONE(load_page);
+	}
+
+	@Override
+	public void showErrorPage() {
+		VISIBLE(nodata_page);
+		nodata_tv.setText("没有关注过商品呢!");
+		nodata_but.setText("马上去看看");
+	}
+
+	@Override
+	public void setList(MyCodeAdapter adapter) {
+		listview.setAdapter(adapter);
+	}
+	
+
+}

@@ -1,0 +1,19 @@
+/**
+ * 
+ */
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.PlatformPrize;
+import com.huimodel.api.base.ResponseBaseEntity;
+
+/**
+ * @author FZ
+ */
+public class PlatformPrizeDetailResponse extends ResponseBaseEntity<PlatformPrize> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7183261818417823364L;
+
+}

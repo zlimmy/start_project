@@ -1,0 +1,95 @@
+package com.hwc.member.adapter;
+
+import android.content.Context;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DPrizeCoupon;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+import java.util.List;
+
+public class CodeFragAdapter extends MirAdapter<DPrizeCoupon> {
+
+	private Context mcontext;
+	private int blue, yellow, red, gray;
+
+	public CodeFragAdapter(Context context, List<DPrizeCoupon> mDatas, int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		this.mcontext = context;
+		blue = mcontext.getResources().getColor(R.color.coupon_blue);
+		yellow = mcontext.getResources().getColor(R.color.coupon_yellow);
+		red = mcontext.getResources().getColor(R.color.coupon_red);
+		gray = mcontext.getResources().getColor(R.color.coupon_gray);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void convert(HolderEntity helper, DPrizeCoupon item) {
+		LinearLayout layout = helper.getView(R.id.discount_ll);
+		ViewTransformUtil.layoutParams(layout, layout.getLayoutParams(), 658, 230);
+		TextView money_tv = helper.getView(R.id.money_tv);
+		TextView need_tv = helper.getView(R.id.need_tv);
+		if (item.getStatus().equals("O")) {
+			layout.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.yhq_used_b));
+			helper.setTextColor(R.id.tv1, blue);
+			helper.setTextColor(R.id.money_tv, blue);
+			helper.setBackground(R.id.line, blue);
+		} else if (item.getStatus().equals("I")) {
+			if (item.getIssue_shop() == null ||item.getIssue_shop() == 0  ) {
+				layout.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.yhq_platform_a));
+				helper.setTextColor(R.id.tv1, red);
+				helper.setTextColor(R.id.money_tv, red);
+				helper.setBackground(R.id.line, red);
+			} else {
+				layout.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.yhq_unused));
+				helper.setTextColor(R.id.tv1, yellow);
+				helper.setTextColor(R.id.money_tv, yellow);
+				helper.setBackground(R.id.line, yellow);
+			}
+
+		} else {
+			layout.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.yhq_expired));
+			helper.setTextColor(R.id.tv1, gray);
+			helper.setTextColor(R.id.money_tv, gray);
+			helper.setBackground(R.id.line, gray);
+		}
+	
+		// helper.setText(R.id.need_tv, item.getDescript());
+		
+		if(item.getCoupon_type().equals("goods")){
+			need_tv.setText("价值：￥"+CommonUtil.conversionInt(item.getPrice()) + "");
+			helper.setText(R.id.money_tv, item.getDescript());
+			helper.setText(R.id.tv1, "奖品：");
+
+			
+		}else{
+			helper.setText(R.id.money_tv, "￥"+CommonUtil.conversionInt(item.getPrice()) );
+			helper.setText(R.id.tv1, "优惠券：");
+			if(item.getSpend()==0){
+				need_tv.setText("");
+			}else{
+				need_tv.setText("满"+item.getSpend()+"以上使用");
+			}
+		}
+		
+		
+		helper.setText(R.id.shop_tv, "仅可用于"+item.getIssue_shop_nick() + "");
+		helper.setText(R.id.data_tv, "有效期：" + item.getBegin_date() + "\t至\t" + item.getExpire_date());
+
+
+		RelativeLayout layout1 = helper.getView(R.id.discount_rl);
+		if(helper.getPosition() == 0){
+			ViewTransformUtil.layoutParams(layout1,layout1.getLayoutParams(), RelativeLayout.LayoutParams.MATCH_PARENT,250);
+		}else {
+			ViewTransformUtil.layoutParams(layout1,layout1.getLayoutParams(), RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+		}
+	}
+
+}

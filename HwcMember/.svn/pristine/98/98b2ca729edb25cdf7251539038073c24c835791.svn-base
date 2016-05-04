@@ -1,0 +1,73 @@
+package com.hwc.member.view.activity.shop;
+
+import android.support.v4.view.ViewPager;
+import android.view.View;
+
+import com.hwc.member.R;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.view.fragment.ContactSellerFragment;
+import com.hwc.member.view.fragment.NewAllGoodsFragment;
+import com.hwc.member.view.fragment.NowShopIndexFragment;
+import com.hwc.member.widget.header.LXHeadView;
+import com.hwc.member.widget.smarttablaout.SmartTabLayout;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
+
+@ContentView(R.layout.activity_new_shop_info)
+public class NewShopInfoActivity extends BaseActivity {
+
+	@ViewInject(R.id.viewpager)
+	private ViewPager viewPager;
+	@ViewInject(R.id.viewpagertab)
+	private SmartTabLayout viewPagerTab;
+	@ViewInject(R.id.header)
+	public LXHeadView header;
+	
+	private long sid;
+	
+	@Override
+	protected void initView() {
+		sid = getIntent().getLongExtra("0", -1);
+		setBack();
+		FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
+		        getSupportFragmentManager(), FragmentPagerItems.with(this)
+		        .add("店铺首页", NowShopIndexFragment.class)
+		        .add("所有商品", NewAllGoodsFragment.class)
+		        .add("联系卖家", ContactSellerFragment.class)
+		        .create());
+		 
+		viewPager.setAdapter(adapter);
+		 
+		viewPagerTab.setViewPager(viewPager);
+//		viewPager.setOnKeyListener(new OnKeyListener() {
+//			
+//			@Override
+//			public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
+//				// TODO Auto-generated method stub
+//				return false;
+//			}
+//		});
+	}
+
+	@Override
+	protected void initListener() {
+
+	}
+	
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		// TODO Auto-generated method stub
+		super.onWindowFocusChanged(hasFocus);
+		
+	}
+	
+	@OnClick(R.id.search_ll)
+	public void goSearch(View v){
+		goTo(SearchShopGoodsActivity.class, sid);
+	}
+
+
+}

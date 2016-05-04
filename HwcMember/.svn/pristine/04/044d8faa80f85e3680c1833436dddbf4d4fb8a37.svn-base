@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:background="@color/white"
+        android:padding="12dp" >
+
+        <ImageView
+            android:id="@+id/shoplogo_iv"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/goodsinfo_item2"
+            android:layout_centerVertical="true" />
+
+        <TextView
+            android:id="@+id/shopname_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:text="店铺名称"
+            android:textSize="@dimen/text_14"
+            android:layout_toRightOf="@id/shoplogo_iv"
+            android:layout_centerVertical="true" />
+        
+        <TextView
+            android:id="@+id/status_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:text="订单状态"
+            android:textSize="@dimen/text_14"
+            android:textColor="@color/main_color"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+        
+    </RelativeLayout>
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="6dp">
+        
+        <ImageView 
+            android:id="@+id/goods_iv"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:src="@drawable/icon_defultbg"/>
+        
+        <TextView 
+            android:id="@+id/goodsname_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lines="2"
+            android:text="商品名"
+            android:textSize="@dimen/text_14"
+            android:layout_toRightOf="@id/goods_iv"
+            android:layout_marginRight="100dp"
+            android:layout_marginLeft="12dp"/>
+        
+        <TextView
+        	android:id="@+id/package_tv"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+			android:layout_alignLeft="@id/goodsname_tv"
+			android:layout_below="@id/goodsname_tv"
+        	android:text=""
+        	android:textSize="@dimen/text_14"
+        	android:textColor="@color/gray5" />
+        
+        <TextView 
+            android:id="@+id/promprice_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="￥30.00"
+            android:textSize="@dimen/text_16"
+            android:layout_alignParentRight="true"/>
+        
+        <TextView 
+            android:id="@+id/num_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="x1"
+            android:textSize="@dimen/text_14"
+            android:textColor="@color/gray5"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/promprice_tv"/>
+        
+    </RelativeLayout>
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:background="@color/white"
+        android:padding="12dp">
+        
+        <TextView 
+            android:id="@+id/total_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="共1件商品  合计：￥45.00"
+            android:layout_alignParentRight="true"
+            android:textSize="@dimen/text_12"/>
+
+        <TextView
+            android:id="@+id/time_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:text="创建时间："
+            android:textSize="@dimen/text_12" />
+        
+    </RelativeLayout>
+
+</LinearLayout>

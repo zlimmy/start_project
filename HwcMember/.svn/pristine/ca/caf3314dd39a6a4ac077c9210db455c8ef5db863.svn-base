@@ -1,0 +1,35 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+
+import com.huimodel.api.base.PointExchange;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.CommonUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class PointHistoryAdapter extends MirAdapter<PointExchange> {
+
+	public PointHistoryAdapter(Context context, List<PointExchange> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, PointExchange item) {
+		helper.setText(R.id.created_tv, "兑换时间：" + CommonUtil.unixTimestampToDate(item.getCreated()));
+		helper.setText(R.id.name_tv, item.getDetails().get(0).getPlatformPrize().getDescript());
+		helper.setText(R.id.num_tv, "x" + item.getDetails().get(0).getNum());
+		helper.setText(R.id.point_tv, item.getDetails().get(0).getUse_point() + "积分");
+	}
+
+}

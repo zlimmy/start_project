@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/shop_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
+        >
+
+        <com.hwc.member.widget.CircleImageView
+            android:id="@+id/log_iv"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/user_photo"
+            app:border_color="@color/gray3"
+            android:layout_marginLeft="18dp"
+            app:border_width="1dp" />
+
+        <TextView
+            android:id="@+id/name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/log_iv"
+            android:text="芦村小梁手机超市"
+            android:textSize="@dimen/text_20" />
+
+        <TextView
+            android:id="@+id/putaway_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp"
+            android:background="@drawable/shape_shop"
+            android:padding="5dp"
+            android:text="上新"
+            android:textColor="@color/main_color"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
+
+</LinearLayout>

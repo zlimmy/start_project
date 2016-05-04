@@ -1,0 +1,23 @@
+/**
+ * 
+ */
+package com.huimodel.api.request;
+
+import java.util.List;
+
+import com.huimodel.api.base.RequestBase;
+
+/**
+ * @author FZ
+ */
+public class AttentionShopCancelReuqest extends RequestBase {
+	private List<Long> shop_ids;
+
+	public List<Long> getShop_ids() {
+		return shop_ids;
+	}
+
+	public void setShop_ids(List<Long> shop_ids) {
+		this.shop_ids = shop_ids;
+	}
+}

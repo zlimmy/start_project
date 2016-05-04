@@ -1,0 +1,52 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.widget.TextView;
+
+import com.huimodel.api.base.ShopItem;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.ViewTransformUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class ProductCategoryAdapter extends MirAdapter<ShopItem> {
+	
+	private int clickTemp = 0;
+    //标识选择的Item
+
+	public ProductCategoryAdapter(Context context,
+			List<ShopItem> mDatas, int itemLayoutId,
+			BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+	
+	public void setSeclection(int position) {
+		clickTemp = position;
+	}
+	
+	
+	
+	@Override
+	public void convert(HolderEntity helper, ShopItem item) {
+		TextView name_rb = helper.getView(R.id.name_rb);
+		name_rb.setText(item.getName());
+		ViewTransformUtil.layoutParams(name_rb, name_rb.getLayoutParams(), 134, 80);
+		if (clickTemp == helper.getPosition()) {
+			name_rb.setBackgroundResource(R.drawable.rb_checkd);
+			name_rb.setTextColor(Color.parseColor("#d22414"));
+			} else {
+			name_rb.setTextColor(Color.parseColor("#a5a5a5"));
+			name_rb.setBackgroundResource(R.drawable.rb_no_checkd);
+		 }
+	}
+}

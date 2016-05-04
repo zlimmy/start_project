@@ -1,0 +1,51 @@
+/**
+ * 
+ */
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.IndicatorsBean;
+import com.huimodel.api.base.ResponseBase;
+
+/**
+ * @author FZ
+ */
+public class IndicatorsDailyResponse extends ResponseBase {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+//	private Map<Date,IndexObject> earn_daily;
+//	public Map<Date,IndexObject> getEarn_daily() {
+//		return earn_daily;
+//	}
+//	public void setEarn_daily(Map<Date,IndexObject> earn_daily) {
+//		this.earn_daily = earn_daily;
+//	}
+	private Double totalAmount;
+	private Integer maxAmount;
+	public List<IndicatorsBean> getIndicators() {
+		return indicators;
+	}
+	public void setIndicators(List<IndicatorsBean> indicators) {
+		this.indicators = indicators;
+	}
+
+	public Integer getMaxAmount() {
+		return maxAmount;
+	}
+	public void setMaxAmount(Integer maxAmount) {
+		this.maxAmount = maxAmount;
+	}
+
+	public Double getTotalAmount() {
+		return totalAmount;
+	}
+	public void setTotalAmount(Double totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	private List<IndicatorsBean> indicators;
+}

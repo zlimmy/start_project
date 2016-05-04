@@ -1,0 +1,142 @@
+package com.huimodel.api.base;
+
+public class PostAdvertRule  extends HwcObject{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8122406585080912815L;
+	/**
+	 * 广告的id post 中的id
+	 */
+	private java.lang.Long post_id;
+	/**
+	 * 可以显示的时间
+	 */
+	private java.lang.String show_date;
+	/**
+	 * 有效期开始
+	 */
+	private java.lang.String begin_date;
+	/**
+	 * 有效期截止
+	 */
+	private java.lang.String end_date;
+	/**
+	 * 剩余天数
+	 */
+	private Integer leaveDay;
+	/**
+	 * 总投入
+	 */
+	private java.math.BigDecimal cost;
+	/**
+	 * 每次点可以赚的钱
+	 */
+	private Double every_time_cost;
+
+	/**
+	 * 每次点可以赚的钱 最大金额
+	 */
+	private Double every_time_cost_max;
+	/**
+	 * 可以点总次数
+	 */
+	private java.math.BigDecimal tl_times;
+	/**
+	 * 已经被点的次数
+	 */
+	private java.math.BigDecimal used_times;
+	/**
+	 * 每天几次
+	 */
+	private java.lang.Integer frequency;
+
+	public java.lang.Long getPost_id() {
+		return post_id;
+	}
+
+	public void setPost_id(java.lang.Long post_id) {
+		this.post_id = post_id;
+	}
+
+	public java.lang.String getShow_date() {
+		return show_date;
+	}
+
+	public void setShow_date(java.lang.String show_date) {
+		this.show_date = show_date;
+	}
+
+	public java.lang.String getBegin_date() {
+		return begin_date;
+	}
+
+	public void setBegin_date(java.lang.String begin_date) {
+		this.begin_date = begin_date;
+	}
+
+	public java.lang.String getEnd_date() {
+		return end_date;
+	}
+
+	public void setEnd_date(java.lang.String end_date) {
+		this.end_date = end_date;
+	}
+
+	public Integer getLeaveDay() {
+		return leaveDay;
+	}
+
+	public void setLeaveDay(Integer leaveDay) {
+		this.leaveDay = leaveDay;
+	}
+
+	public java.math.BigDecimal getCost() {
+		return cost;
+	}
+
+	public void setCost(java.math.BigDecimal cost) {
+		this.cost = cost;
+	}
+
+	public Double getEvery_time_cost() {
+		return every_time_cost;
+	}
+
+	public void setEvery_time_cost(Double every_time_cost) {
+		this.every_time_cost = every_time_cost;
+	}
+
+	public java.math.BigDecimal getTl_times() {
+		return tl_times;
+	}
+
+	public void setTl_times(java.math.BigDecimal tl_times) {
+		this.tl_times = tl_times;
+	}
+
+	public java.math.BigDecimal getUsed_times() {
+		return used_times;
+	}
+
+	public void setUsed_times(java.math.BigDecimal used_times) {
+		this.used_times = used_times;
+	}
+
+	public java.lang.Integer getFrequency() {
+		return frequency;
+	}
+
+	public void setFrequency(java.lang.Integer frequency) {
+		this.frequency = frequency;
+	}
+
+	public Double getEvery_time_cost_max() {
+		return every_time_cost_max;
+	}
+
+	public void setEvery_time_cost_max(Double every_time_cost_max) {
+		this.every_time_cost_max = every_time_cost_max;
+	}
+
+}

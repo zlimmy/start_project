@@ -1,0 +1,67 @@
+/**
+ * 
+ */
+package com.hwc.member.util;
+
+import android.app.Activity;
+
+import com.hwc.member.widget.PullToRefreshLayout;
+import com.hwc.member.widget.PullToRefreshLayout.OnRefreshListener;
+
+/**
+ * @author FZ
+ */
+public class MyRefreshListener implements OnRefreshListener {
+
+	private Callback callback;
+	private Activity activity;
+	
+	public MyRefreshListener(Activity activity, Callback callback){
+		this.activity = activity;
+		this.callback = callback;		
+	}
+	
+	@Override
+	public void onRefresh(final PullToRefreshLayout pullToRefreshLayout) {
+//		new Handler().postDelayed(new Runnable() {
+//
+//			@Override
+//			public void run() {
+				if(UtilActivity.getUp() == activity){
+					callback.refresh(pullToRefreshLayout);
+				}
+//				pullToRefreshLayout.refreshFinish(PullToRefreshLayout.SUCCEED);
+//			}
+//		}, 2000);
+	}
+
+	@Override
+	public void onLoadMore(final PullToRefreshLayout pullToRefreshLayout) {
+//		new Handler().postDelayed(new Runnable() {
+//
+//			@Override
+//			public void run() {
+				if(UtilActivity.getUp() == activity){
+					callback.loadMore(pullToRefreshLayout);
+				}				
+//				pullToRefreshLayout.loadmoreFinish(PullToRefreshLayout.SUCCEED);
+//			}
+//		}, 2000);
+	}
+	
+	/** 回调接口 **/
+	public interface Callback {
+
+		/** 刷新 **/
+		void refresh(PullToRefreshLayout pullToRefreshLayout);
+		
+		/** 加载 **/
+		void loadMore(PullToRefreshLayout pullToRefreshLayout);
+	}
+	
+	/** 注册监听接口 **/
+	public void registerCallback(Callback callback) {
+		this.callback = callback;
+	}
+
+}

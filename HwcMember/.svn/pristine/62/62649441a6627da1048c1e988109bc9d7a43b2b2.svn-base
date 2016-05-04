@@ -1,0 +1,198 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import java.util.List;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.Advert;
+import com.huimodel.api.request.ProductRecommendRequest;
+import com.huimodel.api.request.PromotionADGetRequest;
+import com.huimodel.api.request.ShopCatGetRequest;
+import com.huimodel.api.response.ProductRecommendResponse;
+import com.huimodel.api.response.PromotionADGetResponse;
+import com.huimodel.api.response.ShopCatGetResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.HorizontalListViewAdapter;
+import com.hwc.member.adapter.ProductCategoryAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.util.CacheDataUtil;
+import com.hwc.member.view.activity.view.IProductCategoryView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class ProductCategoryPresenter {
+	
+	private IProductCategoryView productCategoryView;
+	
+	public HorizontalListViewAdapter adapter;
+	
+	public ProductCategoryAdapter adapter2;
+	
+	private List<Advert> adList; //广告
+	private Gson gson;
+	private IHwcBizMain iHwcBizMainImpl;
+	private CacheDataUtil cacheDataUtil ;
+	public ProductCategoryPresenter(IProductCategoryView productCategoryView){
+		this.productCategoryView = productCategoryView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		this.cacheDataUtil = CacheDataUtil.getInstance(App.mContext);
+		this.gson = new Gson();
+	}
+	
+	/**
+	 * 热卖商品
+	 */
+	public void setPromProdcut(){	
+	 String caheJosn = cacheDataUtil.getStringByKey("PromProdcut");
+	  if(caheJosn==null){//如果缓存数据为空
+		ProductRecommendRequest pr = new ProductRecommendRequest();
+		pr.setLatitude(Constant.latitude);
+		pr.setLongitude(Constant.longitude);
+		pr.setUser_id_by(Member.getInstance().getUser_id());
+		pr.setImei(Constant.IMEI);
+		iHwcBizMainImpl.gethotsaleShopProduct(pr, productCategoryView.getContext(), new IResult<ProductRecommendResponse>() {
+			@Override
+			public void result(ProductRecommendResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.getProducts() != null && obj.getProducts().size() > 0){
+						adapter = new HorizontalListViewAdapter(productCategoryView.getContext(), obj.getProducts(), R.layout.item_horizontallist, null);
+						productCategoryView.setListAdapter(adapter);
+						cacheDataUtil.saveJson("PromProdcut", obj, Constant.CACHETIME);
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(productCategoryView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+		
+		}else{
+			ProductRecommendResponse obj = gson.fromJson(caheJosn, ProductRecommendResponse.class);
+			if(obj.getProducts() != null && obj.getProducts().size() > 0){
+				adapter = new HorizontalListViewAdapter(productCategoryView.getContext(), obj.getProducts(), R.layout.item_horizontallist, null);
+				productCategoryView.setListAdapter(adapter);
+			}
+	}
+
+ }
+	
+	/**
+	 * 获取产品类目
+	 */
+	public void setItemCat(){
+	 String caheJosn = cacheDataUtil.getStringByKey("ItemCat");
+	  if(caheJosn==null){//如果缓存数据为空
+		ShopCatGetRequest sc = new ShopCatGetRequest();
+		sc.setLatitude(Constant.latitude);
+		sc.setLongitude(Constant.longitude);
+		sc.setUser_id_by(Member.getInstance().getUser_id());
+		sc.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getdefaultshopcat(sc, productCategoryView.getContext(), new IResult<ShopCatGetResponse>() {
+			@Override
+			public void result(ShopCatGetResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.getItems() != null && obj.getItems().size() > 0){
+						adapter2 = new ProductCategoryAdapter(productCategoryView.getContext(), obj.getItems(), R.layout.item_product_category, null);
+						productCategoryView.setGridAdapter(adapter2);
+						cacheDataUtil.saveJson("ItemCat", obj, Constant.CACHETIME);
+					}
+					productCategoryView.clearLoadPage();
+					break;
+
+				default:
+					productCategoryView.showErrorPage();
+					SimpleHUD.showErrorMessage(productCategoryView.getContext(), code+"");
+					break;
+				}
+			}
+		});	
+	  }else{
+		  ShopCatGetResponse obj = gson.fromJson(caheJosn, ShopCatGetResponse.class);
+			if(obj.getItems() != null && obj.getItems().size() > 0){
+				adapter2 = new ProductCategoryAdapter(productCategoryView.getContext(), obj.getItems(), R.layout.item_product_category, null);
+				productCategoryView.setGridAdapter(adapter2);
+			}
+			productCategoryView.clearLoadPage();
+	  }
+		
+	}
+	
+	
+	
+	/**
+	 * 图片广告
+	 */
+	public void setAD(){
+		PromotionADGetRequest pdr = new PromotionADGetRequest();
+		pdr.setLatitude(Constant.latitude);
+		pdr.setLongitude(Constant.longitude);
+		pdr.setUser_id_by(Member.getInstance().getUser_id());
+		pdr.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getMainAd(pdr, productCategoryView.getContext(), new IResult<PromotionADGetResponse>() {
+			@Override
+			public void result(PromotionADGetResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.getAdverts() != null && obj.getAdverts().size() > 0){
+						adList  = obj.getAdverts();
+						productCategoryView.setPromAd(adList,null);
+					}else{
+						int[] pic = new int[]{R.drawable.icon_defultbg};
+						productCategoryView.setPromAd(null,pic);
+					}					
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(productCategoryView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+//	public void selCategoryGoTo(final Long cid){
+//		ProductRecommendRequest pr = new ProductRecommendRequest();
+//		pr.setLatitude(Constant.latitude);
+//		pr.setLongitude(Constant.longitude);
+//		pr.setUser_id_by(Member.getInstance().getUser_id());
+//		pr.setCid(cid);
+//		iHwcBizMainImpl.getshopproductbycid(pr, productCategoryView.getContext(), new IResult<ShopAndShopProductInfoResponse>() {
+//			@Override
+//			public void result(ShopAndShopProductInfoResponse obj, Code code) {
+//				switch (code) {
+//				case OK:
+//					if(obj.getShops() == null || obj.getShops().size() == 0){
+//						SimpleHUD.showInfoMessage(productCategoryView.getContext(), "没有该种类的门店");
+//					}else if(obj.getShops().size() == 1){
+//						Intent intent = new Intent(productCategoryView.getContext(), NewShopInfoActivity.class);
+//						intent.putExtra("0", obj.getShops().get(0).getSid());
+//						productCategoryView.getContext().startActivity(intent);
+//					}else if(obj.getShops().size() > 1){
+//						Intent intent = new Intent(productCategoryView.getContext(), ShopListActivity.class);
+//						intent.putExtra("0", cid);
+//						productCategoryView.getContext().startActivity(intent);
+//					}
+//					break;
+//
+//				default:
+//					break;
+//				}
+//			}
+//		});
+//	}
+
+}

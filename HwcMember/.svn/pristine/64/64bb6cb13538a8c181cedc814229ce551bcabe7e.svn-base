@@ -1,0 +1,20 @@
+package com.hwc.member.view.activity.view;
+
+import com.hwc.member.adapter.BustlingProductListAdapter;
+
+public interface IBustlingFragView extends LoadDataView  {
+
+	/**
+	 * 发现频道推荐商品
+	 * @param list
+	 */
+    void setPostProdct(BustlingProductListAdapter adapter);
+    
+    /**
+     * 结束刷新
+     */
+    void refreshEnd();
+    
+    
+   
+}

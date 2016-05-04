@@ -1,0 +1,199 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.ProductItem;
+import com.huimodel.api.base.ShopFacepay;
+import com.huimodel.api.response.ShopInfoResponse;
+import com.hwc.member.adapter.ProductGridAdapter;
+import com.hwc.member.view.activity.view.IShopIndexView;
+import com.hwc.member.view.base.FormBaseFragment;
+
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public class ShopIndexFragment extends FormBaseFragment implements IShopIndexView {
+	@Override
+	protected void init() {
+
+	}
+
+	@Override
+	public int getLayoutId() {
+		return 0;
+	}
+
+	@Override
+	public void setGridAdapter(ProductGridAdapter adapter) {
+
+	}
+
+	@Override
+	public void setShopMsg(String name, int shopfans, String products, String promotions, String address, String bulletin, boolean hasFacepay, ShopFacepay facepay) {
+
+	}
+
+
+	@Override
+	public void setShopIcon(String icon, String shopbg) {
+
+	}
+
+	@Override
+	public void setAttention(boolean is_attention) {
+
+	}
+
+	@Override
+	public void getShopInfo(ShopInfoResponse obj) {
+
+	}
+
+	@Override
+	public void setCat(List<ProductItem> productItem) {
+
+	}
+
+	@Override
+	public void refresh(List<DProduct> list) {
+
+	}
+
+	@Override
+	public void more(List<DProduct> list, boolean isEnd) {
+
+	}
+
+	@Override
+	public void clearLoadPage() {
+
+	}
+
+	@Override
+	public void showErrorPage() {
+
+	}
+
+//	@ViewInject(R.id.gridview)
+//	private MyGridView gridview;
+//	@ViewInject(R.id.shoplogo_iv)
+//	private CircleImageView shoplogo_iv;
+//	@ViewInject(R.id.shopname_tv)
+//	private TextView shopname_tv;
+//	@ViewInject(R.id.des_tv)
+//	private TextView des_tv;
+//	@ViewInject(R.id.attentionshop_iv)
+//	private ImageView attentionshop_iv;
+//
+//	private Long sid;
+//
+//	private ShopIndexPresenter presenter = new ShopIndexPresenter(this);
+//
+//	@Override
+//	protected void init() {
+//		gridview.setFocusable(false);
+//		sid = getActivity().getIntent().getLongExtra("0", -1);
+//		presenter.setData(sid);
+//	}
+//
+//	@Override
+//	public int getLayoutId() {
+//		return R.layout.fm_shopindex;
+//	}
+//
+//	@Override
+//	public void setGridAdapter(ProductGridAdapter adapter) {
+//		gridview.setAdapter(adapter);
+//	}
+//
+//	@OnItemClick(R.id.gridview)
+//	public void onGridItemClick(AdapterView<?> parent, View view,
+//			int position, long id) {
+//		goTo(ProductInfoActivity.class, presenter.adapter.getItem(position).getPid(), presenter.adapter.getItem(position).getShop_id());
+//	}
+//
+//	@OnClick(R.id.lucklypan_bt)
+//	public void goLucklyPan(View v){
+//		goTo(TurntableActivity.class);
+//	}
+//
+//	@OnClick(R.id.guaguale_bt)
+//	public void goGua(View v){
+//		goTo(ScratchActivity.class);
+//	}
+//
+////	@Override
+////	public void setShopMsg(String name, int shopfans,String products, String promotions,String address, String bulletin) {
+////		shopname_tv.setText(name);
+////		des_tv.setText(shopfans+"");
+////		ShopInfoActivity activity = (ShopInfoActivity) getActivity();
+////		activity.header.setTitle(name);
+////	}
+//
+//	@Override
+//	public void setShopIcon(String icon, String shopbg) {
+//		bitmapUtils.display(shoplogo_iv, icon);
+//	}
+//
+//	@OnClick(R.id.attentionshop_iv)
+//	public void attentionClick(View v){
+//		presenter.attention(sid);
+//	}
+//
+//	@Override
+//	public void clearLoadPage() {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public void showErrorPage() {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public void setAttention(boolean is_attention) {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public void getShopInfo(ShopInfoResponse obj) {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public void setCat(List<ProductItem> productItem) {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public void setShopMsg(String name, int shopfans, String products,
+//			String promotions, String address, String bulletin,
+//			boolean hasFacepay) {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public void refresh(ProductGridAdapter adapter) {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public void more(boolean isEnd) {
+//		// TODO Auto-generated method stub
+//
+//	}
+
+	
+
+}

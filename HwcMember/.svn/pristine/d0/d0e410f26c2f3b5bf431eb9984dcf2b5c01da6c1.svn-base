@@ -1,0 +1,17 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.hwc.member.adapter.HorizontalListViewAdapter;
+
+/**
+ * @author FZ
+ */
+public interface IMoreShopIndexView extends LoadDataView {
+
+	void setGridAdapter(HorizontalListViewAdapter adapter);
+	
+	void setShopMsg(String name);
+
+}

@@ -1,0 +1,24 @@
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.RequestBase;
+
+
+/***
+ * 每次抽奖请求
+ * @author lxk
+ *
+ */
+public class PromLotteryDrawRequest extends RequestBase {
+	private String prom_code;
+
+	public String getProm_code() {
+		return prom_code;
+	}
+
+	public void setProm_code(String prom_code) {
+		this.prom_code = prom_code;
+	}
+	
+	
+	
+}

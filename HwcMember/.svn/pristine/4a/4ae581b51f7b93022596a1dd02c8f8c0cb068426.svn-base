@@ -1,0 +1,433 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+import java.util.List;
+
+import android.graphics.BitmapFactory;
+import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.google.gson.Gson;
+import com.huimodel.api.base.Advert;
+import com.huimodel.api.base.Jump;
+import com.huimodel.api.base.ResponseBase;
+import com.hwc.member.R;
+import com.hwc.member.adapter.HotGoodsAdapter;
+import com.hwc.member.adapter.MainProductsAdapter;
+import com.hwc.member.anno.ViewTransform;
+import com.hwc.member.application.App;
+import com.hwc.member.bean.GetTuiMessage;
+import com.hwc.member.bean.MLocation;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.presenter.MainFragPresenter;
+import com.hwc.member.util.CommonUtils;
+import com.hwc.member.util.ImageTools;
+import com.hwc.member.util.LocationUtil;
+import com.hwc.member.util.MyRefreshListener;
+import com.hwc.member.util.MyRefreshListener.Callback;
+import com.hwc.member.view.activity.CaptureActivity;
+import com.hwc.member.view.activity.DialogLoginActivity;
+import com.hwc.member.view.activity.SearchActivity;
+import com.hwc.member.view.activity.luckdraw.PlatFormScratchActivity;
+import com.hwc.member.view.activity.luckdraw.PlatFormTurntableActivity;
+import com.hwc.member.view.activity.my.DiscountActivity;
+import com.hwc.member.view.activity.my.MessageActivity;
+import com.hwc.member.view.activity.my.PlayIntegralActivity;
+import com.hwc.member.view.activity.my.ShareActivity;
+import com.hwc.member.view.activity.product.HotProductListActivity;
+import com.hwc.member.view.activity.product.NewProductCategoryActivity;
+import com.hwc.member.view.activity.product.NewProductInfoActivity;
+import com.hwc.member.view.activity.view.IMainFragView;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.hwc.member.widget.MyAdGallery;
+import com.hwc.member.widget.MyAdGallery.MyOnItemClickListener;
+import com.hwc.member.widget.MyGridView;
+import com.hwc.member.widget.PullToRefreshLayout;
+import com.hwc.member.widget.PullableScrollView;
+import com.hwc.member.widget.PullableScrollView.OnBorderListener;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.lidroid.xutils.view.annotation.event.OnItemClick;
+
+/**
+ * @author FZ
+ */
+public class Main_Fragment extends FormBaseFragment implements IMainFragView {
+	@ViewInject(R.id.ad_ll)
+	@ViewTransform(height = 250)
+	private RelativeLayout ad_ll;
+	@ViewInject(R.id.horn_ll)
+	@ViewTransform(height = 126)
+	private RelativeLayout horn_ll;
+	@ViewInject(R.id.gridview)
+	@ViewTransform(height = 250)
+	private MyGridView gridView;
+	@ViewInject(R.id.image_wall_gallery)
+	private MyAdGallery<String> myAdGallery;
+	@ViewInject(R.id.ovalLayout)
+	private LinearLayout ovalLayout;
+	@ViewInject(R.id.pmgridview)
+	private MyGridView pmgridview;
+	@ViewInject(R.id.load_page)
+	private View load_page;
+	@ViewInject(R.id.load_error_page)
+	private View load_error_page;
+	@ViewInject(R.id.head_right)
+	private ImageView head_right;
+	private List<Advert> madlist;
+	private MainFragPresenter presenter = new MainFragPresenter(this);
+
+	@ViewInject(R.id.refresh_view)
+	private PullToRefreshLayout refresh_view;
+	@ViewInject(R.id.scrollview)
+	private PullableScrollView scrollview;
+	@ViewInject(R.id.up_iv)
+	private ImageView up_iv;
+	@ViewInject(R.id.nogoods_tv)
+	private TextView nogoods_tv;
+	private boolean flag = false;
+	private boolean iscanmore = true;
+	private int page = 1;
+	
+	private MyRefreshListener myRefreshListener;
+
+	@Override
+	public int getLayoutId() {
+		return R.layout.fm_main;
+	}
+
+	@Override
+	protected void init() {
+		getPosition();
+		presenter.setHomeData();
+		presenter.getProducts(page, null);
+		presenter.autologin();
+	
+		setUnReadMsg();
+		checkMsg();
+	}
+	
+	public void setUnReadMsg() {
+		// 读取未阅读的消息
+		List<GetTuiMessage> list;
+		try {
+			DbUtils mdb = DbUtils.create(App.mContext, Constant.dbName);
+			list = mdb.findAll(Selector.from(GetTuiMessage.class).where(
+					"ishow", "=", false));
+			if (list != null && list.size() >= 0) {
+				if(list.size() == 0){
+					head_right.setImageResource(R.drawable.white_message);
+				}else{
+					head_right.setImageBitmap(ImageTools.picText(BitmapFactory.decodeResource(this.mContext.getResources(), R.drawable.white_message), list.size() + "", 1, 1));
+				}
+			} else {
+				System.out.println("数据为空");
+			}
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 判断临时消息变量，如果有消息的情况下需要跳转对应界面
+	 */
+	// 1001 消息列表  1002商品列表  1003 热卖商品列表 1004发现 1005刮刮乐,1006转盘
+	public void checkMsg(){
+		if(Constant.gm!=null){
+			if(Constant.gm.getTag()==2){//2标签标识需要跳转
+				switch (Constant.gm.getActivity()) {
+				case 1001://消息列表
+					goTo(MessageActivity.class);
+					Constant.gm = null;
+					break;
+				case 1002:// 1002商品列表	
+					T("商品列表");
+					break;
+				case 1003:// 1003 热卖商品列表	HotProductListActivity //需要传关键字  page=1003,key=邦华V95
+					T("热卖商品列表");
+					break;
+				case 1004:// 1004 发现
+					T("1004 发现");	//跳转 Bustling_Fragment
+					break;
+				case 1005://刮刮乐       // page=prom,type=SCR|TURN,code=1000
+					T("刮刮乐");
+					break;
+				case 1006://大转盘     // page=prom,type=SCR|TURN,code=1000
+					T("大转盘");
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void initListener() {
+		myAdGallery.setMyOnItemClickListener(new MyOnItemClickListener() {
+
+			@Override
+			public void onItemClick(int curIndex) {
+				if(madlist.get(curIndex).getCat().equals("web")){
+					if(madlist.get(curIndex).getJump_url() != null){
+						goTo(ShareActivity.class,"广告详情","赶紧分享优惠活动给好友=。=","http://xs01.meituan.net/waimai_i/img/resource/weixinshare1.0c707072.png", madlist.get(curIndex).getJump_url());
+					}
+				}else if(madlist.get(curIndex).getCat().equals("app")){
+					Jump jump = new Gson().fromJson(madlist.get(curIndex).getJump_url(), Jump.class);
+					if(jump != null){
+						if(jump.getPage().equals("prom")){
+							//抽奖
+							if(jump.getType().equals("SCR")){
+								goTo(PlatFormScratchActivity.class, jump.getCode());
+							}else if(jump.getType().equals("TURN")){
+								goTo(PlatFormTurntableActivity.class, jump.getCode());
+							}
+						}else if(jump.getPage().equals("1003")){
+							goTo(HotProductListActivity.class, jump.getKey(), "热卖商品");
+						}else if(jump.getPage().equals("1001")){
+							goTo(MessageActivity.class);
+						}
+					}
+				}
+			}
+		});
+		
+		myRefreshListener = new MyRefreshListener(getActivity(), new Callback() {
+			
+			@Override
+			public void refresh(PullToRefreshLayout pullToRefreshLayout) {
+				GONE(nogoods_tv);
+				page = 1;
+				presenter.setHomeData();
+				presenter.getProducts(page, pullToRefreshLayout);
+			}
+			
+			@Override
+			public void loadMore(PullToRefreshLayout pullToRefreshLayout) {
+//				if(page >= 2){
+//					pullToRefreshLayout.loadmoreFinish(PullToRefreshLayout.SUCCEED);
+//					T("没有更多了");
+//				}else{
+//					page = ++page;
+//					presenter.getProducts(page, pullToRefreshLayout);
+//					T("加载成功");
+//				}
+			}
+		});
+		refresh_view.setOnRefreshListener(myRefreshListener);
+		scrollview.setMyOnScrollListener(new OnBorderListener() {
+			
+			@Override
+			public void onUp() {			
+				if(!flag){
+					AlphaAnimation aa = new AlphaAnimation(0.0f, 1.0f);
+					aa.setDuration(1000);
+					aa.setFillAfter(true);
+					up_iv.startAnimation(aa);
+					VISIBLE(up_iv);
+					flag = true;
+				}
+			}
+			
+			@Override
+			public void onTop() {}
+			
+			@Override
+			public void onDown() {				
+				if(flag){
+					AlphaAnimation aa = new AlphaAnimation(1.0f, 0.0f);
+					aa.setDuration(1000);
+					aa.setFillAfter(true);
+					up_iv.startAnimation(aa);
+					GONE(up_iv);
+					flag = false;
+				}
+				
+			}
+			
+			@Override
+			public void onBottom() {}
+
+			@Override
+			public void onQuickDown() {
+				if(!CommonUtils.isFastDoubleClick()){
+					if(iscanmore){
+						if(page >= 2){
+							VISIBLE(nogoods_tv);
+						}else{
+							page = ++page;
+							presenter.getProducts(page, null);
+						}
+					}
+				}
+			}
+		});
+	}
+	
+	@OnClick(R.id.up_iv)
+	public void goUp(View v){
+		scrollview.scrollTo(0, 0);
+	}
+
+	@Override
+	public void setMenu(HotGoodsAdapter adapter) {
+//		gridView.setAdapter(adapter);
+	}
+
+	@OnItemClick(R.id.pmgridview)
+	public void onGridItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		goTo(NewProductInfoActivity.class, presenter.hladapter.getItem(position)
+				.getPid(), presenter.hladapter.getItem(position).getShop_id(), presenter.hladapter.getItem(position).getName());
+	}
+
+	@Override
+	public void setGridAdapter(MainProductsAdapter adapter) {
+		// TODO Auto-generated method stub
+//		pmgridview.setAdapter(adapter);
+//		adapter.notifyDataSetChanged();
+	}
+
+	@OnItemClick(R.id.gridview)
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		switch (position) {
+		case 0:
+			goTo(NewProductCategoryActivity.class);
+			break;
+		case 1:
+			if (Member.isNull()) {
+				goTo(DialogLoginActivity.class);
+			} else {
+				goTo(DiscountActivity.class);
+			}
+			break;
+		case 2:
+			if (Member.isNull()) {
+				goTo(DialogLoginActivity.class);
+			} else {
+				goTo(PlayIntegralActivity.class);
+			}
+			break;
+		case 3:
+			if (Member.isNull()) {
+				goTo(DialogLoginActivity.class);
+			} else {
+//				goTo(FollowActivity.class);
+			}
+			break;
+		}
+	}
+
+	@Override
+	public void setPromAd(List<Advert> adList, int[] pic) {
+		madlist = adList;
+		myAdGallery.clearDisappearingChildren();
+//		myAdGallery.clearChildFocus(ovalLayout);
+		ovalLayout.removeAllViews();
+		CommonUtils.setAdGallery(myAdGallery, mContext, adList, pic, ovalLayout);
+	}
+
+	// 定位
+	public void getPosition() {
+		LocationUtil.requestLocation(new BDLocationListener() {
+			@Override
+			public void onReceiveLocation(BDLocation arg0) {
+				LocationUtil.stop();
+				MLocation mLocation = new MLocation();
+				mLocation.setId(1);
+				mLocation.setAddress(arg0.getAddress().address);
+				mLocation.setCity(arg0.getAddress().city);
+				mLocation.setCityCode(arg0.getAddress().cityCode);
+				mLocation.setCountry(arg0.getAddress().country);
+				mLocation.setCountryCode(arg0.getAddress().countryCode);
+				mLocation.setDistrict(arg0.getAddress().district);
+				mLocation.setProvince(arg0.getAddress().province);
+				mLocation.setStreet(arg0.getAddress().street);
+				mLocation.setStreetNumber(arg0.getAddress().streetNumber);
+				mLocation.setLatitude(arg0.getLatitude() + "");
+				mLocation.setLongitude(arg0.getLongitude() + "");		
+				presenter.check_Loaction(mLocation);
+				Constant.latitude = arg0.getLatitude() + "";
+				Constant.longitude = arg0.getLongitude() + "";
+				
+			}
+
+		});
+	}
+
+	@Override
+	public void clearLoadPage() {
+		load_page.setVisibility(View.GONE);
+	}
+
+	@OnClick(R.id.load_error_page)
+	public void Reloading(View v) {
+		VISIBLE(load_page);
+		init();
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+		GONE(load_page);
+		VISIBLE(load_error_page);
+	}
+
+	@OnClick(R.id.search_ll)
+	public void goSearch(View v) {
+		goTo(SearchActivity.class);
+	}
+
+	@OnClick(R.id.head_left)
+	public void goCapture(View v) {
+		goTo(CaptureActivity.class);
+	}
+
+	@OnClick(R.id.head_right)
+	public void goMsg(View v) {
+		
+//		CacheDataUtil.getInstance(App.mContext).clearAllData();
+//		bitmapUtils.clearCache();
+//		bitmapUtils.clearDiskCache();
+//		bitmapUtils.clearMemoryCache();
+//		T("缓存清理成功");
+		
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+			goTo(MessageActivity.class);
+		}	
+	}
+	
+	@Override
+	public void onResume() {
+		setUnReadMsg();
+		super.onResume();
+	}
+
+	@Override
+	public void setIsCanMore(boolean b) {
+		iscanmore = b;
+	}
+
+	@Override
+	public void notifyCarNum() {}
+	@Override
+	public void validateLocation(ResponseBase responseBase) {
+
+	}
+}

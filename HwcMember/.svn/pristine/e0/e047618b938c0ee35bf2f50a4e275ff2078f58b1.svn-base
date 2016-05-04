@@ -1,0 +1,9 @@
+package com.hwc.member.view.activity.view;
+
+import com.hwc.member.adapter.AddressListAdapter;
+
+public interface IAddressView extends LoadDataView{
+
+	void setList(AddressListAdapter adapter);
+	
+}

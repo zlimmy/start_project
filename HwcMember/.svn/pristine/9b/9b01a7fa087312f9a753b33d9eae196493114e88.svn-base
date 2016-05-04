@@ -1,0 +1,217 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+import android.graphics.drawable.ColorDrawable;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DPrizeCoupon;
+import com.hwc.member.R;
+import com.hwc.member.adapter.CodeFragAdapter;
+import com.hwc.member.presenter.UnUserCodePresenter;
+import com.hwc.member.util.ScreenUtil;
+import com.hwc.member.util.ToastUtil;
+import com.hwc.member.view.activity.my.DiscountInfoActivity;
+import com.hwc.member.view.activity.view.ICodeVIew;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.hwc.member.widget.PullToRefreshFooter;
+import com.hwc.member.widget.PullToRefreshHeadView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import in.srain.cube.views.loadmore.LoadMoreContainer;
+import in.srain.cube.views.loadmore.LoadMoreHandler;
+import in.srain.cube.views.loadmore.LoadMoreListViewContainer;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
+
+/**
+ * 优惠券：未使用
+ * 
+ * @author FZ
+ */
+public class UnUserCodeFragment extends FormBaseFragment implements ICodeVIew {
+
+	@ViewInject(R.id.load_more_list_view_ptr_frame)
+	private PtrFrameLayout mPtrFrameLayout;
+
+	@ViewInject(R.id.load_more_container)
+	LoadMoreListViewContainer load_more_container;
+
+	@ViewInject(R.id.listview)
+	private ListView mListView;
+
+
+	private List<DPrizeCoupon> couponList;
+	public CodeFragAdapter adapter;
+
+	private int mIndex = 0;
+	private int mRefreshIndex = 1;
+
+	@ViewInject(R.id.nodata_page)
+	private View nodata_page;
+	@ViewInject(R.id.nodata_tv)
+	private TextView nodata_tv;
+	@ViewInject(R.id.nodata_but)
+	private Button nodata_but;
+
+	private UnUserCodePresenter presenter = new UnUserCodePresenter(this);
+
+	@Override
+	protected void init() {
+		couponList = new ArrayList<>();
+		mListView.setDivider(new ColorDrawable(0xffffff));
+		mListView.setDividerHeight(ScreenUtil.dip2px(10));
+		adapter = new CodeFragAdapter(getContext(), couponList, R.layout.item_coupon, null);
+		mListView.setAdapter(adapter);
+			// mListView.setEmptyView(nodata_page);
+//		unusercode_refresh.doPullRefreshing(true, 0);// 刚进入时自动刷新
+
+	}
+
+	@Override
+	public void initListener() {
+//		unusercode_refresh.setOnRefreshListener(new OnRefreshListener<ListView>() {
+//
+//			@Override
+//			public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+//				// TODO Auto-generated method stub
+//				mRefreshIndex = 1;
+//				presenter.clearData();
+//				presenter.setListData(unusercode_refresh);
+//
+//			}
+//
+//			@Override
+//			public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+//				// TODO Auto-generated method stub
+//				mIndex = ++mRefreshIndex;
+//				presenter.setListMoreData(mIndex, unusercode_refresh);
+//
+//			}
+//		});
+		PullToRefreshHeadView headView = new PullToRefreshHeadView(getContext());
+		headView.setLastUpdateTimeKey(this.getClass().getSimpleName());
+		mPtrFrameLayout.setHeaderView(headView);
+		mPtrFrameLayout.addPtrUIHandler(headView);
+		mPtrFrameLayout.setPtrHandler(new PtrHandler() {
+			@Override
+			public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+
+				return PtrDefaultHandler.checkContentCanBePulledDown(frame, mListView, header);
+			}
+
+			@Override
+			public void onRefreshBegin(PtrFrameLayout frame) {
+				mRefreshIndex = 1;
+				presenter.setListData();
+			}
+		});
+
+		load_more_container.setAutoLoadMore(true);
+		final PullToRefreshFooter footer = new PullToRefreshFooter(getContext());
+		load_more_container.setLoadMoreView(footer);
+		load_more_container.setLoadMoreUIHandler(footer);
+
+		// binding view and data
+		load_more_container.setLoadMoreHandler(new LoadMoreHandler() {
+			@Override
+			public void onLoadMore(LoadMoreContainer loadMoreContainer) {
+				mIndex = ++mRefreshIndex;
+				presenter.setListMoreData(mIndex);
+			}
+		});
+
+
+		showProgressDialog(null);
+		mRefreshIndex = 1;
+		presenter.setListData();
+
+
+
+
+		mListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// TODO Auto-generated method stub
+				goTo(DiscountInfoActivity.class, adapter.getItem(position).getCoupon_id(), adapter
+						.getItem(position).getStatus());
+			}
+		});
+	}
+
+	@Override
+	public int getLayoutId() {
+		return R.layout.fm_unusercode;
+	}
+
+	@Override
+	public void setListAdapter(CodeFragAdapter adapter) {
+		mListView.setAdapter(adapter);
+	}
+
+	@Override
+	public void clearLoadPage() {
+	}
+
+	@Override
+	public void showErrorPage() {
+	}
+
+	@Override
+	public void setNodataPage() {
+		GONE(load_more_container);
+		VISIBLE(nodata_page);
+		nodata_tv.setText("还没有优惠券呢");
+		nodata_but.setText("我要去领优惠券!");
+		INVISIBLE(nodata_but);
+	}
+
+	@OnClick(R.id.nodata_but)
+	public void nodata_but(View v) {
+		ToastUtil.show("跳转界面");
+	}
+
+	@Override
+	public void setLoadEnable() {
+		ToastUtil.show("没有更多了");
+	}
+
+	@Override
+	public void refresh(List<DPrizeCoupon> list) {
+		GONE(nodata_page);
+		VISIBLE(load_more_container);
+		couponList.clear();
+		couponList.addAll(list);
+		adapter.notifyDataSetChanged();
+		mPtrFrameLayout.refreshComplete();
+		// load more
+		if (couponList.size() <= 0) {
+			setNodataPage();
+		} else if (couponList.size() < 5) {
+			load_more_container.loadMoreFinish(true, false);
+		} else {
+			load_more_container.loadMoreFinish(false, true);
+		}
+	}
+
+	@Override
+	public void more(List<DPrizeCoupon> list, boolean isEnd) {
+		couponList.addAll(list);
+		mPtrFrameLayout.refreshComplete();
+		// load more
+		load_more_container.loadMoreFinish(false, isEnd);
+		adapter.notifyDataSetChanged();
+	}
+}

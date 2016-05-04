@@ -1,0 +1,44 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+public class DiscoveryCollectRequest extends RequestBase {
+		
+		//收藏
+		private java.lang.Long id;
+		private java.lang.String cat;
+		private java.lang.Long content_id;
+		private java.lang.String status;
+		private java.lang.String remark;
+		public java.lang.Long getId() {
+			return id;
+		}
+		public void setId(java.lang.Long id) {
+			this.id = id;
+		}
+		public java.lang.String getCat() {
+			return cat;
+		}
+		public void setCat(java.lang.String cat) {
+			this.cat = cat;
+		}
+		public java.lang.Long getContent_id() {
+			return content_id;
+		}
+		public void setContent_id(java.lang.Long content_id) {
+			this.content_id = content_id;
+		}
+		public java.lang.String getStatus() {
+			return status;
+		}
+		public void setStatus(java.lang.String status) {
+			this.status = status;
+		}
+		public java.lang.String getRemark() {
+			return remark;
+		}
+		public void setRemark(java.lang.String remark) {
+			this.remark = remark;
+		}
+		
+}

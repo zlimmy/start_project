@@ -1,0 +1,146 @@
+package com.hwc.member.view.activity.luckdraw;
+
+import android.os.Handler;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.ImageView;
+
+import com.huimodel.api.base.ShopPromLottery;
+import com.huimodel.api.response.PromLotteryDrawResponse;
+import com.hwc.member.R;
+import com.hwc.member.common.Constant;
+import com.hwc.member.presenter.ShopTurntablePresenter;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.view.activity.DialogLoginActivity;
+import com.hwc.member.view.activity.view.ITurntableView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.LuckyPanView;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+/**
+ * 转盘
+ * @author Administrator
+ *
+ */
+@ContentView(R.layout.activity_turntable)
+public class TurntableActivity extends BaseActivity implements ITurntableView {
+
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.luckypan)
+	private LuckyPanView luckypan;
+	@ViewInject(R.id.start_btn)
+	private ImageView start_btn;
+	
+	private String promcode;
+	private String[] strs;
+	private String[] strs_price;
+	
+	private long sid;
+	
+	private ShopTurntablePresenter presenter = new ShopTurntablePresenter(this);
+	
+	private PromLotteryDrawResponse pld;
+	
+	@Override
+	protected void initView() {
+		setBack();
+		promcode = getIntent().getStringExtra("0");
+		sid = getIntent().getLongExtra("1", -1);
+		presenter.getPrizes(promcode, sid);
+	}
+
+	@Override
+	protected void initListener() {
+		start_btn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (!luckypan.isStart()) {
+//					start_btn.setImageResource(R.drawable.stop);
+//					luckypan.luckyStart(3);
+					presenter.playGame(promcode, strs, sid);
+				} else {
+					if (!luckypan.isShouldEnd()) {
+						start_btn.setImageResource(R.drawable.start);					
+						luckypan.luckyEnd();
+						new Handler().postDelayed(new Runnable() {
+							
+							@Override
+							public void run() {
+								if(pld.isIs_win()){
+									DialogUtil.showDialog(Constant.Dialog, "恭喜抽中:"+pld.getPrize().getDescript()+"是否领取?", Gravity.CENTER, context, null, new OnClickListener() {
+										
+										@Override
+										public void onClick(DialogPlus dialog, View view) {
+											switch (view.getId()) {
+											case R.id.cancel:
+												
+												break;
+											case R.id.confirm:
+												presenter.winlotterydraw(pld, sid);
+												
+												break;
+											}
+											dialog.dismiss();
+										}
+									}, null);
+								}else{
+									if(pld.getMsg() == null){
+										T("真可惜，就差那么一点呢！");
+									}else{
+										T(pld.getMsg());
+									}							
+								}
+							}
+						}, 3000);
+					}
+				}
+			}
+		});
+	}
+
+	@Override
+	public void clearLoadPage() {}
+
+	@Override
+	public void showErrorPage() {}
+
+	@Override
+	public void setPrizeData(ShopPromLottery ppl) {
+		if(!isEmpty(ppl.getProm_descript())){
+			header.setTitle(ppl.getProm_descript());
+		}
+		luckypan.setCount(ppl.getPrizes().size()+1);
+		strs = new String[ppl.getPrizes().size()+1];
+		strs_price = new String[ppl.getPrizes().size()+1];
+		for (int i = 0; i < ppl.getPrizes().size(); i++) {
+			strs[i] = ppl.getPrizes().get(i).getPrize().getDescript();
+			if(ppl.getPrizes().get(i).getPrize().getPrice() == 0 || ppl.getPrizes().get(i).getPrize().getPrice() == null){
+				strs_price[i] = "";
+			}else{
+				strs_price[i] = "￥" + ppl.getPrizes().get(i).getPrize().getPrice();
+			}
+		}
+		strs[ppl.getPrizes().size()] = "再接再厉";
+		strs_price[ppl.getPrizes().size()] = "";
+		luckypan.setItemStrs(strs);
+		luckypan.setItemStrsPrice(strs_price);
+	}
+
+	@Override
+	public void setPrize(int i, PromLotteryDrawResponse obj) {
+		start_btn.setImageResource(R.drawable.stop);
+		luckypan.luckyStart(i);
+		pld = obj;
+	}
+
+	@Override
+	public void goLogin() {
+		goTo(DialogLoginActivity.class);
+	}
+
+}

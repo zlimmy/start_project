@@ -1,0 +1,21 @@
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.base.Shopproductimg;
+
+public class ProductMagazineResponse extends ResponseBase {
+
+	/**
+	 * 杂志图
+	 */
+	private static final long serialVersionUID = -1813918396138611130L;
+	private ResponseBaseList<Shopproductimg> magazine;
+
+	public ResponseBaseList<Shopproductimg> getMagazine() {
+		return magazine;
+	}
+
+	public void setMagazine(ResponseBaseList<Shopproductimg> magazine) {
+		this.magazine = magazine;
+	}
+}

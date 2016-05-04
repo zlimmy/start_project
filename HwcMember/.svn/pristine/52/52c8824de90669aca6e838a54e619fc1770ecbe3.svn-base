@@ -1,0 +1,49 @@
+/**
+ * 
+ */
+package com.hwc.member.bean;
+
+/**
+ * @author FZ
+ */
+public class TeamerBean {
+
+	private String name = "张三";
+	private String mobile = "15226262626";
+	private String joinTime = "2015.06.23";
+	private double rebate = 125.08;
+	private String imgurl = "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png";
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getMobile() {
+		return mobile;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+	public String getJoinTime() {
+		return joinTime;
+	}
+	public void setJoinTime(String joinTime) {
+		this.joinTime = joinTime;
+	}
+	public double getRebate() {
+		return rebate;
+	}
+	public void setRebate(double rebate) {
+		this.rebate = rebate;
+	}
+	public String getImgurl() {
+		return imgurl;
+	}
+	public void setImgurl(String imgurl) {
+		this.imgurl = imgurl;
+	}
+	
+	
+	
+}

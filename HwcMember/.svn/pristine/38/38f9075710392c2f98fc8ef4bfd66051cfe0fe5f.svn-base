@@ -1,0 +1,24 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.base.Order;
+
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public interface IAllOrderView extends LoadDataView {
+
+//	void setList(NewOrderAdapter adapter);
+
+	// 刷新
+	void refresh(List<Order> list);
+
+	// 加载
+	void more(List<Order> list, boolean hasMore);
+
+	void setNodataPage();
+}

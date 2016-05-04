@@ -1,0 +1,182 @@
+/**
+ * 
+ */
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+/**
+ * @author FZ
+ */
+public class UserInfoRequest extends RequestBase {
+
+	private String avatar;
+	private String address;
+	private String city;
+	private String country;
+	private String nick;
+	private String real_name;
+	private String zip;
+	private String role;
+	
+	/** 身份证号码 **/
+	private String ident;
+	/** 电话号码 **/
+	private String phone;
+	/** 性别 **/
+	private String sex;
+	/** 电子邮件 **/
+	private String email;
+	/** 生日 **/
+	private String birthday;
+	
+	private String pay_type;
+	
+	private String payaccount;
+	
+	
+	public String getRole() {
+		return role;
+	}
+	public void setRole(String role) {
+		this.role = role;
+	}
+	public String getAvatar() {
+		return avatar;
+	}
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getCountry() {
+		return country;
+	}
+	public void setCountry(String country) {
+		this.country = country;
+	}
+	public String getNick() {
+		return nick;
+	}
+	public void setNick(String nick) {
+		this.nick = nick;
+	}
+	public String getReal_name() {
+		return real_name;
+	}
+	public void setReal_name(String real_name) {
+		this.real_name = real_name;
+	}
+	public String getZip() {
+		return zip;
+	}
+	public void setZip(String zip) {
+		this.zip = zip;
+	}
+	
+	
+	
+	/**
+	 * @return the ident
+	 */
+	public String getIdent() {
+		return ident;
+	}
+	/**
+	 * @param ident the ident to set
+	 */
+	public void setIdent(String ident) {
+		this.ident = ident;
+	}
+	/**
+	 * @return the phone
+	 */
+	public String getPhone() {
+		return phone;
+	}
+	/**
+	 * @param phone the phone to set
+	 */
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	/**
+	 * @return the sex
+	 */
+	public String getSex() {
+		return sex;
+	}
+	/**
+	 * @param sex the sex to set
+	 */
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
+	/**
+	 * @return the email
+	 */
+	public String getEmail() {
+		return email;
+	}
+	/**
+	 * @param email the email to set
+	 */
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	/**
+	 * @return the birthday
+	 */
+	public String getBirthday() {
+		return birthday;
+	}
+	/**
+	 * @param birthday the birthday to set
+	 */
+	public void setBirthday(String birthday) {
+		this.birthday = birthday;
+	}
+	
+	
+	
+	/**
+	 * @return the pay_type
+	 */
+	public String getPay_type() {
+		return pay_type;
+	}
+	/**
+	 * @param pay_type the pay_type to set
+	 */
+	public void setPay_type(String pay_type) {
+		this.pay_type = pay_type;
+	}
+	/**
+	 * @return the payaccount
+	 */
+	public String getPayaccount() {
+		return payaccount;
+	}
+	/**
+	 * @param payaccount the payaccount to set
+	 */
+	public void setPayaccount(String payaccount) {
+		this.payaccount = payaccount;
+	}
+	@Override
+	public String toString() {
+		return "UserInfoRequest [avatar=" + avatar + ", address=" + address
+				+ ", city=" + city + ", country=" + country + ", nick=" + nick
+				+ ", real_name=" + real_name + ", zip=" + zip + "]";
+	}
+}

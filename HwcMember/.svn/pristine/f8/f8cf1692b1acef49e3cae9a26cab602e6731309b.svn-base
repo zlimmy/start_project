@@ -1,0 +1,92 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Bitmap.Config;
+import android.graphics.Paint;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DProduct;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+import java.util.List;
+
+/**
+ * @author FZ
+ * 主页，店铺主页，全部商品GridView适配器
+ */
+public class ProductGridAdapter extends MirAdapter<DProduct> {
+
+	private BitmapUtils utils;
+	
+	public ProductGridAdapter(Context context,
+			List<DProduct> mDatas, int itemLayoutId,
+			BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		utils = new BitmapUtils(mContext);
+	}
+
+	@SuppressLint("InlinedApi")
+	@Override
+	public void convert(HolderEntity helper, DProduct item) {
+		utils.configDefaultBitmapConfig(Config.ARGB_8888);
+		utils.configDefaultLoadingImage(R.drawable.icon_defultbg);
+		utils.configDefaultLoadFailedImage(R.drawable.icon_defultbg);
+		utils.configDefaultBitmapMaxSize(340, 340);
+		
+		ImageView iv = helper.getView(R.id.pro_iv);
+
+		utils.display(iv, item.getImageurl());
+//		utils.display(iv, "http://img2.imgtn.bdimg.com/it/u=404257037,585340839&fm=15&gp=0.jpg");
+		View  view = helper.getView(R.id.prolist_rl);
+		ViewTransformUtil.layoutParams(view, view.getLayoutParams(), 340,LayoutParams.WRAP_CONTENT);
+		ViewTransformUtil.layoutParams(iv, iv.getLayoutParams(), 340,340);
+		if(item.getSellPt() != null && !item.getSellPt().equals("")){
+			helper.setText(R.id.name_tv, item.getName() + "  " + item.getSellPt().replace("\n", ""));
+		}else{
+			helper.setText(R.id.name_tv, item.getName().replace("\n", "") +"");
+		}
+		
+		TextView t = helper.getView(R.id.price_tv);
+		TextView newprice = helper.getView(R.id.prom_price);
+		if(item.getProminfo()!=null){
+			newprice.setText("￥"+CommonUtil.conversionDouble(item.getPrice())+"");
+			newprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG|Paint.ANTI_ALIAS_FLAG); 
+			helper.setText(R.id.price_tv, "￥"+CommonUtil.conversionDouble(item.getProminfo().getProm_price())+"");
+			newprice.setVisibility(View.VISIBLE);
+		}else{	
+			newprice.setVisibility(View.INVISIBLE);
+			t.setText("￥"+CommonUtil.conversionDouble(item.getPrice())+"");
+			t.getPaint().setFlags(0|Paint.ANTI_ALIAS_FLAG);
+		}
+		
+		TextView num_flag = helper.getView(R.id.num_flag);
+		TextView stock_flag = helper.getView(R.id.stock_flag);
+		if(item.getNum_flag() != null && !item.getNum_flag().equals("")){
+			num_flag.setText(item.getNum_flag());
+			num_flag.setVisibility(View.VISIBLE);
+		}else{
+			num_flag.setVisibility(View.INVISIBLE);
+		}
+		
+		if(item.getStock_flag() != null && !item.getStock_flag().equals("")){
+			stock_flag.setText(item.getStock_flag());
+			stock_flag.setVisibility(View.VISIBLE);
+		}else{
+			stock_flag.setVisibility(View.INVISIBLE);
+		}
+		helper.setText(R.id.views_tv,String.valueOf(item.getViews_num()));
+	}
+
+}

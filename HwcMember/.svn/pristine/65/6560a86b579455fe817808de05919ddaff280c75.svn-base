@@ -1,0 +1,28 @@
+/**
+ * 
+ */
+package com.huimodel.api.request;
+
+import java.util.List;
+
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.base.ShopPids;
+
+/**
+ * @author FZ
+ */
+public class ShopCarRequest extends RequestBase {
+
+	private List<ShopPids> pids;
+
+	public List<ShopPids> getPids() {
+		return pids;
+	}
+
+	public void setPids(List<ShopPids> pids) {
+		this.pids = pids;
+	}
+	
+	
+	
+}

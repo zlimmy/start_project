@@ -1,0 +1,36 @@
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.ResponseBase;
+
+public class ProductRecommendResponse extends ResponseBase {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private String show_type;
+
+	private List<DProduct> products;
+
+	public String getShow_type() {
+		return show_type;
+	}
+
+	public void setShow_type(String show_type) {
+		this.show_type = show_type;
+	}
+
+	public List<DProduct> getProducts() {
+		return products;
+	}
+
+	public void setProducts(List<DProduct> products) {
+		this.products = products;
+	}
+   
+	
+}

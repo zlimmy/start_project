@@ -1,0 +1,62 @@
+package com.hwc.member.view.activity.my;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
+import android.widget.PopupWindow;
+
+import com.hwc.member.R;
+import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+public class RetPhotoPW extends PopupWindow {
+	
+	@ViewInject(R.id.camera_but)
+	private Button camera_but;
+	@ViewInject(R.id.album_but)
+	private Button album_but;
+	@ViewInject(R.id.cancel_but)
+	private Button cancel_but;
+	private View mMenuView;
+
+	public RetPhotoPW(Activity context,OnClickListener itemsOnClick) {
+		super(context);
+		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mMenuView = inflater.inflate(R.layout.dialog_resetphoto, null);
+		ViewUtils.inject(this,mMenuView);
+		this.setContentView(mMenuView);
+		this.setWidth(LayoutParams.MATCH_PARENT);
+		this.setHeight(LayoutParams.WRAP_CONTENT);
+		this.setFocusable(true);
+		ColorDrawable dw = new ColorDrawable(0xb0000000);
+		this.setBackgroundDrawable(dw);
+		camera_but.setOnClickListener(itemsOnClick);
+		album_but.setOnClickListener(itemsOnClick);
+		mMenuView.setOnTouchListener(new OnTouchListener() {
+		public boolean onTouch(View v, MotionEvent event) {	
+				int height = mMenuView.findViewById(R.id.pop_layout).getTop();
+				int y=(int) event.getY();
+				if(event.getAction()==MotionEvent.ACTION_UP){
+					if(y<height){
+						dismiss();
+					}
+				}				
+				return true;
+			}
+		});
+
+	}
+
+	@OnClick(R.id.cancel_but)
+	public void cancel_but(View v){
+		dismiss();
+	}
+}

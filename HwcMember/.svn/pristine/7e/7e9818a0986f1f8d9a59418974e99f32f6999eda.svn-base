@@ -1,0 +1,29 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+public class PromLotteryDrawRequest extends RequestBase {
+	private String prom_code;
+
+	/***
+	 * 是否需要扣除积分
+	 */
+	private boolean deduct_Point;
+
+	public String getProm_code() {
+		return prom_code;
+	}
+
+	public void setProm_code(String prom_code) {
+		this.prom_code = prom_code;
+	}
+
+	public boolean isDeduct_Point() {
+		return deduct_Point;
+	}
+
+	public void setDeduct_Point(boolean deduct_Point) {
+		this.deduct_Point = deduct_Point;
+	}
+
+}

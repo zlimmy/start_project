@@ -1,0 +1,107 @@
+package com.hwc.member.view.activity;
+
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import cn.smssdk.SMSSDK;
+
+import com.hwc.member.R;
+import com.hwc.member.common.Constant;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.SMSUtil;
+import com.hwc.member.util.SMSUtil.Callback;
+import com.hwc.member.util.UtilActivity;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.EditDelText;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+@ContentView(R.layout.activity_regist_step2)
+public class RegistStep2Activity extends BaseActivity {
+
+	@ViewInject(R.id.phone_tv)
+	private TextView phone_tv;
+	private String phone;
+	@ViewInject(R.id.getcode)
+	private Button getcode;
+	@ViewInject(R.id.code_et)
+	private EditDelText code_et;
+	
+	private SMSUtil util;
+	
+	@Override
+	protected void initView() {
+		phone = getIntent().getStringExtra("0");
+		phone_tv.setText(phone);
+		setDownTime(getcode);
+		timer.start();
+		
+		util = new SMSUtil(this);
+		util.initSMS();
+	}
+
+	@Override
+	protected void initListener() {
+		setBack(R.drawable.back, null, new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				DialogUtil.showDialog(Constant.Dialog, "验证码短信略有延迟，确定返回并重新开始？", Gravity.CENTER, context, null, new OnClickListener() {
+					
+					@Override
+					public void onClick(DialogPlus dialog, View view) {
+						switch (view.getId()) {
+						case R.id.cancel:
+							break;
+
+						case R.id.confirm:
+							UtilActivity.finishNum(2);
+							break;
+						}
+						dialog.dismiss();
+					}
+				}, null);
+			}
+		});
+		
+		util.registerCallback(new Callback() {
+
+			@Override
+			public void goToRegist() { 
+				goTo(RegistStep3Activity.class, phone);
+				finish();
+			}
+
+			@Override
+			public void getCheckCode() {
+			}
+		});
+	}
+
+	@OnClick(R.id.getcode)
+	public void getCode(View v){
+		SMSSDK.getVerificationCode("86", phone);
+		setDownTime(getcode);
+		timer.start();
+	}
+	
+	@OnClick(R.id.bt)
+	public void checkCode(View v){
+		if(isEmpty(getViewValue(code_et))){
+			code_et.startAnimation(shake);
+			return;
+		}
+		SMSSDK.submitVerificationCode("86", phone, getViewValue(code_et));	
+	}
+	
+	@Override
+	protected void onDestroy() {
+		SMSSDK.unregisterAllEventHandler();
+		super.onDestroy();
+	}
+	
+}

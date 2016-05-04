@@ -1,0 +1,60 @@
+/**
+ * 
+ */
+package com.hwc.member.util;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Context;
+import android.telephony.TelephonyManager;
+import android.widget.LinearLayout;
+
+import com.huimodel.api.base.Advert;
+import com.hwc.member.R;
+import com.hwc.member.application.App;
+import com.hwc.member.widget.MyAdGallery;
+
+/**
+ * @author FZ
+ */
+public class CommonUtils {
+
+	/** 两次点击按钮间隔时间，间隔小于5秒返回true **/
+	private static long lastClickTime;
+
+	public static boolean isFastDoubleClick() {
+		long time = System.currentTimeMillis();
+		long timeD = time - lastClickTime;
+		if (timeD > 0 && timeD < 2000) {
+			return true;
+		}
+		lastClickTime = time;
+		return false;
+
+	}
+
+	// 设置首页轮播
+	public static void setAdGallery(MyAdGallery<String> myAdGallery, Context context, List<Advert> adList, int[] pic, LinearLayout ll) {
+		if(adList != null && pic == null){
+			List<String> list = new ArrayList<String>();
+			for (int i = 0; i < adList.size(); i++) {
+				if(adList.get(i).getAd_url() != null){
+					list.add(adList.get(i).getAd_url());
+				}
+			}
+			myAdGallery.start(context, list, null, 3000, ll,R.drawable.dot_unsel, R.drawable.dot_sel);
+		}else if(adList == null && pic != null){
+			myAdGallery.start(context, null, pic, 3000, ll,R.drawable.dot_unsel, R.drawable.dot_sel);
+		}
+	}
+	
+	/** 获取android手机Imei码 **/
+	public static String getImei() {
+		TelephonyManager TelephonyMgr = (TelephonyManager) App.mContext
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		String szImei = TelephonyMgr.getDeviceId(); // Requires
+		return szImei;
+	}
+
+}

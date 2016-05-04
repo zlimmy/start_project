@@ -1,0 +1,174 @@
+package com.hwc.member.adapter.base;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.util.SparseArray;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+/**
+ * @author FZ
+ * EntityViewHolder.java
+ * 2015-8-14
+ * 下午12:05:19
+ */
+public class HolderEntity {
+	private final SparseArray<View> mViews;
+	private int mPosition;
+	private View mConvertView;
+
+	private HolderEntity(Context context, ViewGroup parent, int layoutId, int position) {
+		this.mPosition = position;
+		this.mViews = new SparseArray<View>();
+		mConvertView = LayoutInflater.from(context).inflate(layoutId, parent, false);
+		// setTag
+		mConvertView.setTag(this);
+	}
+
+	/**
+	 * 得到一个Holder对象
+	 * 
+	 * @param context
+	 * @param convertView
+	 * @param parent
+	 * @param layoutId
+	 * @param position
+	 * @return
+	 */
+	public static HolderEntity get(Context context, View convertView, ViewGroup parent, int layoutId, int position) {
+		HolderEntity holder = null;
+		if (convertView == null) {
+			holder = new HolderEntity(context, parent, layoutId, position);
+		} else {
+			holder = (HolderEntity) convertView.getTag();
+			holder.mPosition = position;
+		}
+		return holder;
+	}
+
+	public View getConvertView() {
+		return mConvertView;
+	}
+
+	/**
+	 * 通过控件Id获取对应控件，如果没有则加入views
+	 * 
+	 * @param viewId
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends View> T getView(int viewId) {
+		View view = mViews.get(viewId);
+		if (view == null) {
+			view = mConvertView.findViewById(viewId);
+			mViews.put(viewId, view);
+		}
+		return (T) view;
+	}
+
+	/**
+	 * 为TextView设置字符串
+	 * 
+	 * @param viewId
+	 * @param text
+	 * @return
+	 */
+	public HolderEntity setText(int viewId, CharSequence text) {
+		TextView view = getView(viewId);
+		view.setText(text);
+		return this;
+	}
+	
+	
+	/**
+	 * 为TextView设置字体颜色
+	 * 
+	 * @param viewId
+	 * @param color
+	 * @return
+	 */
+	public HolderEntity setTextColor(int viewId, int color) {
+		TextView view = getView(viewId);
+		view.setTextColor(color);
+		return this;
+	}
+
+
+    /**
+	 *
+	 * 设置VIEw是否可见
+	 *
+	 * @param viewId
+	 * @param visbility
+	 * @return
+     */
+
+	public HolderEntity setViewVisbility(int viewId, int visbility) {
+		View view = getView(viewId);
+		view.setVisibility(visbility);
+		return this;
+	}
+
+
+
+	/**
+	 * 为ImageView设置图片
+	 * 
+	 * @param viewId
+	 * @param drawableId
+	 * @return
+	 */
+	public HolderEntity setImageResource(int viewId, int drawableId) {
+		ImageView view = getView(viewId);
+		if(view!=null){
+			view.setImageResource(drawableId);	
+		}
+		return this;
+	}
+
+	/**
+	 * 为ImageView设置图片
+	 * 
+	 * @param viewId
+	 * @param drawableId
+	 * @return
+	 */
+	public HolderEntity setImageBitmap(int viewId, Bitmap bm) {
+		ImageView view = getView(viewId);
+		view.setImageBitmap(bm);
+		return this;
+	}
+	
+	
+	/**
+	 * 为View设置backgroundcolor
+	 * 
+	 * @param viewId
+	 * @param backgroundcolor
+	 * @return
+	 */
+	public HolderEntity setBackground(int viewId, int color) {
+		View view = getView(viewId);
+		view.setBackgroundColor(color);
+		return this;
+	}
+
+	/**
+	 * 为ImageView设置图片
+	 * 
+	 * @param viewId
+	 * @param drawableId
+	 * @return
+	 */
+//	public HolderEntity setImageByUrl(int viewId, String url) {
+//		UniversalImageLoader.getInstance().displayImage(url, (ImageView) getView(viewId));
+//		return this;
+//	}
+
+	public int getPosition() {
+		return mPosition;
+	}
+
+}

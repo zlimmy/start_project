@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white" >
+
+    <RelativeLayout
+        android:id="@+id/prom_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/gray2" >
+
+        <TextView
+            android:id="@+id/tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:text="巨实惠"
+            android:textSize="@dimen/text_18"
+            android:layout_centerVertical="true" />
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:text="(各门店促销商品)"
+            android:textSize="@dimen/text_12"
+            android:textColor="@color/gray4"
+            android:layout_toRightOf="@id/tv"
+            android:layout_centerVertical="true" />
+        
+        <TextView
+            android:id="@+id/more_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:text="查看更多"
+            android:textSize="@dimen/text_12"
+            android:textColor="@color/gray4"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+        
+        
+    </RelativeLayout>
+
+    <com.hwc.member.widget.MyGridView
+        android:id="@+id/gridview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="2"
+        android:scrollbars="none" />
+
+</LinearLayout>

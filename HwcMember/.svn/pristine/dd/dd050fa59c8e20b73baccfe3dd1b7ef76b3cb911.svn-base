@@ -1,0 +1,243 @@
+package com.hwc.member.view.activity.order;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+
+import com.hwc.member.R;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.view.fragment.NewOrderFragment;
+import com.hwc.member.widget.smarttablaout.SmartTabLayout;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+@ContentView(R.layout.activity_order)
+public class NewOrderActivity extends BaseActivity {
+
+
+	@ViewInject(R.id.viewpager)
+	private ViewPager viewPager;
+	@ViewInject(R.id.viewpagertab)
+	private SmartTabLayout viewPagerTab;
+	private int position;
+
+	@Override
+	public void beforeOnCreate() {
+		// TODO Auto-generated method stub
+		super.beforeOnCreate();
+	}
+
+	@Override
+	protected void initView() {
+		position = getIntent().getIntExtra("0", 0);
+
+		MyAdapter adapter = new MyAdapter(getSupportFragmentManager());
+
+		viewPager.setAdapter(adapter);
+		viewPager.setOffscreenPageLimit(0);
+		viewPagerTab.setViewPager(viewPager);
+		viewPager.setCurrentItem(position);
+	}
+
+	@Override
+	protected void initListener() {
+		setBack();
+	}
+
+
+	public static class MyAdapter extends FragmentPagerAdapter {
+
+		private static final String[] CONTENT = new String[]{"待付款", "待发货", "待收货", "售后", "全部"};
+
+
+		public MyAdapter(FragmentManager fm) {
+			super(fm);
+		}
+
+		@Override
+		public int getCount() {
+			return 5;
+		}
+
+		@Override
+		public CharSequence getPageTitle(int position) {
+			return CONTENT[position];
+		}
+
+		@Override
+		public Fragment getItem(int position) {
+			return NewOrderFragment.newInstance(position);
+		}
+	}
+
+//	@ViewInject(R.id.order_refres)
+//	private PullToRefreshListView order_refres;
+//	private ListView mListView;
+//	private MyOrderAdapter myOrderAdapter;
+//	private List<Order> moreList;
+//	private int mIndex = 1;
+//
+//	@ViewInject(R.id.nodata_page)
+//	private View nodata_page;
+//	@ViewInject(R.id.nodata_tv)
+//	private TextView nodata_tv;
+//	@ViewInject(R.id.nodata_but)
+//	private Button nodata_but;
+//
+//	@ViewInject(R.id.header)
+//	private LXHeadView header;
+//
+//	private int tag = 1;
+//
+//	private AllOrderPresenter presenter = new AllOrderPresenter(this);
+//
+//	@Override
+//	protected void initView() {
+//		// TODO Auto-generated method stub
+//
+//		tag = getIntent().getIntExtra("0", 1);
+//		setHead(tag);
+//		order_refres.setPullLoadEnabled(false);
+//		order_refres.setScrollLoadEnabled(true);
+//		moreList = new ArrayList<Order>();
+//		myOrderAdapter = new MyOrderAdapter(getContext(), moreList, R.layout.item_order, null);
+//		mListView = order_refres.getRefreshableView();
+//		mListView.setDivider(new ColorDrawable(getResources().getColor(R.color.shop_background)));
+//		mListView.setDividerHeight(ScreenUtil.dip2px(10));
+//		mListView.setAdapter(myOrderAdapter);
+//
+//	}
+//
+//	@Override
+//	protected void initListener() {
+//		// TODO Auto-generated method stub
+//		setBack();
+//
+//		order_refres.setOnRefreshListener(new OnRefreshListener<ListView>() {
+//
+//			@Override
+//			public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+//				// TODO Auto-generated method stub
+//				presenter.refresh(tag);
+//
+//			}
+//
+//			@Override
+//			public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+//				// TODO Auto-generated method stub
+//				mIndex++;
+//				presenter.more(tag, mIndex);
+//
+//			}
+//		});
+//
+//		setLastUpdateTime();
+//		order_refres.doPullRefreshing(true, 0);
+//		mListView.setOnItemClickListener(new OnItemClickListener() {
+//
+//			@Override
+//			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//				// TODO Auto-generated method stub
+//				if (myOrderAdapter.getItem(position).getTradefrom().equals("FACEPAY")) {
+//					goTo(PreferentialOrderDetailActivity.class, moreList.get(position).getRid());
+//				} else {
+//					goToForResult(OrderDetailsActivity.class, moreList.get(position).getRid());
+//				}
+//			}
+//		});
+//	}
+//
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		// TODO Auto-generated method stub
+//		super.onActivityResult(requestCode, resultCode, data);
+//		if (resultCode == RESULT_OK) {
+//			order_refres.doPullRefreshing(true, 0);
+//		}
+//	}
+//
+//	@Override
+//	public void clearLoadPage() {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public void showErrorPage() {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public void refresh(List<Order> list) {
+//		// TODO Auto-generated method stub
+//		if (moreList == null) {
+//			moreList = new ArrayList<Order>();
+//		}
+//		moreList.clear();
+//		moreList.addAll(list);
+//		myOrderAdapter.notifyDataSetChanged();
+//		order_refres.onPullDownRefreshComplete();
+//		order_refres.onPullUpRefreshComplete();
+//		order_refres.setHasMoreData(true);
+//		setLastUpdateTime();
+//		mIndex = 1;
+//		if (moreList.size() <= 0) {
+//			setNodataPage();
+//		}
+//	}
+//
+//	@Override
+//	public void more(List<Order> list, boolean isEnd) {
+//		// TODO Auto-generated method stub
+//		if (isEnd) {
+//			moreList.addAll(list);
+//		}
+//		myOrderAdapter.notifyDataSetChanged();
+//		order_refres.onPullDownRefreshComplete();
+//		order_refres.onPullUpRefreshComplete();
+//		order_refres.setHasMoreData(isEnd);
+//	}
+//
+//	@Override
+//	public void setNodataPage() {
+//		// TODO Auto-generated method stub
+//		order_refres.setScrollLoadEnabled(false);
+//		order_refres.setPullRefreshEnabled(true);
+//		VISIBLE(nodata_page);
+//		nodata_tv.setText("还没有订单呢");
+//		INVISIBLE(nodata_but);
+//
+//	}
+//
+//	private void setLastUpdateTime() {
+//		String text = formatDateTime(System.currentTimeMillis());
+//		order_refres.setLastUpdatedLabel(text);
+//
+//	}
+//
+//	private void setHead(int tag) {
+//		switch (tag) {
+//		case 1:
+//			header.setTitle("我的订单");
+//			break;
+//		case 2:
+//			header.setTitle("我的订单-待付款");
+//			break;
+//		case 3:
+//			header.setTitle("我的订单-待发货");
+//			break;
+//		case 4:
+//			header.setTitle("我的订单-待收货");
+//			break;
+//		case 5:
+//			header.setTitle("我的订单-售后");
+//			break;
+//
+//		default:
+//			break;
+//		}
+//	}
+
+}

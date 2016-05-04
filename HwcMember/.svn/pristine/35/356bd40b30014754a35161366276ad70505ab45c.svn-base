@@ -1,0 +1,103 @@
+package com.hwc.member.view.activity.luckdraw;
+
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.PromLotteryAdapter;
+import com.hwc.member.presenter.PlatFormListPresenter;
+import com.hwc.member.util.MyRefreshListener;
+import com.hwc.member.util.MyRefreshListener.Callback;
+import com.hwc.member.view.activity.shop.NewShopInfoActivity;
+import com.hwc.member.view.activity.view.IPlatFormListView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.PullToRefreshLayout;
+import com.hwc.member.widget.PullableListView;
+import com.hwc.member.widget.SimpleHUD;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnItemClick;
+
+@ContentView(R.layout.activity_plat_form_list)
+public class PlatFormListActivity extends BaseActivity implements IPlatFormListView {
+
+	@ViewInject(R.id.listview)
+	private PullableListView listview;
+	@ViewInject(R.id.refresh_view)
+	private PullToRefreshLayout refresh_view;
+	
+	@ViewInject(R.id.nodata_page)
+	private View nodata_page;
+	@ViewInject(R.id.nodata_tv)
+	private TextView nodata_tv;
+	@ViewInject(R.id.nodata_but)
+	private Button nodata_but;
+	
+	private boolean isFirstIn = true;
+	private MyRefreshListener myRefreshListener;
+	
+	private PlatFormListPresenter presenter = new PlatFormListPresenter(this);
+	
+	@Override
+	protected void initView() {
+		
+	}
+	
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus){
+		super.onWindowFocusChanged(hasFocus);
+		// 第一次进入自动刷新
+		if (isFirstIn){
+			refresh_view.autoRefresh();
+			isFirstIn = false;
+		}
+	}
+
+	@Override
+	protected void initListener() {
+		setBack();
+		myRefreshListener = new MyRefreshListener(PlatFormListActivity.this, new Callback() {
+			
+			@Override
+			public void refresh(PullToRefreshLayout pullToRefreshLayout) {
+				presenter.getData();
+			}
+			
+			@Override
+			public void loadMore(PullToRefreshLayout pullToRefreshLayout) {
+				SimpleHUD.showInfoMessage(context, "没有更多了");
+			}
+		});
+		refresh_view.setOnRefreshListener(myRefreshListener);
+	}
+
+	@Override
+	public void clearLoadPage() {}
+
+	@Override
+	public void showErrorPage() {
+		VISIBLE(nodata_page);
+		nodata_tv.setText("没有活动!");
+		INVISIBLE(nodata_but);
+	}
+
+	@Override
+	public void setList(PromLotteryAdapter adapter) {
+		listview.setAdapter(adapter);
+	}
+	
+	@OnItemClick(R.id.listview)
+	public void onListItemClick(AdapterView<?> parent, View view,
+			int position, long id) {
+		if(presenter.adapter.getItem(position).getProm_cat().equals("SCR")){
+			//刮刮乐
+			goTo(PlatFormScratchActivity.class, presenter.adapter.getItem(position).getProm_code());
+		}else if(presenter.adapter.getItem(position).getProm_cat().equals("TURN")){
+			//大转盘
+			goTo(NewShopInfoActivity.class, presenter.adapter.getItem(position).getProm_code());
+		}
+	}
+	
+}

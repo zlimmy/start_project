@@ -1,0 +1,46 @@
+/**
+ * 
+ */
+package com.hwc.member.util;
+
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.TranslateAnimation;
+
+/**
+ * @author FZ
+ */
+public class AnimationUtil {
+
+	public static LayoutAnimationController getListAnim(){
+		AnimationSet set = new AnimationSet(false);
+		Animation animation = new AlphaAnimation(0, 1); // AlphaAnimation
+														// 控制渐变透明的动画效果
+		animation.setDuration(200); // 动画时间毫秒数
+		set.addAnimation(animation); // 加入动画集合
+
+		animation = new TranslateAnimation(200, 0, 100, 0); // ScaleAnimation
+															// 控制尺寸伸缩的动画效果
+		animation.setDuration(200);
+		animation.setInterpolator(new AccelerateInterpolator());
+		set.addAnimation(animation);
+
+		// animation = new RotateAnimation(30, 10); // TranslateAnimation&nbsp;
+		// // 控制画面平移的动画效果
+		// animation.setDuration(1000);
+		// set.addAnimation(animation);
+		//
+		// animation = new ScaleAnimation(5, 0, 2, 0); // RotateAnimation&nbsp;
+		// // 控制画面角度变化的动画效果
+		// animation.setDuration(1000);
+		// set.addAnimation(animation);
+
+		LayoutAnimationController controller = new LayoutAnimationController(set, 1);
+		// controller.setOrder(LayoutAnimationController.ORDER_RANDOM);
+		return controller;
+	}
+	
+}

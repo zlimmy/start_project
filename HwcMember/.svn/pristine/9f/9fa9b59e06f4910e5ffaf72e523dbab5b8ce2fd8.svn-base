@@ -1,0 +1,65 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.base.PointExchange;
+import com.huimodel.api.request.PointExchangeRequest;
+import com.huimodel.api.response.PointExchangeResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.PointHistoryAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IPointHistoryView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class PointHistoryPresenter {
+
+	private IPointHistoryView view;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	private PointHistoryAdapter adapter;
+	
+	public PointHistoryPresenter(IPointHistoryView view){
+		this.view = view;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void getData(){
+		PointExchangeRequest per = new PointExchangeRequest();
+		per.setUser_id_by(Member.getInstance().getUser_id());
+		PointExchange pe = new PointExchange();
+		pe.setUser_id(Member.getInstance().getUser_id());
+		per.setEntity(pe);
+		per.setImei(Constant.IMEI);
+		iHwcBizMainImpl.searchPointExchanges(per, view.getContext(), new IResult<PointExchangeResponse>() {
+			
+			@Override
+			public void result(PointExchangeResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						adapter = new PointHistoryAdapter(view.getContext(), obj.getEntities(), R.layout.item_point_history, null);
+						view.setList(adapter);
+					}else{
+						SimpleHUD.showErrorMessage(view.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+}

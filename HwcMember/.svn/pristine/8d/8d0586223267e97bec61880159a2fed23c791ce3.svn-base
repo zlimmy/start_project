@@ -1,0 +1,24 @@
+/**
+ * 
+ */
+package com.huimodel.api.request;
+
+
+import com.huimodel.api.base.Address;
+import com.huimodel.api.base.RequestBase;
+
+/**
+ * @author FZ
+ */
+public class UserAddressCreateRequest extends RequestBase {
+	private Address address;
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+}

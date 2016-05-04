@@ -1,0 +1,23 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import android.content.Context;
+
+/**
+ * @author FZ
+ */
+public interface LoadDataView {
+
+	void showProgressDialog(String msg);
+
+	void dismissProgressDialog();
+
+	Context getContext();
+
+	void clearLoadPage();
+
+	void showErrorPage();
+	
+}

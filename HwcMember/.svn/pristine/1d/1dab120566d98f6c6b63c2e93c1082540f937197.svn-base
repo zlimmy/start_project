@@ -1,0 +1,121 @@
+package com.huimodel.api.base;
+
+/**
+ * 店铺策略协议
+ * @author 郭赟
+ *
+ */
+public class ShopStrategy {
+	/**
+	 * 编号
+	 */
+	private java.lang.Long id;
+	/**
+	 * 店铺编号
+	 */
+	private java.lang.Long sid;
+	/**
+	 * 策略描述
+	 */
+	private java.lang.String descript;
+	/**
+	 * 类型
+	 */
+	private java.lang.String cat;
+	/**
+	 * 开始时间
+	 */
+	private java.util.Date begin_date;
+	/**
+	 * 结束时间
+	 */
+	private java.util.Date end_date;
+	/**
+	 * 是否停用
+	 */
+	private java.lang.String halt;
+	/**
+	 * 修改人
+	 */
+	private java.lang.Long cby;
+	/**
+	 * 修改时间
+	 */
+	private java.util.Date changed;
+	/**
+	 * 创建人
+	 */
+	private java.lang.Long crtby;
+	/**
+	 * 创建时间
+	 */
+	private java.util.Date created;
+	public java.lang.Long getId() {
+		return id;
+	}
+	public void setId(java.lang.Long id) {
+		this.id = id;
+	}
+	public java.lang.Long getSid() {
+		return sid;
+	}
+	public void setSid(java.lang.Long sid) {
+		this.sid = sid;
+	}
+	public java.lang.String getDescript() {
+		return descript;
+	}
+	public void setDescript(java.lang.String descript) {
+		this.descript = descript;
+	}
+	public java.lang.String getCat() {
+		return cat;
+	}
+	public void setCat(java.lang.String cat) {
+		this.cat = cat;
+	}
+	public java.util.Date getBegin_date() {
+		return begin_date;
+	}
+	public void setBegin_date(java.util.Date begin_date) {
+		this.begin_date = begin_date;
+	}
+	public java.util.Date getEnd_date() {
+		return end_date;
+	}
+	public void setEnd_date(java.util.Date end_date) {
+		this.end_date = end_date;
+	}
+	public java.lang.String getHalt() {
+		return halt;
+	}
+	public void setHalt(java.lang.String halt) {
+		this.halt = halt;
+	}
+	public java.lang.Long getCby() {
+		return cby;
+	}
+	public void setCby(java.lang.Long cby) {
+		this.cby = cby;
+	}
+	public java.util.Date getChanged() {
+		return changed;
+	}
+	public void setChanged(java.util.Date changed) {
+		this.changed = changed;
+	}
+	public java.lang.Long getCrtby() {
+		return crtby;
+	}
+	public void setCrtby(java.lang.Long crtby) {
+		this.crtby = crtby;
+	}
+	public java.util.Date getCreated() {
+		return created;
+	}
+	public void setCreated(java.util.Date created) {
+		this.created = created;
+	}
+	
+	
+}

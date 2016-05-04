@@ -1,0 +1,32 @@
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+
+import com.huimodel.api.base.PlatformPromAwards;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.PromProzeUtil;
+import com.lidroid.xutils.BitmapUtils;
+public class PlatformPrizeAdapter extends MirAdapter<PlatformPromAwards>{
+
+	
+	public PlatformPrizeAdapter(Context context, List<PlatformPromAwards> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void convert(HolderEntity helper, PlatformPromAwards item) {
+		// TODO Auto-generated method stub
+		helper.setText(R.id.name_tv, item.getPrize().getDescript());
+		helper.setText(R.id.awards_tv, PromProzeUtil.awardsString(item.getAwards()));
+		helper.setText(R.id.num_tv, "数量X"+item.getNum());
+		helper.setText(R.id.winning_tv, "价值:"+CommonUtil.conversionDouble(item.getPrize().getPrice())+"元");
+	}
+
+}

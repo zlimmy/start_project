@@ -1,0 +1,34 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.widget.ImageView;
+
+import com.huimodel.api.base.HomeFunction;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class MainFragAdapter extends MirAdapter<HomeFunction> {
+
+	public MainFragAdapter(Context context, List<HomeFunction> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, HomeFunction item) {
+		helper.setText(R.id.tv, item.getName());
+		ImageView iv = helper.getView(R.id.iv);
+		bitmapUtils.display(iv, item.getIcon());
+	}
+
+}

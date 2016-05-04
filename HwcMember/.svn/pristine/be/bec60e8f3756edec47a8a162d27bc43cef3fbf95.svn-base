@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <com.hwc.member.widget.header.LXHeadView
+        xmlns:my="http://schemas.android.com/apk/res/com.hwc.member"
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        my:centertitle="新增收货地址"
+        my:rightImage="@drawable/iconfont_wancheng" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical" >
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:text="姓名："
+            android:textColor="@color/gray5"
+            android:textSize="@dimen/text_16"
+            android:gravity="center" />
+
+        <EditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:background="@null"
+            android:singleLine="true"
+            android:maxLength="4"
+            android:textSize="@dimen/text_16" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:layout_marginTop="1dp"
+        android:gravity="center_vertical" >
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:text="手机："
+            android:textColor="@color/gray5"
+            android:textSize="@dimen/text_16"
+            android:gravity="center" />
+
+        <EditText
+            android:id="@+id/phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:background="@null"
+            android:singleLine="true"
+            android:phoneNumber="true"
+            android:maxLength="11"
+            android:textSize="@dimen/text_16" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:layout_marginTop="1dp"
+        android:gravity="center_vertical" >
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:text="收货地址："
+            android:textColor="@color/gray5"
+            android:textSize="@dimen/text_16"
+            android:gravity="center" />
+
+        <EditText
+            android:id="@+id/address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="12dp"
+            android:background="@null"
+            android:singleLine="true"
+            android:textSize="@dimen/text_16" />
+        
+        <ImageView 
+            android:id="@+id/map_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_loc"
+            android:layout_marginRight="12dp"/>
+    </LinearLayout>
+    
+    <RadioGroup
+        android:id="@+id/rg"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_margin="12dp"
+        android:checkedButton="@+id/nodefault_rb" >
+        
+        <RadioButton 
+            android:id="@+id/isdefault_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="默认地址"
+            android:checked="true"
+            android:button="@drawable/button_checkbox2"
+            android:textColor="@color/gray5"
+            android:textSize="@dimen/text_16"/>
+        
+        <RadioButton 
+            android:id="@+id/nodefault_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="不设置为默认"
+            android:button="@drawable/button_checkbox2"
+            android:textColor="@color/gray5"
+            android:textSize="@dimen/text_16"/>
+        
+    </RadioGroup>
+
+</LinearLayout>

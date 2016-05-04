@@ -1,0 +1,132 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.PromLotteryPrizeAddRequest;
+import com.huimodel.api.response.PlatformPromLotteryDrawGetResponse;
+import com.huimodel.api.response.PromLotteryDrawRequest;
+import com.huimodel.api.response.PromLotteryDrawResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IPlatFormTurntableView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class TurntablePresenter {
+
+	private IPlatFormTurntableView view;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public TurntablePresenter(IPlatFormTurntableView view){
+		this.view = view;
+		iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	/** 获取奖品 **/
+	public void getPrizes(String promcode){
+		PromLotteryDrawRequest t = new PromLotteryDrawRequest();
+		t.setProm_code(promcode);
+		t.setUser_id_by(Member.getInstance().getUser_id());
+		t.setImei(Constant.IMEI);
+		view.showProgressDialog("获取奖品数据中。。。");
+		iHwcBizMainImpl.promLotteryDetail(t, view.getContext(), new IResult<PlatformPromLotteryDrawGetResponse>() {
+
+			@Override
+			public void result(PlatformPromLotteryDrawGetResponse obj, Code code) {
+				view.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					view.setPrizeData(obj.getPromlottery().get(0));
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 开始抽奖
+	 */
+	public void playGame(String promcode,final String[] strs){
+		if (Member.isNull()) {
+			view.goLogin();
+			return;
+		}
+		PromLotteryDrawRequest t = new PromLotteryDrawRequest();
+		t.setUser_id_by(Member.getInstance().getUser_id());
+		t.setProm_code(promcode);
+		t.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getpromlotterydraw(t, view.getContext(), new IResult<PromLotteryDrawResponse>() {
+			@Override
+			public void result(PromLotteryDrawResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj != null){
+						if(obj.isIs_win()){ //如果中奖
+							 String str = obj.getPrize().getDescript();
+							 int x = -1;
+							 for (int i = 0; i < strs.length; i++) {
+								if(strs[i].equals(str)){
+									x = i;
+								}
+							}						
+							view.setPrize(x, obj);
+						 }else{	 
+							view.setPrize(strs.length-1, obj);
+						 }
+						
+					}
+					break;
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	public void winlotterydraw(PromLotteryDrawResponse pdg) {
+		PromLotteryPrizeAddRequest plp = new PromLotteryPrizeAddRequest();
+		plp.setPrice(pdg.getPrize().getPrice());
+		plp.setProm_code(pdg.getProm_code());
+		plp.setProm_prize_code(pdg.getPrize().getCode());
+		plp.setProm_prize_descript(pdg.getPrize().getDescript());
+		plp.setProm_prize_code(pdg.getPrize().getCode());
+		plp.setUser_id_by(Member.getInstance().getUser_id());
+		plp.setAwards(pdg.getAwards());
+		plp.setImei(Constant.IMEI);
+		iHwcBizMainImpl.winlotterydraw(plp, view.getContext(), new IResult<ResponseBase>() {
+
+					@Override
+					public void result(ResponseBase obj, Code code) {
+						switch (code) {
+						case OK:
+							if (obj.isSuccess()) {
+								SimpleHUD.showSuccessMessage(view.getContext(), "领取成功!");
+							}
+							break;
+
+						default:
+							SimpleHUD.showErrorMessage(view.getContext(), code + "");
+							break;
+						}
+
+					}
+
+				});
+
+		}
+	
+}

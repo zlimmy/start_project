@@ -1,0 +1,32 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+
+import com.huimodel.api.base.IndicatorsBean;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class SalesVolumeAdapter extends MirAdapter<IndicatorsBean> {
+
+	public SalesVolumeAdapter(Context context, List<IndicatorsBean> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, IndicatorsBean item) {
+		helper.setText(R.id.date_tv, item.getDate());
+		helper.setText(R.id.amount_tv, item.getAmount() + "");
+	}
+
+}

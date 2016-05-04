@@ -1,0 +1,110 @@
+package com.hwc.member.receiver;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.hwc.member.bean.GetTuiMessage;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.util.GeTuiUtil;
+import com.hwc.member.util.NoticeTransit;
+import com.hwc.member.util.NotificationUtil;
+import com.igexin.sdk.PushConsts;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.exception.DbException;
+
+public class PushReceiver extends BroadcastReceiver {
+
+    /**
+     * 应用未启动, 个推 service已经被唤醒,保存在该时间段内离线消息(此时 GetuiSdkDemoActivity.tLogView == null)
+     */
+    public static StringBuilder payloadData = new StringBuilder();
+
+    private DbUtils mda;
+    private Gson gson = new Gson();
+    private boolean isAppRunning;
+    @Override
+    public void onReceive(Context context, Intent intent) {
+    	 NotificationUtil.getInstance(context);
+        Bundle bundle = intent.getExtras();
+       try {
+
+           switch (bundle.getInt(PushConsts.CMD_ACTION)) {
+               case PushConsts.GET_MSG_DATA:
+                   // 获取透传数据 
+                   // String appid = bundle.getString("appid");
+                   byte[] payload = bundle.getByteArray("payload");
+//                   String taskid = bundle.getString("taskid"); 
+//                   String messageid = bundle.getString("messageid");
+//                   // smartPush第三方回执调用接口，actionid范围为90000-90999，可根据业务场景执行
+                  // boolean result = PushManager.getInstance().sendFeedbackMessage(context, taskid, messageid, 90001);
+     
+                   if (payload != null) {
+                   	String data = new String(payload);
+         
+                   	GetTuiMessage getTuiMessage = gson.fromJson(data, GetTuiMessage.class);
+                   	if(getTuiMessage!=null){
+                   		Constant.gm = getTuiMessage;
+                   		//
+                		   if(getTuiMessage.isIssave()){//是否要把数据存下来
+                			   mda = DbUtils.create(context,Constant.dbName);
+                			   getTuiMessage.setMobile(Member.getInstance().getMobile());
+                			   try {
+   							mda.save(getTuiMessage);
+   						} catch (DbException e) {
+   							e.printStackTrace();
+   						}
+                		   }
+                   	}
+               		NoticeTransit  NoticeTransit = new NoticeTransit(context, getTuiMessage);
+               		NoticeTransit.doNotice();
+                   }
+                   break;
+       
+               case PushConsts.GET_CLIENTID:
+                   // 获取ClientID(CID)
+                   // 第三方应用需要将CID上传到第三方服务器，并且将当前用户帐号和CID进行关联，以便日后通过用户帐号查找CID进行消息推送
+                   String cid = bundle.getString("clientid"); 
+                   if(!cid.equals("")){
+                   	if(Member.getInstance().getUser_id()!=null){
+                   		
+                   		if(!Member.getInstance().getMobile().equals("0")){
+                   			 GeTuiUtil.bindAlias(context,"alias_"+Member.getInstance().getMobile());
+                   		}
+                   	
+                   	}else{
+                   		 //Toast.makeText(context, "绑定失败", 11111).show();
+//                         
+                   	}
+                   	 GeTuiUtil.addTag(context, "足球");
+                     //个推绑定
+   // System.out.println("cid:"+cid);
+//                    if(Member.getInstance().getShop_id()!=0){
+//                   	//  System.out.println("绑定:"+Constant.TAG + Member.getInstance().getShop_id());
+////                   	  GeTuiUtil.addTag(context, Constant.TAG + Member.getInstance().getShop_id());
+////                         GeTuiUtil.bindAlias(context, Constant.ALIAS + Member.getInstance().getMobile());
+//                    }else{
+//                   	// Toast.makeText(context, "不改变", 11111).show();
+//                    }
+                   
+                   } 
+                   break;
+
+               case PushConsts.THIRDPART_FEEDBACK:
+
+                   break;
+               default:
+                   break;
+           }
+		} catch (Exception e) {
+			
+		}
+    }
+    
+    
+
+}

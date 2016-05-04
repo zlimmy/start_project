@@ -1,0 +1,57 @@
+package com.hwc.member.view.activity.my;
+
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.SalesVolumeAdapter;
+import com.hwc.member.presenter.SalesVolumePresenter;
+import com.hwc.member.view.activity.view.ISalesVolumeView;
+import com.hwc.member.view.base.BaseActivity;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+@ContentView(R.layout.activity_sales_volume)
+public class SalesVolumeActivity extends BaseActivity implements ISalesVolumeView {
+
+	@ViewInject(R.id.todayamount_tv)
+	private TextView todayamount_tv;
+	@ViewInject(R.id.allamount_tv)
+	private TextView allamount_tv;
+	@ViewInject(R.id.listview)
+	private ListView listview;
+	
+	private SalesVolumePresenter presenter = new SalesVolumePresenter(this);
+	
+	@Override
+	protected void initView() {
+		presenter.getTopData(1);
+		presenter.getTopData(-1);
+		presenter.getListData();
+	}
+
+	@Override
+	protected void initListener() {
+		setBack();
+	}
+
+	@Override
+	public void clearLoadPage() {}
+	@Override
+	public void showErrorPage() {}
+
+	@Override
+	public void setToday(String amount) {
+		todayamount_tv.setText(amount);
+	}
+
+	@Override
+	public void setAll(String amount) {
+		allamount_tv.setText(amount);
+	}
+	
+	@Override
+	public void setList(SalesVolumeAdapter adapter) {
+		listview.setAdapter(adapter);
+	}
+}

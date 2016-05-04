@@ -1,0 +1,13 @@
+package com.hwc.member.view.activity.view;
+
+import java.util.List;
+
+import com.huimodel.api.base.PlatformPrize;
+
+public interface IProductIntegralView extends LoadDataView {
+	
+	void setAdGalleryImg(List<String> list);
+	
+	void setGoodsData(PlatformPrize pp);
+
+}

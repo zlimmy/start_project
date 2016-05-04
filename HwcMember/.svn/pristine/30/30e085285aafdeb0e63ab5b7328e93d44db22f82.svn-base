@@ -1,0 +1,158 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.huimodel.api.base.Order;
+import com.hwc.member.R;
+import com.hwc.member.adapter.NewOrderAdapter;
+import com.hwc.member.presenter.AllOrderPresenter;
+import com.hwc.member.view.activity.order.OrderDetailsActivity;
+import com.hwc.member.view.activity.view.IAllOrderView;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.hwc.member.widget.pullrefresh.PullToRefreshBase;
+import com.hwc.member.widget.pullrefresh.PullToRefreshBase.OnRefreshListener;
+import com.hwc.member.widget.pullrefresh.PullToRefreshListView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+/**
+ * @author FZ
+ */
+public class AllOrderFragment extends FormBaseFragment implements IAllOrderView {
+
+	@ViewInject(R.id.all_order_refres)
+	private PullToRefreshListView all_order_refres;
+	private ListView mListView;
+	private NewOrderAdapter newOrderAdapter;
+	private List<Order> moreList;
+	private int mIndex = 1;
+
+	@ViewInject(R.id.nodata_page)
+	private View nodata_page;
+	@ViewInject(R.id.nodata_tv)
+	private TextView nodata_tv;
+	@ViewInject(R.id.nodata_but)
+	private Button nodata_but;
+
+	private AllOrderPresenter presenter = new AllOrderPresenter(this);
+
+	// private MyRefreshListener myRefreshListener;
+
+	@Override
+	protected void init() {
+		all_order_refres.setPullLoadEnabled(false);
+		all_order_refres.setScrollLoadEnabled(true);
+		moreList = new ArrayList<Order>();
+		newOrderAdapter = new NewOrderAdapter(getContext(), moreList, R.layout.item_orderstyle, null);
+		mListView = all_order_refres.getRefreshableView();
+		mListView.setAdapter(newOrderAdapter);
+
+		all_order_refres.setOnRefreshListener(new OnRefreshListener<ListView>() {
+
+			@Override
+			public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+				// TODO Auto-generated method stub
+				presenter.refresh(1);
+
+			}
+
+			@Override
+			public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+				// TODO Auto-generated method stub
+				mIndex++;
+				presenter.more(1, mIndex);
+
+			}
+		});
+
+		setLastUpdateTime();
+		all_order_refres.doPullRefreshing(true, 0);
+		mListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// TODO Auto-generated method stub
+				goTo(OrderDetailsActivity.class, moreList.get(position).getRid());
+			}
+		});
+
+	}
+
+	private void setLastUpdateTime() {
+		String text = formatDateTime(System.currentTimeMillis());
+		all_order_refres.setLastUpdatedLabel(text);
+
+	}
+
+	@Override
+	public int getLayoutId() {
+		return R.layout.fm_allorder;
+	}
+
+	@Override
+	public void clearLoadPage() {
+	}
+
+	@Override
+	public void showErrorPage() {
+	}
+
+	// @OnItemClick(R.id.listview)
+	// public void onListItemClick(AdapterView<?> parent, View view,
+	// int position, long id) {
+	// goTo(OrderDetailsActivity.class,
+	// presenter.adapter.getItem(position).getRid());
+	// }
+
+	public void setNodataPage() {
+		all_order_refres.setScrollLoadEnabled(false);
+		all_order_refres.setPullRefreshEnabled(false);
+		VISIBLE(nodata_page);
+		nodata_tv.setText("还没有订单呢");
+		INVISIBLE(nodata_but);
+	}
+
+	@Override
+	public void refresh(List<Order> list) {
+		// TODO Auto-generated method stub
+		if (moreList == null) {
+			moreList = new ArrayList<Order>();
+		}
+		moreList.clear();
+		moreList.addAll(list);
+		newOrderAdapter.notifyDataSetChanged();
+		all_order_refres.onPullDownRefreshComplete();
+		all_order_refres.onPullUpRefreshComplete();
+		all_order_refres.setHasMoreData(true);
+		setLastUpdateTime();
+		mIndex = 1;
+		if (moreList.size() <= 0) {
+			setNodataPage();
+		}
+
+	}
+
+	@Override
+	public void more(List<Order> list, boolean isEnd) {
+		// TODO Auto-generated method stub
+		if (isEnd) {
+			moreList.addAll(list);
+		}
+		newOrderAdapter.notifyDataSetChanged();
+		all_order_refres.onPullDownRefreshComplete();
+		all_order_refres.onPullUpRefreshComplete();
+		all_order_refres.setHasMoreData(isEnd);
+
+	}
+
+}

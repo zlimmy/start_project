@@ -1,0 +1,23 @@
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.DPrizeCoupon;
+import com.huimodel.api.base.ResponseBase;
+
+public class CouponDetailGetResponse extends ResponseBase {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private DPrizeCoupon coupon;
+
+	public DPrizeCoupon getCoupon() {
+		return coupon;
+	}
+
+	public void setCoupon(DPrizeCoupon coupon) {
+		this.coupon = coupon;
+	}
+
+}

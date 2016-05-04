@@ -1,0 +1,69 @@
+package com.hwc.member.view.activity.my;
+
+import java.util.List;
+import java.util.Map;
+
+import android.widget.ExpandableListView;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.WalletAdapter;
+import com.hwc.member.bean.WalletBean;
+import com.hwc.member.view.base.BaseActivity;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+@ContentView(R.layout.activity_team_rebate)
+public class TeamRebateActivity extends BaseActivity {
+
+	@ViewInject(R.id.listview)
+	private ExpandableListView listview;
+	private List<String> parent = null;
+	private Map<String, List<WalletBean>> map = null;
+	private WalletAdapter adapter;
+	
+	@Override
+	protected void initView() {
+//		parent = new ArrayList<String>();
+//		parent.add("本月");
+//        parent.add("2月");
+//        parent.add("1月");
+// 
+//        map = new HashMap<String, List<WalletBean>>();
+// 
+//        List<WalletBean> list1 = new ArrayList<WalletBean>();
+//        list1.add(new WalletBean());
+//        list1.add(new WalletBean());
+//        list1.add(new WalletBean());
+//        map.put(parent.get(0), list1);
+// 
+//        List<WalletBean> list2 = new ArrayList<WalletBean>();
+//        list2.add(new WalletBean());
+//        list2.add(new WalletBean());
+//        list2.add(new WalletBean());
+//        map.put(parent.get(1), list2);
+// 
+//        List<WalletBean> list3 = new ArrayList<WalletBean>();
+//        list3.add(new WalletBean());
+//        list3.add(new WalletBean());
+//        list3.add(new WalletBean());
+//        map.put(parent.get(2), list3);
+//        
+//        adapter = new WalletAdapter(this, parent, map);
+//        listview.setAdapter(adapter);
+//        for (int i = 0; i < adapter.getGroupCount(); i++) {
+//            listview.expandGroup(i);
+//        }
+//        listview.setGroupIndicator(null);
+	}
+
+	@Override
+	protected void initListener() {
+//		setBack();
+//		listview.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+//            @Override
+//            public boolean onGroupClick(ExpandableListView expandableListView, View view, int i, long l) {
+//                return true;
+//            }
+//        });
+	}
+}

@@ -1,0 +1,201 @@
+package com.hwc.member.view.activity.my;
+
+import android.app.AlertDialog;
+import android.graphics.Bitmap;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.huimodel.api.base.DPrizeCoupon;
+import com.hwc.member.R;
+import com.hwc.member.anno.ViewTransform;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Member;
+import com.hwc.member.presenter.CounponPresenter;
+import com.hwc.member.util.BitmapUtil;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.view.activity.view.ICouponView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.SimpleHUD;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+/**
+ * 优惠券详情页面
+ * 
+ * @author Administrator
+ * 
+ */
+@ContentView(R.layout.activity_discountinfo)
+public class DiscountInfoActivity extends BaseActivity implements ICouponView {
+
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.bg_rl)
+	private RelativeLayout bg_rl;
+	@ViewInject(R.id.footer_rl)
+	@ViewTransform(height = 110)
+	private RelativeLayout footer_rl;
+	@ViewInject(R.id.qrcode_iv)
+	@ViewTransform(height = 340, width = 340)
+	private ImageView qrcode_iv;
+	@ViewInject(R.id.back_iv)
+	private ImageView back_iv;
+	@ViewInject(R.id.share_iv)
+	private ImageView share_iv;
+	private String coupon_id;
+
+	private CounponPresenter counponPresenter = new CounponPresenter(this);
+
+	@ViewInject(R.id.price_tv)
+	private TextView price_tv;
+	@ViewInject(R.id.data_tv)
+	private TextView data_tv;
+	@ViewInject(R.id.state_tv)
+	private TextView state_tv;
+	@ViewInject(R.id.name_tv_1)
+	private TextView name_tv_1;
+	@ViewInject(R.id.shop_address_tv)
+	private TextView shop_address_tv;
+	@ViewInject(R.id.shop_name_tv)
+	private TextView shop_name_tv;
+	@ViewInject(R.id.rule_tv)
+	private TextView rule_tv;
+
+	private DPrizeCoupon dc;
+
+	@Override
+	protected void initView() {
+		// TODO Auto-generated method stub
+		coupon_id = getIntent().getStringExtra("0");
+		Bitmap qrcode = BitmapUtil.createImage(Member.getInstance().getUser_id() + "@" + coupon_id, 340);
+		qrcode_iv.setImageBitmap(qrcode);
+		counponPresenter.getMyCounponByNo(coupon_id);
+
+	}
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@OnClick(R.id.footer_rl)
+	public void doGiveOnclcik(View v) {
+
+		if (dc.getStatus().equals("I")) {
+			DialogUtil.showGiveDialog(context, "", new DialogUtil.Callback() {
+
+				@Override
+				public void positiveClick(boolean isChecked, String name, String mobile, AlertDialog alertDialog) {
+					counponPresenter.doGive(mobile, isChecked, coupon_id);
+					alertDialog.dismiss();
+				}
+			});
+		} else if (dc.getStatus().equals("O")){
+			SimpleHUD.showInfoMessage(context, "该优惠券已被使用");
+		} else if (dc.getStatus().equals("E")){
+			SimpleHUD.showInfoMessage(context, "该优惠券已过期");
+		}
+
+	}
+
+	@Override
+	public void initCounpon(DPrizeCoupon dPrizeCoupon) {
+		this.dc = dPrizeCoupon;
+
+		shop_name_tv.setText("使用店铺：" + dPrizeCoupon.getIssue_shop_nick());
+		if (dPrizeCoupon.getCoupon_type().equals("goods")) {
+			name_tv_1.setText(dPrizeCoupon.getRemark());
+			GONE(rule_tv);
+		} else {
+			VISIBLE(rule_tv);
+			name_tv_1.setText("购物代金券");
+			if (dPrizeCoupon.getSpend() == 0) {
+				rule_tv.setText("4、无门槛使用");
+			} else {
+				rule_tv.setText("4、满" + dPrizeCoupon.getSpend() + "可使用");
+			}
+		}
+
+		// if(dPrizeCoupon.getCoupon_type().equals("goods")){
+		// remark_tv.setText("可对换奖品："+dPrizeCoupon.getRemark());
+		// }else{
+		// if(dPrizeCoupon.getSpend()==0){
+		// remark_tv.setText("无门槛使用");
+		// }else{
+		// remark_tv.setText("满"+dPrizeCoupon.getSpend()+"可使用");
+		// }
+		// }
+
+		if (!isEmpty(dPrizeCoupon.getIssue_shop_addr())) {
+			shop_address_tv.setText("店铺地址："+dPrizeCoupon.getIssue_shop_addr());
+		}else {
+			GONE(shop_address_tv);
+		}
+		
+
+		price_tv.setText("价值：￥" + CommonUtil.conversionDouble(dPrizeCoupon.getPrice()) + "");
+		data_tv.setText("有效期至：" + dPrizeCoupon.getExpire_date());
+		if (dPrizeCoupon.getStatus().equals("O")) {// 过期或者已使用
+			bg_rl.setBackgroundColor(getResources().getColor(R.color.color_8dc9de));
+			state_tv.setBackgroundResource(R.drawable.shape_bt_gray);
+			state_tv.setText("已使用");
+		} else if (dPrizeCoupon.getStatus().equals("I")){
+			bg_rl.setBackgroundColor(getResources().getColor(R.color.color_f7b72a));
+			state_tv.setBackgroundResource(R.drawable.shape_bt_orange);
+			state_tv.setText("转赠");
+		}else if (dPrizeCoupon.getStatus().equals("E")){
+			bg_rl.setBackgroundColor(getResources().getColor(R.color.color_f7b72a));
+			state_tv.setBackgroundResource(R.drawable.shape_bt_gray);
+			state_tv.setText("已过期");
+		}
+	}
+
+	@OnClick(R.id.back_iv)
+	public void back_iv(View v) {
+		finish();
+	}
+
+	@OnClick(R.id.share_iv)
+	public void share_iv(View v) {
+
+	}
+
+	public void print(String str) {
+		Toast.makeText(App.mContext, "扫码成功后触发时间", 111).show();
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void getCounpon() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void doGive() {
+		// TODO Auto-generated method stub
+		SimpleHUD.showSuccessMessage(context, "赠送成功");
+
+		counponPresenter.getMyCounponByNo(coupon_id);
+
+	}
+
+}

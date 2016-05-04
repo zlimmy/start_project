@@ -1,0 +1,35 @@
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.Discovery;
+import com.huimodel.api.base.ResponseBase;
+
+public class DiscoveryGetResponse  extends ResponseBase {
+
+	/**
+	 * 平台商品
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private List<Discovery> discoverys;
+
+	private int total;
+
+	public List<Discovery> getDiscoverys() {
+		return discoverys;
+	}
+
+	public void setDiscoverys(List<Discovery> discoverys) {
+		this.discoverys = discoverys;
+	}
+
+	public int getTotal() {
+		return total;
+	}
+
+	public void setTotal(int total) {
+		this.total = total;
+	}
+
+}

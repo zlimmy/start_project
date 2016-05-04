@@ -1,0 +1,105 @@
+package com.hwc.member.view.activity;
+
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+
+import com.huimodel.api.response.SmsMessageResponse;
+import com.hwc.member.R;
+import com.hwc.member.view.activity.view.IRegistView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.progressbtn.CircularProgressButton;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+@ContentView(R.layout.activity_regist)
+public class RegistActivity extends BaseActivity implements IRegistView {
+
+	@ViewInject(R.id.goregist)
+	private CircularProgressButton goregist;
+	@ViewInject(R.id.showpwd)
+	private CheckBox showpwd;
+	@ViewInject(R.id.pwd)
+	private EditText pwd;
+	@ViewInject(R.id.mobile)
+	private EditText mobile;
+	@ViewInject(R.id.getcode)
+	private Button getcode;
+	
+	@Override
+	protected void initView() {
+		goregist.setIndeterminateProgressMode(true);
+	}
+
+	@Override
+	protected void initListener() {}
+	
+	@OnClick(R.id.goregist)
+	public void goRegist(View v){
+		if(goregist.getProgress() == 100 || goregist.getProgress() == -1){
+			goregist.setProgress(0);
+			return;
+		}
+		if(goregist.getProgress() == 0){
+			goregist.setProgress(50);
+			return;
+		}
+		if(goregist.getProgress() == 50){
+			goregist.setProgress(100);
+			return;
+		}
+	}
+	
+	@OnClick(R.id.back_btn)
+	public void back(View v){
+		finish();
+	}
+	
+	@OnClick(R.id.showpwd)
+	public void showPwd(View v){
+		if(showpwd.isChecked()){
+			//设置成明文  
+			pwd.setTransformationMethod(HideReturnsTransformationMethod.getInstance());  
+		}else{
+			//设置成密文 
+			pwd.setTransformationMethod(PasswordTransformationMethod.getInstance());  
+		}
+	}
+
+	@OnClick(R.id.getcode)
+	public void getCode(View v){
+		if(isEmpty(getViewValue(mobile))){
+			mobile.startAnimation(shake);
+		}else{  
+			setDownTime(getcode);
+			timer.start();
+		}
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sendSmssuccee(SmsMessageResponse smsMessageResponse) {
+
+	}
+
+	@Override
+	public void validPhone(boolean isValid, String phone) {
+
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

@@ -1,0 +1,18 @@
+/**
+ * 
+ */
+package com.huimodel.net;
+
+
+
+/**
+ * @author FZ
+ * @param <T>
+ */
+public interface IResult<T> {
+
+	/** 请求 回调接口**/
+	void result(T obj , Code code);
+	
+	
+}

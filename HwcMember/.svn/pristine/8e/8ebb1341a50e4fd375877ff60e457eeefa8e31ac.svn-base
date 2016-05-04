@@ -1,0 +1,389 @@
+package com.hwc.member.view.activity.product;
+
+import java.util.List;
+
+import android.app.AlertDialog;
+import android.graphics.Paint;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.response.ProductSuiteGetResponse;
+import com.hwc.member.R;
+import com.hwc.member.adapter.ProductInfoAdapter;
+import com.hwc.member.adapter.SimpleAdapter;
+import com.hwc.member.anno.ViewTransform;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.presenter.ProductInfoPresenter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.IntentUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.util.WeiXinShareUtil;
+import com.hwc.member.view.activity.DialogLoginActivity;
+import com.hwc.member.view.activity.order.ConfirmOrderActivity;
+import com.hwc.member.view.activity.shop.NewShopInfoActivity;
+import com.hwc.member.view.activity.view.IProductInfoView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.MyAdGallery;
+import com.hwc.member.widget.MyListView;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnItemClickListener;
+import com.hwc.member.widget.header.HeadView.Dir;
+import com.hwc.member.widget.header.HeadView.OnHeadClickListener;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.mir.mytitlebar.barutil.ObservableScrollView;
+import com.mir.mytitlebar.barutil.ObservableScrollViewCallbacks;
+import com.mir.mytitlebar.barutil.ScrollState;
+import com.mir.mytitlebar.barutil.ScrollUtils;
+import com.nineoldandroids.view.ViewHelper;
+
+/**
+ * 产品详情
+ * @author Administrator
+ *
+ */
+@ContentView(R.layout.activity_product_info)
+public class ProductInfoActivity extends BaseActivity implements IProductInfoView, ObservableScrollViewCallbacks {
+  
+	@ViewInject(R.id.image_wall_gallery)
+	private MyAdGallery<String> myAdGallery;
+	@ViewInject(R.id.ovalLayout)
+	private LinearLayout ovalLayout;
+	@ViewInject(R.id.scroll)
+	private ObservableScrollView mScrollView;
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.image_rl)
+	private RelativeLayout image_rl;
+	@ViewInject(R.id.name_tv)
+	private TextView name_tv;
+	@ViewInject(R.id.description_tv)
+	private TextView description_tv;
+	@ViewInject(R.id.newprice_tv)
+	private TextView newprice_tv;
+	@ViewInject(R.id.num_flag)
+	private TextView num_flag;
+	@ViewInject(R.id.stock_flag)
+	private TextView stock_flag;
+	@ViewInject(R.id.prom_des)
+	private TextView prom_des;
+	@ViewInject(R.id.promprice_tv)
+	private TextView promprice_tv;
+	@ViewInject(R.id.attentionshop_iv)
+	private ImageView attentionshop_iv;
+	@ViewInject(R.id.listview)
+	private MyListView listview;
+	@ViewInject(R.id.goodstool_ll)
+	@ViewTransform(height = 90)
+	private LinearLayout goodstool_ll;
+	@ViewInject(R.id.loc_tv)
+	private TextView loc_tv;
+	private ProductInfoPresenter presenter = new ProductInfoPresenter(this);
+	
+	private int mParallaxImageHeight;
+	private Long pid, shop_id;
+	private ResponseBase responseBase;
+	@ViewInject(R.id.load_page)
+	private View load_page;
+	@ViewInject(R.id.load_error_page)
+	private View load_error_page;
+	private DProduct dp;
+	private String shopmoblie;
+	@ViewInject(R.id.more_rl)
+	private RelativeLayout more_rl;
+	
+	@Override
+	protected void initView() {
+		header.setBackgroundColor(ScrollUtils.getColorWithAlpha(0, getResources().getColor(R.color.main_color)));
+        mScrollView.setScrollViewCallbacks(this);
+        mParallaxImageHeight = getResources().getDimensionPixelSize(R.dimen.parallax_image_height);
+        ViewTransformUtil.layoutParams(image_rl, image_rl.getLayoutParams(), android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 680);
+        listview.setFocusable(false);
+        pid = getIntent().getLongExtra("0", -1);
+        shop_id = getIntent().getLongExtra("1", -1);
+        presenter.setGoodsInfo(pid, shop_id);
+        presenter.getShopMobile(shop_id);
+        presenter.getMagazine(pid, shop_id);
+	}
+
+	@Override
+	protected void initListener() {
+		setBack(R.drawable.product_back);
+		header.setOnHeadClickListener(new OnHeadClickListener() {
+			
+			@Override
+			public void onHeadClick(Dir dir, View view) {
+				switch (dir) {
+				case Right:
+					String SHARE_URL = "http://app.huiwancun.com:9080/HwcAppSupport/shareProduct/";
+					WeiXinShareUtil wx = new WeiXinShareUtil(mController, context, dp.getImageurl(), dp.getName(), dp.getSellPt(), SHARE_URL + shop_id + "-" + pid + ".shtml");
+				    wx.initShare();
+					mController.openShare(ProductInfoActivity.this, false);
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+	}
+	
+	@Override
+	protected void onDestroy() {
+		myAdGallery.clearAnimation();
+		myAdGallery.stopTimer();
+		super.onDestroy();
+	}
+
+	@Override
+	public void setAdGalleryImg(List<String> list) {
+		myAdGallery.start(ProductInfoActivity.this, list, null, 0, ovalLayout,R.drawable.dot_unsel, R.drawable.dot_sel);
+	}
+
+	@Override
+	public void onDownMotionEvent() {}
+
+	@Override
+	public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+		int baseColor = getResources().getColor(R.color.main_color);
+        float alpha = Math.min(1, (float) scrollY / mParallaxImageHeight);
+        header.setBackgroundColor(ScrollUtils.getColorWithAlpha(alpha, baseColor));
+        ViewHelper.setTranslationY(image_rl, scrollY / 2);
+	}
+
+	@Override
+	public void onUpOrCancelMotionEvent(ScrollState scrollState) {}
+	
+	@Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        onScrollChanged(mScrollView.getCurrentScrollY(), false, false);
+    }
+	
+//	@OnClick(R.id.discode_rl)
+//	public void showDisCode(View v){
+//		if(Member.isNull()){
+//			goTo(DialogLoginActivity.class);
+//		}else{
+//			if(responseBase!=null){//如果已经获取过一次优惠吗
+//				showDisCodeDialog(responseBase);
+//			}else{
+//				presenter.createInvitationCode(pid, shop_id);
+//			}
+//			
+//		}
+//		
+//	}
+	
+	@OnClick(R.id.call_rl)
+	public void callPhone(View v){
+		IntentUtil.toPhoneApp(context, shopmoblie);
+	}
+	
+	@OnClick(R.id.goshop_rl)
+	public void goShop(View v){
+		goTo(NewShopInfoActivity.class, shop_id);
+	}
+	
+	@OnClick(R.id.more_rl)
+	public void goMoreProductInfo(View v){
+		goTo(ProductImageActivity.class, pid, shop_id);
+	}
+	
+	@OnClick(R.id.attentionshop_iv)
+	public void attentionClick(View v){
+		if(Member.isNull()){
+			goTo(DialogLoginActivity.class);
+		}else{
+			if(dp.isAttention()){
+				presenter.delCollection(dp);
+			}else{
+				presenter.updateCollection(pid, shop_id);
+			}
+			
+			
+		}
+		
+		
+	}
+
+	/**
+	 * 获取套餐
+	 * @param v
+	 */
+	@OnClick(R.id.buy_rl)
+	public void buy_click(View v){
+		if(Member.isNull()){
+			goTo(DialogLoginActivity.class);
+		}else{
+			presenter.getProductSuite(pid,shop_id);
+			
+		}
+	
+	}
+	
+
+	
+	@Override
+	public void setGoodsInfo(DProduct obj) {
+		System.out.println(gson.toJson(obj)+"---------");
+		try {
+			dp = obj;
+			name_tv.setText(obj.getName());
+			header.setTitle(obj.getName());
+			description_tv.setText(obj.getSellPt());
+			newprice_tv.setText("￥" + CommonUtil.conversionDouble(obj.getPrice()));
+			newprice_tv.setTextSize(20);
+			if(obj.getProminfo() != null){
+				prom_des.setText(obj.getProminfo().getProm_des());
+				promprice_tv.setText("￥" + CommonUtil.conversionDouble(obj.getProminfo().getProm_price()));
+				VISIBLE(prom_des);
+				VISIBLE(promprice_tv);
+				newprice_tv.setTextSize(12);
+				newprice_tv.setTextColor(getResources().getColor(R.color.gray4));
+				newprice_tv.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG|Paint.ANTI_ALIAS_FLAG); 		
+			}
+			//判断是否是关注商品切换标签
+			if(obj.isAttention()){
+				attentionshop_iv.setImageResource(R.drawable.icon_iscoll);
+			}else{
+				attentionshop_iv.setImageResource(R.drawable.icon_nocoll);
+			}
+			
+			if(obj.getNum_flag() != null && !obj.getNum_flag().equals("")){
+				num_flag.setText(obj.getNum_flag());
+				VISIBLE(num_flag);
+			}
+			
+			if(obj.getStock_flag() != null && !obj.getStock_flag().equals("")){
+				stock_flag.setText(obj.getStock_flag());
+				VISIBLE(stock_flag);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+
+	//确认购买
+	@Override
+	public void doBuy(DProduct obj, int flag) {
+		// TODO Auto-generated method stub
+		if(obj.isSuite()&&obj.getPsuite()==null){
+			T("请选择一个套餐");
+		}else{
+			goTo(ConfirmOrderActivity.class,obj);
+		}	
+	}
+	
+	@Override
+	public void openProductSuite(final ProductSuiteGetResponse psg) {
+		// TODO Auto-generated method stub
+		final SimpleAdapter adapter = new SimpleAdapter(context, psg.getSuites(),dp, R.layout.buy_grid_items, null);
+
+		DialogUtil.showBuyDialog(Constant.gridDialog, null, Gravity.BOTTOM, context, adapter,dp, bitmapUtils,this, 1, null, new OnItemClickListener() {
+			
+			@Override
+			public void onItemClick(DialogPlus dialog, Object item, View view,
+					int position) {
+				
+			 adapter.setSeclection(position);
+			 adapter.notifyDataSetChanged();
+				
+			 TextView textView = (TextView) dialog.findViewById(R.id.price_tv);
+			 TextView pro_desc = (TextView) dialog.findViewById(R.id.pro_desc);
+//			 TextView stock_tv = (TextView) dialog.findViewById(R.id.stock_tv);
+			 if(dp.getProminfo() != null && dp.getProminfo().getSuite_id()!=null&&dp.getProminfo().getSuite_id().equals(psg.getSuites().get(position).getSuite_id())){
+				 textView.setText("￥"+dp.getProminfo().getProm_price());
+				 psg.getSuites().get(position).setSale_price(dp.getProminfo().getProm_price());
+			 }else{
+			  textView.setText("￥"+psg.getSuites().get(position).getSale_price());
+			 }
+			 pro_desc.setText(""+psg.getSuites().get(position).getDescript());
+//			 stock_tv.setText(Html.fromHtml("剩余:&nbsp;<font color='red'>"+psg.getSuites().get(position).getNum()+"</font>&nbsp;件"));
+			 
+			 
+			 dp.setPsuite(psg.getSuites().get(position));
+	
+			}
+		});
+	}
+
+
+	@Override
+	public void setList(ProductInfoAdapter adapter) {
+		listview.setAdapter(adapter);
+	}
+
+	@Override
+	public void clearLoadPage() {
+		GONE(load_page);
+	}
+
+	@Override
+	public void showErrorPage() {
+		GONE(load_page);
+		VISIBLE(load_error_page);
+	}
+
+	@Override
+	public void showDisCodeDialog(ResponseBase base) {
+		// TODO Auto-generated method stub
+		responseBase = base;
+		DialogUtil.showDisCodeDialog(context, base.getParams().get("invitationCode"), new DialogUtil.Callback() {
+		@Override
+		public void positiveClick(boolean isChecked, String name, String mobile, AlertDialog alertDialog) {
+			alertDialog.dismiss();
+			presenter.updateInvitationCode(name, mobile, responseBase.getParams().get("invitationCode"));
+		}
+	});
+	}
+
+	@Override
+	public void setAttenImg() {
+		attentionshop_iv.setImageResource(R.drawable.icon_iscoll);
+		dp.setAttention(true);
+	}
+
+	@Override
+	public void setMobile(String mobile,String address, double distance, String name, String bulletin) {
+		shopmoblie = mobile;
+		loc_tv.setText(address);
+	}
+
+	@Override
+	public void setUnAttenImg() {
+		attentionshop_iv.setImageResource(R.drawable.icon_nocoll);
+		dp.setAttention(false);
+	}
+
+	@Override
+	public void hideMore(boolean flag) {
+		if(flag){
+			GONE(more_rl);
+		}
+	}
+
+	@Override
+	public void noGoods() {
+		T("该商品已下架！");
+		finish();
+	}
+
+	@Override
+	public void doBuy(DProduct obj, int flag, DialogPlus dialog) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

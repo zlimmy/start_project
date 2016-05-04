@@ -1,0 +1,132 @@
+package com.hwc.member.presenter;
+
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.response.CollectionShopResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IFollowShopView;
+import com.hwc.member.widget.SimpleHUD;
+
+public class FollowShopPresenter {
+
+    private IFollowShopView followShopView;
+    private IHwcBizMain iHwcBizMainImpl;
+
+    private int page_size = 10;
+
+    public FollowShopPresenter(IFollowShopView followShopView) {
+        this.followShopView = followShopView;
+        this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+    }
+
+    // public void setListData(final PullToRefreshLayout pullToRefreshLayout){
+    // RequestBase rb = new RequestBase();
+    // rb.setUser_id_by(Member.getInstance().getUser_id());
+    // rb.setImei(Constant.IMEI);
+    // iHwcBizMainImpl.searchCollectionShops(rb, followShopView.getContext(),
+    // new IResult<CollectionShopResponse>() {
+    //
+    // @Override
+    // public void result(CollectionShopResponse obj, Code code) {
+    // followShopView.clearLoadPage();
+    // if(pullToRefreshLayout != null){
+    // pullToRefreshLayout.refreshFinish(PullToRefreshLayout.SUCCEED);
+    // }
+    // switch (code) {
+    // case OK:
+    // if(obj.getEntities() != null && obj.getEntities().size() > 0){
+    // adapter = new FollowShopAdapter(followShopView.getContext(),
+    // obj.getEntities(), R.layout.item_follow_shop_list, null);
+    // followShopView.setListAdapter(adapter);
+    // } else {
+    // followShopView.showErrorPage();
+    // }
+    // break;
+    //
+    // default:
+    // SimpleHUD.showErrorMessage(followShopView.getContext(), code+"");
+    // break;
+    // }
+    // }
+    // });
+    //
+    // }
+    //
+    // public void addMoreData(int mIndex, PullToRefreshLayout
+    // pullToRefreshLayout){
+    // SimpleHUD.showErrorMessage(followShopView.getContext(), "没有更多");
+    // pullToRefreshLayout.loadmoreFinish(PullToRefreshLayout.SUCCEED);
+    // }
+    //
+
+    /**
+     * 刷新
+     */
+    public void refresh() {
+        RequestBase rb = new RequestBase();
+        rb.setUser_id_by(Member.getInstance().getUser_id());
+        rb.setImei(Constant.IMEI);
+        rb.setPage(1);
+        rb.setPage_size(page_size);
+        iHwcBizMainImpl.searchCollectionShops(rb, followShopView.getContext(),
+                new IResult<CollectionShopResponse>() {
+
+                    @Override
+                    public void result(CollectionShopResponse obj, Code code) {
+                        followShopView.clearLoadPage();
+                        followShopView.dismissProgressDialog();
+                        switch (code) {
+                            case OK:
+                                followShopView.refresh(obj.getEntities());
+                                break;
+                            default:
+                                SimpleHUD.showErrorMessage(
+                                        followShopView.getContext(), code + "");
+                                break;
+                        }
+                    }
+                });
+    }
+
+    /**
+     * 获取更多
+     *
+     * @param mCurIndex
+     */
+    public void more(int mCurIndex) {
+        RequestBase rb = new RequestBase();
+        rb.setUser_id_by(Member.getInstance().getUser_id());
+        rb.setImei(Constant.IMEI);
+        rb.setPage(mCurIndex);
+        rb.setPage_size(page_size);
+
+        iHwcBizMainImpl.searchCollectionShops(rb, followShopView.getContext(),
+                new IResult<CollectionShopResponse>() {
+
+                    @Override
+                    public void result(CollectionShopResponse obj, Code code) {
+                        followShopView.clearLoadPage();
+                        boolean isEnd = true;
+                        switch (code) {
+                            case OK:
+                                if (obj.getEntities().size() < page_size) {
+                                    isEnd = false;
+                                }
+                                followShopView.more(obj.getEntities(), isEnd);
+                                break;
+
+                            default:
+                                SimpleHUD.showErrorMessage(
+                                        followShopView.getContext(), code + "");
+                                break;
+                        }
+                    }
+                });
+    }
+
+}

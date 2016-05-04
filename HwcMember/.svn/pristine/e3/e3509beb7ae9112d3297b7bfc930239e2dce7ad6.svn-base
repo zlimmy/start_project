@@ -1,0 +1,193 @@
+package com.huimodel.api.base;
+
+import java.io.Serializable;
+
+public class Shop implements Serializable{
+	private static final long serialVersionUID = 1236965455833812554L;
+	  
+ 
+
+	/*
+	 * 店铺公告
+	 */
+	private String bulletin;
+
+	private Long cid;
+	/*
+	 * 店铺描述
+	 */
+	private String desc;
+
+	private String nick;
+
+	private String pic_path;
+
+ 
+	private Long sid;
+	/*
+	 * 店铺标题
+	 */
+	private String title;
+
+ 
+
+	private String shop_type;
+
+	private String address;
+
+	private String city;
+
+	private String country;
+
+	private String district;
+
+	private String state;
+
+	private String zip;
+	
+	private String status;
+	private String owner;
+	private Long owner_id;
+
+	public String getBulletin() {
+		return bulletin;
+	}
+
+	public void setBulletin(String bulletin) {
+		this.bulletin = bulletin;
+	}
+
+	public Long getCid() {
+		return cid;
+	}
+
+	public void setCid(Long cid) {
+		this.cid = cid;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
+	public String getNick() {
+		return nick;
+	}
+
+	public void setNick(String nick) {
+		this.nick = nick;
+	}
+
+	public String getPic_path() {
+		return pic_path;
+	}
+
+	public void setPic_path(String pic_path) {
+		this.pic_path = pic_path;
+	}
+
+	public Long getSid() {
+		return sid;
+	}
+
+	public void setSid(Long sid) {
+		this.sid = sid;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getShop_type() {
+		return shop_type;
+	}
+
+	public void setShop_type(String shop_type) {
+		this.shop_type = shop_type;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getZip() {
+		return zip;
+	}
+
+	public void setZip(String zip) {
+		this.zip = zip;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	public Long getOwner_id() {
+		return owner_id;
+	}
+
+	public void setOwner_id(Long owner_id) {
+		this.owner_id = owner_id;
+	}
+	
+	
+}

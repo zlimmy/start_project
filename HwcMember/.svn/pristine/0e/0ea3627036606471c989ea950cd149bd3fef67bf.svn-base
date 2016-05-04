@@ -1,0 +1,88 @@
+package com.hwc.member.presenter;
+
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.OrderUpdateRequest;
+import com.huimodel.api.response.ShopFacepayGetResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.view.activity.view.IPreferentialView;
+
+public class PreferentialPayPresenter {
+
+	private IPreferentialView iPreferentialView;
+	private IHwcBizMain iHwcBizMainImpl;
+	private Gson gson;
+
+	public PreferentialPayPresenter(IPreferentialView iPreferentialView) {
+		this.iPreferentialView = iPreferentialView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		gson = new Gson();
+	}
+	
+	
+	
+	public void getPreferential(Long sid){
+		
+		RequestBase request = new RequestBase();
+		request.setShop_id(sid);
+		
+		iHwcBizMainImpl.getFacepayWithShop(request, iPreferentialView.getContext(), new IResult<ShopFacepayGetResponse>() {
+			
+			@Override
+			public void result(ShopFacepayGetResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						iPreferentialView.setPreferential(obj.getEntity());
+					}
+					
+					break;
+				default:
+					break;
+				}
+			}
+		});
+		
+
+	}
+	
+	
+	/**
+	 * 计算金额
+	 */
+	public void calculateFacepayment(Double real_point_fee,Double discount_fee ,Long sid,Long uid){
+		OrderUpdateRequest request = new OrderUpdateRequest(); 
+		request.setUser_id_by(uid);
+		request.setShop_id(sid);
+		request.setDiscount_fee(real_point_fee+"");
+		request.setReal_point_fee(discount_fee);
+		System.out.println(gson.toJson(request)+"---");
+		iHwcBizMainImpl.calculateFacepayment(request, iPreferentialView.getContext(), new IResult<ResponseBase>() {
+			
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				switch (code) {
+				case OK:
+					
+					if(obj.isSuccess()){
+						iPreferentialView.calculateFacepayment(obj);
+					}
+										
+					break;
+				default:
+					break;
+				}
+				
+			}
+		});
+		
+	}
+	
+}

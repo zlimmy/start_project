@@ -1,0 +1,6 @@
+package com.hwc.member.widget.progressbtn;
+
+interface OnAnimationEndListener {
+
+    void onAnimationEnd();
+}

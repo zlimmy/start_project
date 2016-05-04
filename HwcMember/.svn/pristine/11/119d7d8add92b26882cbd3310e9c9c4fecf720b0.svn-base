@@ -1,0 +1,47 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import java.util.List;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.response.ProductSuiteGetResponse;
+import com.hwc.member.adapter.ProductInfoAdapter;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+
+/**
+ * @author FZ
+ */
+public interface IProductInfoView extends LoadDataView {
+
+	void setAdGalleryImg(List<String> list);
+	
+	void setGoodsInfo(DProduct obj);
+	
+	void setList(ProductInfoAdapter adapter);
+	
+	void showDisCodeDialog(ResponseBase base);
+	
+	void doBuy(DProduct obj, int flag);
+	
+	void doBuy(DProduct obj, int flag,DialogPlus dialog);
+	
+	
+	/**
+	 * 打开套餐选择界面
+	 * @param psg
+	 */
+	void openProductSuite(ProductSuiteGetResponse psg);
+	
+	void setAttenImg();
+	
+	void setUnAttenImg();
+	
+	void setMobile(String mobile,String address, double distance, String name, String bulletin);
+	
+	void hideMore(boolean flag);
+	
+	void noGoods();
+}

@@ -1,0 +1,236 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.Address;
+import com.huimodel.api.base.Cart;
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.OrderDetails;
+import com.huimodel.api.base.OrderPayDetail;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.ClearShoppingCartRequest;
+import com.huimodel.api.request.OrderCreateRequest;
+import com.huimodel.api.request.UserAddressGetRequest;
+import com.huimodel.api.response.OrderGetPayInfoResponse;
+import com.huimodel.api.response.ShopPostFeeStrategyResponse;
+import com.huimodel.api.response.UserAddressGetOneResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.ConfirmOrderAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IConfirmOrderView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class ConfirmOrderPresenter {
+	
+	private IConfirmOrderView confirmOrderView;
+	private ConfirmOrderAdapter adapter;
+	private IHwcBizMain iHwcBizMainImpl;
+	private List<DProduct> dplist;
+	private Gson gson;
+	public ConfirmOrderPresenter(IConfirmOrderView confirmOrderView){
+		this.confirmOrderView = confirmOrderView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		this.gson = new Gson();
+	}
+	
+	public void setData(List<DProduct> dp,IConfirmOrderView iv){
+		dplist = dp;
+		adapter = new ConfirmOrderAdapter(confirmOrderView.getContext(), dp, R.layout.item_confirmorder, null,iv);
+		confirmOrderView.setList(adapter);	
+	}
+	
+	/**
+	 * 提交订单
+	 * @param shop_id
+	 * @param orders
+	 * @param buyer_memo
+	 */
+	public void doSubmit(Long shop_id,List<OrderDetails> orders,String buyer_memo,String paycode,String shipping_type,List<OrderPayDetail> payDetails,Address mAddress){
+		OrderCreateRequest t = new OrderCreateRequest();
+		t.setUser_id_by(Member.getInstance().getUser_id());
+		t.setShop_id(shop_id);
+		t.setOrderss(orders);
+		t.setPaycode(paycode);
+		t.setBuyer_memo(buyer_memo);
+		t.setSeller_id(shop_id);
+		t.setImei(Constant.IMEI);
+		t.setPayDetails(payDetails);
+		t.setShipping_type(shipping_type);
+		if(mAddress!=null){
+			t.setMailing_address(mAddress.getId());
+		}
+		System.out.println("订单提交参数:=========="+gson.toJson(t));
+		confirmOrderView.showProgressDialog("正在提交订单...");
+		iHwcBizMainImpl.createOrderWithBuyer(t, confirmOrderView.getContext(), new IResult<ResponseBase>() {			 
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				// TODO Auto-generated method stub
+				confirmOrderView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						SimpleHUD.showSuccessMessage(confirmOrderView.getContext(), "订单提交成功");
+						confirmOrderView.doOrderInfo(obj);
+					}else{
+						if(obj.getErrorCode().equals("20200004")){
+							confirmOrderView.noAddress(obj.getMsg());
+						}else{
+//							confirmOrderView.wrongStatus(obj.getMsg());
+							SimpleHUD.showErrorMessage(confirmOrderView.getContext(), obj.getMsg());
+						}
+					}
+					break;
+				default:
+					SimpleHUD.showInfoMessage(confirmOrderView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	
+	
+	public List<DProduct>  getDpList(){
+		
+		return adapter.getListData();
+	}
+	
+	/** 获取默认地址 **/
+	public void getDefaultAddress(){
+		UserAddressGetRequest request = new UserAddressGetRequest();
+		request.setUser_id_by(Member.getInstance().getUser_id());
+		request.setIsdefault("T");
+		request.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getDefaultAddress(request, confirmOrderView.getContext(), new IResult<UserAddressGetOneResponse>() {
+
+			@Override
+			public void result(UserAddressGetOneResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						confirmOrderView.setAddress(obj.getAddress());
+					}else{
+						SimpleHUD.showErrorMessage(confirmOrderView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(confirmOrderView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+		
+	}
+	
+	/**
+	 * 清空购物车
+	 * @param obj
+	 */
+	public void delProductForCart(List<DProduct> obj){
+		ClearShoppingCartRequest request = new ClearShoppingCartRequest();
+		Cart cart = null;
+		List<Cart> cartList = new ArrayList<Cart>();
+		
+		for(int i=0;i<obj.size();i++){
+			cart = new Cart();
+			cart.setAction("del");
+			cart.setId(obj.get(i).getCart_id());//里面放的是购物车ID
+			cart.setUser_id(Member.getInstance().getUser_id());
+			cart.setSid(obj.get(i).getShop_id());
+			cart.setPid(obj.get(i).getPid());
+			if(obj.get(i).isSuite() && obj.get(i).getPsuite() != null){
+				cart.setSuite_id(obj.get(i).getPsuite().getSuite_id());
+				cart.setSuite_descript(obj.get(i).getPsuite().getDescript());
+			}
+			cartList.add(cart);
+		}
+
+		request.setCarts(cartList);
+		iHwcBizMainImpl.clearShoppingcart(request, confirmOrderView.getContext(), new IResult<ResponseBase>() {
+			
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						SimpleHUD.showInfoMessage(confirmOrderView.getContext(), obj.getMsg());
+					}
+					break;
+				default:
+					SimpleHUD.showErrorMessage(confirmOrderView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	
+	
+	
+	/**
+	 * 获取可用的礼券 跟账户余额
+	 */
+	public void getPayInfoWithOrder(Long sid,List<OrderDetails> orders){
+		OrderCreateRequest credorder = new OrderCreateRequest();
+		  credorder.setUser_id_by(Member.getInstance().getUser_id());
+		  credorder.setShop_id(sid);
+		  credorder.setOrderss(orders);
+		  System.out.println("请求参数-------------"+gson.toJson(credorder));
+		  iHwcBizMainImpl.getPayInfoWithOrder(credorder, confirmOrderView.getContext(), new IResult<OrderGetPayInfoResponse>() {
+			
+			@Override
+			public void result(OrderGetPayInfoResponse obj, Code code) {	
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						confirmOrderView.setPayInfo(obj);
+					}
+					break;
+				default:
+					 SimpleHUD.showErrorMessage(confirmOrderView.getContext(), code+"");
+					break;
+				}
+				
+			}
+		});
+	}
+
+	public void getPayInfo(Long sid ) {
+		RequestBase requestBase = new RequestBase();
+		requestBase.setPage(1);
+		requestBase.setShop_id(sid);
+		requestBase.setUser_id_by(Member.getInstance().getUser_id());
+		iHwcBizMainImpl.getShopPostStrategy(requestBase, confirmOrderView.getContext(), new IResult<ShopPostFeeStrategyResponse>() {
+			@Override
+			public void result(ShopPostFeeStrategyResponse obj, Code code) {
+				switch (code) {
+					case OK:
+						if (obj.isSuccess()) {
+							confirmOrderView.setOrderInfo(obj);
+						}
+						break;
+					default:
+						SimpleHUD.showErrorMessage(confirmOrderView.getContext(), code+"");
+						break;
+				}
+			}
+		});
+	}
+
+}

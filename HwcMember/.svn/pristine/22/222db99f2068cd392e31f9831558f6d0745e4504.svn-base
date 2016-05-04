@@ -1,0 +1,34 @@
+package com.huimodel.api.response;
+import java.util.List;
+
+import com.huimodel.api.base.ProductSuite;
+import com.huimodel.api.base.ResponseBase;
+
+
+public class ProductSuiteGetResponse extends ResponseBase {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4133416362030435607L;
+	private Long pid;
+	private Long sid;
+	private List<ProductSuite> suites;
+	public Long getPid() {
+		return pid;
+	}
+	public void setPid(Long pid) {
+		this.pid = pid;
+	}
+	public Long getSid() {
+		return sid;
+	}
+	public void setSid(Long sid) {
+		this.sid = sid;
+	}
+	public List<ProductSuite> getSuites() {
+		return suites;
+	}
+	public void setSuites(List<ProductSuite> suites) {
+		this.suites = suites;
+	}
+}

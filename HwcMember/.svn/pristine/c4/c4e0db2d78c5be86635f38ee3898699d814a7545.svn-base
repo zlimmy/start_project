@@ -1,0 +1,111 @@
+package com.hwc.member.view.activity.product;
+
+import java.util.List;
+
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+
+import com.huimodel.api.base.Advert;
+import com.hwc.member.R;
+import com.hwc.member.adapter.HorizontalListViewAdapter;
+import com.hwc.member.adapter.ProductCategoryAdapter;
+import com.hwc.member.anno.ViewTransform;
+import com.hwc.member.presenter.ProductCategoryPresenter;
+import com.hwc.member.util.CommonUtils;
+import com.hwc.member.view.activity.shop.ShopListActivity;
+import com.hwc.member.view.activity.view.IProductCategoryView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.HorizontalListView;
+import com.hwc.member.widget.MyAdGallery;
+import com.hwc.member.widget.MyGridView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnItemClick;
+
+/**
+ * 我要逛街
+ * @author Administrator
+ *
+ */
+@ContentView(R.layout.activity_product_category)
+public class ProductCategoryActivity  extends BaseActivity implements IProductCategoryView {
+
+	
+	@ViewInject(R.id.listview)
+	private HorizontalListView listview;
+	@ViewInject(R.id.gridview)
+	private MyGridView gridview;
+	@ViewInject(R.id.scrollview)
+	private ScrollView scrollview;
+	@ViewInject(R.id.ad_ll)
+	@ViewTransform(height = 300)
+	private RelativeLayout ad_ll;
+	@ViewInject(R.id.image_wall_gallery)
+	private MyAdGallery<String> myAdGallery;
+	@ViewInject(R.id.ovalLayout)
+	private LinearLayout ovalLayout;
+	@ViewInject(R.id.load_page)
+	private View load_page;
+	@ViewInject(R.id.load_error_page)
+	private View load_error_page;
+	
+	private ProductCategoryPresenter presenter = new ProductCategoryPresenter(this);
+	
+	@Override
+	protected void initView() {
+		setBack();
+		scrollview.smoothScrollTo(0,20);
+		presenter.setPromProdcut();
+		presenter.setItemCat();
+		presenter.setAD();
+	}
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setListAdapter(HorizontalListViewAdapter adapter) {
+		listview.setAdapter(adapter);
+	}
+	
+	@OnItemClick(R.id.listview)
+	public void onListItemClick(AdapterView<?> parent, View view,
+			int position, long id) {
+		goTo(ProductInfoActivity.class, presenter.adapter.getItem(position).getPid(), presenter.adapter.getItem(position).getShop_id());
+	}
+
+	@Override
+	public void setGridAdapter(ProductCategoryAdapter adapter) {
+		gridview.setAdapter(adapter);
+	}
+	
+	@OnItemClick(R.id.gridview)
+	public void onGridItemClick(AdapterView<?> parent, View view,
+			int position, long id) {
+//		presenter.selCategoryGoTo(presenter.adapter2.getItem(position).getCid());
+		goTo(ShopListActivity.class, presenter.adapter2.getItem(position).getCid());
+	}
+
+	@Override
+	public void setPromAd(List<Advert> list, int[] pic) {
+		CommonUtils.setAdGallery(myAdGallery, context, list, pic, ovalLayout);
+	}
+
+	@Override
+	public void clearLoadPage() {
+		GONE(load_page);
+	}
+
+	@Override
+	public void showErrorPage() {
+		GONE(load_page);
+		VISIBLE(load_error_page);
+	}
+
+}

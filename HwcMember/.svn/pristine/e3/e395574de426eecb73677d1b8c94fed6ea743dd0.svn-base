@@ -1,0 +1,256 @@
+package com.hwc.member.view.activity.luckdraw;
+
+import android.annotation.SuppressLint;
+import android.os.Handler;
+import android.os.Message;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.huimodel.api.base.PlatformPromLottery;
+import com.huimodel.api.response.PlatformPromLotteryDrawGetResponse;
+import com.huimodel.api.response.PromLotteryDrawResponse;
+import com.hwc.member.R;
+import com.hwc.member.adapter.PlatformPrizeAdapter;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.presenter.PlatformPromotionPresenter;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.view.activity.DialogLoginActivity;
+import com.hwc.member.view.activity.view.IPlatformPromotionView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.MyListView;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.hwc.member.widget.gua.GuagualeView;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+
+
+/**
+ * 平台级刮刮乐
+ * @author Administrator
+ *
+ */
+@ContentView(R.layout.activity_scratch)
+public class PlatFormScratchActivity  extends BaseActivity implements IPlatformPromotionView{
+
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.lottery_myview)
+	private GuagualeView lotteryMyView;
+	@ViewInject(R.id.again_btn)
+	private Button again_btn;
+	private String promcode;
+	@ViewInject(R.id.listview)
+	private MyListView listview;
+	@ViewInject(R.id.shopname)
+	private TextView shopname;
+	private PlatformPrizeAdapter platformPrizeAdapter;
+	private PlatformPromotionPresenter pp = new PlatformPromotionPresenter(this);
+	private PromLotteryDrawResponse pd;
+	
+	//判断请求到抽奖结果后是否有刮开
+	private boolean flag;
+	
+	//还需要增加 积分购买次数 跟判断次数是否够，提交奖品
+	
+	@SuppressLint("HandlerLeak")
+	private Handler handler = new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			flag = false;
+			if(Member.isNull()){
+				T("请先登录！");
+				goTo(DialogLoginActivity.class);	 
+				return;
+			}
+			if(pd!=null){
+				if(pd.isIs_win()){
+					DialogUtil.showDialog(Constant.Dialog, "恭喜中奖:"+pd.getPrize().getDescript()+"是否领取?", Gravity.CENTER, context, null, new OnClickListener() {
+						
+						@Override
+						public void onClick(DialogPlus dialog, View view) {
+							switch (view.getId()) {
+							case R.id.cancel:
+								
+								break;
+							case R.id.confirm:
+								pp.winlotterydraw(pd);
+								
+								break;
+							}
+							dialog.dismiss();
+						}
+					}, null);
+					
+				}else{
+					if(pd.getMsg() == null){
+						T("真可惜，就差那么一点呢！");
+					}else{
+						T(pd.getMsg());
+					}				
+				}
+					
+					
+				VISIBLE(again_btn);
+			}
+			
+			super.handleMessage(msg);
+		}
+	};
+	
+	@Override
+	protected void initView() {
+		promcode = getIntent().getStringExtra("0");
+		
+		pp.promLotteryDetail(promcode);
+		lotteryMyView.setHd(handler);
+		if(Member.isNull()){
+			goTo(DialogLoginActivity.class);
+			lotteryMyView.setText("");
+		}else{
+		   pp.playGame(null, promcode);
+		}
+		shopname.setText("本次奖品由惠万村提供");
+	}
+
+	@Override
+	protected void initListener() {
+		setBack(R.drawable.back, null, new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				exitClick();
+			}
+		});
+	}
+	
+	@OnClick(R.id.again_btn)
+	public void again_btnclick(View v){
+		if(flag){
+			DialogUtil.showDialog(Constant.Dialog, "这次的抽奖结果还没刮开哦，确定不看看吗？", Gravity.CENTER, context, null, new OnClickListener() {
+				
+				@Override
+				public void onClick(DialogPlus dialog, View view) {
+					switch (view.getId()) {
+					case R.id.cancel:
+						break;
+
+					case R.id.confirm:
+						lotteryMyView.setHd(handler);
+						lotteryMyView.againLotter();
+						pp.playGame(null, promcode);	
+						break;
+					}
+					dialog.dismiss();
+				}
+			}, null);	
+		}else{
+			// 再次抽奖判断抽奖次数
+			lotteryMyView.setHd(handler);
+			lotteryMyView.againLotter();
+			pp.playGame(null, promcode);
+		}
+		
+		
+	}
+
+	
+	
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void doGame(PlatformPromLotteryDrawGetResponse obj) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void initGame(PlatformPromLottery ppl) {
+		header.setTitle(ppl.getProm_descript());
+		platformPrizeAdapter = new PlatformPrizeAdapter(context, ppl.getAwards(), R.layout.item_promrize, bitmapUtils);
+		listview.setAdapter(platformPrizeAdapter);
+		platformPrizeAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void setWinning(PromLotteryDrawResponse p) {
+		// TODO Auto-generated method stub
+		pd = p;
+		if(pd.isIs_win()){
+			lotteryMyView.setText(pd.getPrize().getDescript());
+		}else{
+			lotteryMyView.setText("再接再厉");
+		}
+	}
+
+	@Override
+	public void rest(String str) {
+		// TODO Auto-generated method stub
+		lotteryMyView.againLotter();
+		if(str.equals("")){
+			lotteryMyView.setText("再接再厉");
+		}else{
+			lotteryMyView.setText(str);
+		}	
+		flag = true;
+	}
+	
+	/**
+	 * 关闭界面前如果没使用本次抽奖提示用户
+	 */
+	private void exitClick() {
+		if(flag){
+			DialogUtil.showDialog(Constant.Dialog, "如果现在退出的话将浪费本次抽奖机会哦= =", Gravity.CENTER, context, null, new OnClickListener() {
+				
+				@Override
+				public void onClick(DialogPlus dialog, View view) {
+					switch (view.getId()) {
+					case R.id.cancel:
+						break;
+
+					case R.id.confirm:
+						finish();	
+						break;
+					}
+					dialog.dismiss();
+				}
+			}, null);	
+		}else{
+			finish();
+		}
+	}
+	
+	/**
+	 * 菜单、返回键响应
+	 */
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			exitClick();
+		}
+		return false;
+	}
+
+	@Override
+	public void goLogin() {
+		goTo(DialogLoginActivity.class);
+	}
+	
+}

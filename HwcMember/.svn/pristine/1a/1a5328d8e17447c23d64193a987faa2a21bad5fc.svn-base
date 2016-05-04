@@ -1,0 +1,158 @@
+package com.hwc.member.presenter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.view.Gravity;
+import android.view.View;
+
+import com.huimodel.api.base.PlatformPrize;
+import com.huimodel.api.base.PointExchange;
+import com.huimodel.api.base.PointExchangeDetail;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.PlatformPrizeRequest;
+import com.huimodel.api.request.PointExchangeRequest;
+import com.huimodel.api.response.PlatformPrizeDetailResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.view.activity.view.IProductIntegralView;
+import com.hwc.member.widget.SimpleHUD;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+
+public class ProductIntegralPresenter {
+	
+	private IProductIntegralView productIntegralView;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	private List<String> list = new ArrayList<String>();
+	
+	public ProductIntegralPresenter(IProductIntegralView productIntegralView){
+		this.productIntegralView = productIntegralView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void setImg(PlatformPrizeDetailResponse obj){
+		if(obj.getEntity() != null){
+			if(obj.getEntity().getPic_url() != null && !obj.getEntity().getPic_url().equals("")){
+				list.add(obj.getEntity().getPic_url());
+			}
+		}
+		productIntegralView.setAdGalleryImg(list);
+	}
+	
+	public void setGoodsInfo(String code){
+		PlatformPrizeRequest ppr = new PlatformPrizeRequest();
+		PlatformPrize pp = new PlatformPrize();
+		pp.setCode(code);
+		ppr.setPrize(pp);
+		ppr.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getPlatformPrizeDetail(ppr, productIntegralView.getContext(), new IResult<PlatformPrizeDetailResponse>() {
+			
+			@Override
+			public void result(PlatformPrizeDetailResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						setImg(obj);
+						productIntegralView.setGoodsData(obj.getEntity());
+					}
+					
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(productIntegralView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	public void checkPoint(final PlatformPrize pfp){
+		PointExchangeRequest per = new PointExchangeRequest();
+		per.setUser_id_by(Member.getInstance().getUser_id());
+		PointExchange pe = new PointExchange();
+		pe.setUser_id(Member.getInstance().getUser_id());
+		pe.setUse_point(pfp.getPoint());
+		per.setEntity(pe);
+		per.setImei(Constant.IMEI);
+		iHwcBizMainImpl.validateExchange(per, productIntegralView.getContext(), new IResult<ResponseBase>() {
+
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						DialogUtil.showDialog(Constant.Dialog, "是否确定兑换这件商品", Gravity.CENTER, productIntegralView.getContext(), null, new OnClickListener() {
+							
+							@Override
+							public void onClick(DialogPlus dialog, View view) {
+								switch (view.getId()) {
+								case R.id.cancel:
+									break;
+
+								case R.id.confirm:
+									buyGoods(pfp);
+									break;
+								}
+								dialog.dismiss();
+							}
+						}, null);	
+					}else{
+						SimpleHUD.showErrorMessage(productIntegralView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(productIntegralView.getContext(), code+"");
+					break;
+				}
+			}			
+		});
+	}
+	
+	public void buyGoods(final PlatformPrize pfp){
+		PointExchangeRequest per = new PointExchangeRequest();
+		per.setUser_id_by(Member.getInstance().getUser_id());
+		PointExchange pe = new PointExchange();
+		pe.setUser_id(Member.getInstance().getUser_id());
+//		pe.setUse_point(pfp.getPoint());
+		PointExchangeDetail ped = new PointExchangeDetail();
+		ped.setUse_point(pfp.getPoint());
+		ped.setNum(1);
+		ped.setPlatformPrize(pfp);
+		List<PointExchangeDetail> list = new ArrayList<PointExchangeDetail>();
+		list.add(ped);
+		pe.setDetails(list);
+		per.setEntity(pe);
+		per.setImei(Constant.IMEI);
+		iHwcBizMainImpl.exchangeWithPoint(per, productIntegralView.getContext(), new IResult<ResponseBase>() {
+
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						SimpleHUD.showSuccessMessage(productIntegralView.getContext(), "兑换成功");
+						Member.getInstance().setPoint(Member.getInstance().getPoint() - pfp.getPoint());
+					}else{
+						SimpleHUD.showErrorMessage(productIntegralView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(productIntegralView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+
+}

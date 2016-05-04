@@ -1,0 +1,105 @@
+package com.huimodel.api.base;
+
+import java.io.Serializable;
+
+public class Product_prom implements Serializable  {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	//促销代码
+	private String prom_code;
+	//促销价格
+	private Double prom_price;
+	//促销 限量销售
+	private int prom_num;
+	//促销预订数量
+	private Double prom_res_num;
+	//促销成交数量
+	private Double prom_real_num;
+	//促销开始时间
+	private String prom_begin;
+	//促销截止时间
+	private String prom_end;
+	//输入邀请码 再减多少金额
+	private Double discount; 
+	//促销的描述
+	private String prom_des;
+	//套餐Id
+	private Long suite_id;
+	// 套餐描述
+	private String suite_descript;
+
+	public Long getSuite_id() {
+		return suite_id;
+	}
+	public void setSuite_id(Long suite_id) {
+		this.suite_id = suite_id;
+	}
+	public String getSuite_descript() {
+		return suite_descript;
+	}
+	public void setSuite_descript(String suite_descript) {
+		this.suite_descript = suite_descript;
+	}
+	public Double getProm_price() {
+		return prom_price;
+	}
+	public void setProm_price(Double prom_price) {
+		this.prom_price = prom_price;
+	}
+	public int getProm_num() {
+		return prom_num;
+	}
+	public void setProm_num(int prom_num) {
+		this.prom_num = prom_num;
+	}
+	public Double getProm_res_num() {
+		return prom_res_num;
+	}
+	public void setProm_res_num(Double prom_res_num) {
+		this.prom_res_num = prom_res_num;
+	}
+	public Double getProm_real_num() {
+		return prom_real_num;
+	}
+	public void setProm_real_num(Double prom_real_num) {
+		this.prom_real_num = prom_real_num;
+	}
+	public String getProm_begin() {
+		return prom_begin;
+	}
+	public void setProm_begin(String prom_begin) {
+		this.prom_begin = prom_begin;
+	}
+	public String getProm_end() {
+		return prom_end;
+	}
+	public void setProm_end(String prom_end) {
+		this.prom_end = prom_end;
+	}
+	public String getProm_code() {
+		return prom_code;
+	}
+	public void setProm_code(String prom_code) {
+		this.prom_code = prom_code;
+	}
+	
+	public Double getDiscount() {
+		return discount;
+	}
+	public void setDiscount(Double discount) {
+		this.discount = discount;
+	}
+	public String getProm_des() {
+		return prom_des;
+	}
+	public void setProm_des(String prom_des) {
+		this.prom_des = prom_des;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	
+}

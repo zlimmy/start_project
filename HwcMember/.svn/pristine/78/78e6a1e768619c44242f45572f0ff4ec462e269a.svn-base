@@ -1,0 +1,235 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+import android.graphics.Paint;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.response.ProductSuiteGetResponse;
+import com.hwc.member.R;
+import com.hwc.member.adapter.ProductInfoAdapter;
+import com.hwc.member.anno.ViewTransform;
+import com.hwc.member.common.Member;
+import com.hwc.member.presenter.ProductInfoPresenter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.IntentUtil;
+import com.hwc.member.view.activity.DialogLoginActivity;
+import com.hwc.member.view.activity.shop.ShopIndexActivity;
+import com.hwc.member.view.activity.view.IProductInfoView;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.hwc.member.widget.ProductAdGallery;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public class ProductInfoUpFragment extends FormBaseFragment implements IProductInfoView {
+
+	@ViewInject(R.id.image_rl)
+	@ViewTransform(height = 720)
+	private RelativeLayout image_rl;
+	@ViewInject(R.id.image_wall_gallery)
+	private ProductAdGallery<String> myAdGallery;
+	@ViewInject(R.id.ovalLayout)
+	private LinearLayout ovalLayout;
+	@ViewInject(R.id.name_tv)
+	private TextView name_tv;
+	@ViewInject(R.id.description_tv)
+	private TextView description_tv;
+	@ViewInject(R.id.newprice_tv)
+	private TextView newprice_tv;
+	@ViewInject(R.id.num_flag)
+	private TextView num_flag;
+	@ViewInject(R.id.stock_flag)
+	private TextView stock_flag;
+	@ViewInject(R.id.prom_des)
+	private TextView prom_des;
+	@ViewInject(R.id.promprice_tv)
+	private TextView promprice_tv;
+	@ViewInject(R.id.attentionshop_iv)
+	private ImageView attentionshop_iv;
+	@ViewInject(R.id.mobile_tv)
+	private TextView mobile_tv;
+	@ViewInject(R.id.address_tv)
+	private TextView address_tv;
+	@ViewInject(R.id.distance_tv)
+	private TextView distance_tv;
+	@ViewInject(R.id.shopname_tv)
+	private TextView shopname_tv;
+	@ViewInject(R.id.showcase_flag)
+	private TextView showcase_flag;
+	@ViewInject(R.id.notice_tv)
+	private TextView notice_tv;
+
+	@ViewInject(R.id.views_tv)
+	private TextView views_tv;
+	
+	private ProductInfoPresenter presenter = new ProductInfoPresenter(this);
+	
+	private Long pid, shop_id;
+	private DProduct dp;
+	private String shopmoblie;
+	
+	@Override
+	protected void init() {
+		pid = getActivity().getIntent().getLongExtra("0", -1);
+        shop_id = getActivity().getIntent().getLongExtra("1", -1);
+        presenter.setGoodsInfo(pid, shop_id);
+        presenter.getShopMobile(shop_id);
+	}
+
+	@Override
+	public int getLayoutId() {
+		return R.layout.fragment_productinfoup;
+	}
+	
+	@Override
+	public void onDestroy() {
+		myAdGallery.clearAnimation();
+		myAdGallery.stopTimer();
+		super.onDestroy();
+	}
+
+	@Override
+	public void clearLoadPage() {}
+
+	@Override
+	public void showErrorPage() {}
+
+	@Override
+	public void setAdGalleryImg(List<String> list) {
+		myAdGallery.start(getActivity(), list, null, 0, ovalLayout,R.drawable.dot_unsel, R.drawable.dot_sel);
+	}
+
+	@Override
+	public void setGoodsInfo(DProduct obj) {
+		try {
+			dp = obj;
+			name_tv.setText(obj.getName());
+			description_tv.setText(obj.getSellPt());
+			newprice_tv.setText("￥" + CommonUtil.conversionDouble(obj.getPrice()));
+			if(obj.getProminfo() != null){
+				prom_des.setText(obj.getProminfo().getProm_des());
+				newprice_tv.setText("￥" + CommonUtil.conversionDouble(obj.getProminfo().getProm_price()));
+				VISIBLE(prom_des);
+				VISIBLE(promprice_tv);
+				promprice_tv.setText("￥" + CommonUtil.conversionDouble(obj.getPrice()));
+				promprice_tv.setTextColor(getResources().getColor(R.color.gray4));
+				promprice_tv.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG|Paint.ANTI_ALIAS_FLAG); 		
+			}
+			//判断是否是关注商品切换标签
+			if(obj.isAttention()){
+				attentionshop_iv.setImageResource(R.drawable.icon_iscoll);
+			}else{
+				attentionshop_iv.setImageResource(R.drawable.icon_nocoll);
+			}
+			
+			if(obj.getNum_flag() != null && !obj.getNum_flag().equals("")){
+				num_flag.setText(obj.getNum_flag());
+				VISIBLE(num_flag);
+			}
+			
+			if(obj.getStock_flag() != null && !obj.getStock_flag().equals("")){
+				stock_flag.setText(obj.getStock_flag());
+				VISIBLE(stock_flag);
+			}
+			if(obj.getHas_showcase() == 1){
+				VISIBLE(showcase_flag);
+			}else{
+				GONE(showcase_flag);
+			}
+
+			views_tv.setText(obj.getViews_num()+"");
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+
+	@Override
+	public void setList(ProductInfoAdapter adapter) {}
+
+	@Override
+	public void showDisCodeDialog(ResponseBase base) {}
+
+	//确认购买
+	@Override
+	public void doBuy(DProduct obj, int flag) {
+	}
+
+	@Override
+	public void openProductSuite(ProductSuiteGetResponse psg) {}
+
+	@Override
+	public void setAttenImg() {
+		attentionshop_iv.setImageResource(R.drawable.icon_iscoll);
+		dp.setAttention(true);
+	}
+
+	@Override
+	public void setUnAttenImg() {
+		attentionshop_iv.setImageResource(R.drawable.icon_nocoll);
+		dp.setAttention(false);
+	}
+
+	@Override
+	public void setMobile(String mobile, String address, double distance, String name, String bulletin) {
+		shopmoblie = mobile;
+		shopname_tv.setText("店铺名称：" + name);
+		address_tv.setText("" + address);
+		distance_tv.setText("距离：" + CommonUtil.conversionDistance(distance));
+		notice_tv.setText(bulletin);
+	}
+
+	@Override
+	public void hideMore(boolean flag) {}
+
+	@Override
+	public void noGoods() {
+		T("该商品已下架！");
+		getActivity().finish();
+	}
+	
+	@OnClick(R.id.attentionshop_iv)
+	public void attentionClick(View v){
+		if(Member.isNull()){
+			goTo(DialogLoginActivity.class);
+		}else{
+			if(dp.isAttention()){
+				presenter.delCollection(dp);
+			}else{
+				presenter.updateCollection(pid, shop_id);
+			}
+			
+			
+		}	
+	}
+	
+	@OnClick(R.id.call_iv)
+	public void callPhone(View v){
+		IntentUtil.toPhoneApp(getActivity(), shopmoblie);
+	}
+	
+	@OnClick(R.id.goshop_tv)
+	public void goShop(View v){
+		goTo(ShopIndexActivity.class, shop_id);
+	}
+
+	@Override
+	public void doBuy(DProduct obj, int flag, DialogPlus dialog) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

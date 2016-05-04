@@ -1,0 +1,29 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.ProductItem;
+import com.hwc.member.adapter.ProductGridAdapter;
+
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public interface IAllGoodsView extends LoadDataView {
+
+	void setGridAdapter(ProductGridAdapter adapter);
+
+	// 刷新
+	void refresh(List<DProduct> list);
+
+	// 加载
+	void more(List<DProduct> lis,boolean isEnd);
+	
+	void setIsCanMore(boolean b) ;
+	
+	void setCat(List<ProductItem> productItem);
+
+}

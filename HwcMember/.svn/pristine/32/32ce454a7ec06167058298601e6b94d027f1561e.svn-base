@@ -1,0 +1,13 @@
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.Order;
+import com.huimodel.api.base.ResponseBaseEntity;
+
+public class OrderDetailResponse extends ResponseBaseEntity<Order>{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+}

@@ -1,0 +1,51 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+public class PromLotteryPrizeAddRequest extends RequestBase {
+	private String prom_code;
+	private Long prom_shop_id;
+	private String prom_prize_code;
+	private String prom_prize_descript;
+	private Double price;
+	//奖项
+	private String awards;
+
+	public String getAwards() {
+		return awards;
+	}
+	public void setAwards(String awards) {
+		this.awards = awards;
+	}
+	public String getProm_code() {
+		return prom_code;
+	}
+	public void setProm_code(String prom_code) {
+		this.prom_code = prom_code;
+	}
+	public String getProm_prize_code() {
+		return prom_prize_code;
+	}
+	public void setProm_prize_code(String prom_prize_code) {
+		this.prom_prize_code = prom_prize_code;
+	}
+	public Double getPrice() {
+		return price;
+	}
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+	public String getProm_prize_descript() {
+		return prom_prize_descript;
+	}
+	public void setProm_prize_descript(String prom_prize_descript) {
+		this.prom_prize_descript = prom_prize_descript;
+	}
+	public Long getProm_shop_id() {
+		return prom_shop_id;
+	}
+	public void setProm_shop_id(Long prom_shop_id) {
+		this.prom_shop_id = prom_shop_id;
+	}
+	
+}

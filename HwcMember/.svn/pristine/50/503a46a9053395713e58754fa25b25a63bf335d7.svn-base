@@ -1,0 +1,172 @@
+package com.hwc.member.presenter;
+
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.base.WithdrawApply;
+import com.huimodel.api.request.UserInfoRequest;
+import com.huimodel.api.request.WithdrawApplyRequest;
+import com.huimodel.api.response.MemberUpdateResponse;
+import com.huimodel.api.response.WithdrawApplyListResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IWithdrawalsView;
+import com.hwc.member.widget.SimpleHUD;
+public class WithdrawalsPresenter {
+	
+	private IWithdrawalsView withdrawalsView;
+	private IHwcBizMain iHwcBizMainImpl;
+	private int pagesize = 10;
+	private Gson gson;
+	public WithdrawalsPresenter(IWithdrawalsView withdrawalsView){
+		this.withdrawalsView = withdrawalsView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		this.gson = new Gson();
+	}
+	
+	
+	public void subimt(String amount){
+		WithdrawApplyRequest request = new WithdrawApplyRequest();
+		request.setUser_id_by(Member.getInstance().getUser_id());
+		WithdrawApply withdrawApply = new WithdrawApply();
+		withdrawApply.setAmount(Double.parseDouble(amount));
+		request.setEntity(withdrawApply);
+		withdrawalsView.showProgressDialog("正在提交申请...");
+		iHwcBizMainImpl.submitWithdrawApply(request, withdrawalsView.getContext(), new IResult<ResponseBase>() {	
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				// TODO Auto-generated method stub
+				withdrawalsView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						withdrawalsView.submitSuccess();
+					}else{
+						withdrawalsView.submitFail();
+						SimpleHUD.showErrorMessage(withdrawalsView.getContext(), obj.getMsg());
+					}
+					break;
+				default:
+					withdrawalsView.submitFail();
+					SimpleHUD.showInfoMessage(withdrawalsView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+
+
+	/**
+	 * 刷新提现记录
+	 */
+	 public void refresh(){
+		WithdrawApplyRequest request = new WithdrawApplyRequest();
+		WithdrawApply wa = new WithdrawApply();
+		wa.setUser_id(Member.getInstance().getUser_id());
+		request.setEntity(wa);
+		iHwcBizMainImpl.getWithdrawApplies(request, withdrawalsView.getContext(), new IResult<WithdrawApplyListResponse>() {
+			
+			@Override
+			public void result(WithdrawApplyListResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						
+						if(obj.getEntities().size()==0){
+							withdrawalsView.clearLoadPage();
+						}else{
+							withdrawalsView.refresh(obj.getEntities());
+						}
+						
+					}
+					break;
+				default:
+					withdrawalsView.submitFail();
+					SimpleHUD.showInfoMessage(withdrawalsView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	 }
+	
+	 
+	 
+	/**
+	 * 获取提现列表 
+	 * @param pageno
+	 */
+	 public void more(int pageno){
+		WithdrawApplyRequest request = new WithdrawApplyRequest();
+		WithdrawApply wa = new WithdrawApply();
+		wa.setUser_id(Member.getInstance().getUser_id());
+		request.setEntity(wa);
+		iHwcBizMainImpl.getWithdrawApplies(request, withdrawalsView.getContext(), new IResult<WithdrawApplyListResponse>() {
+			
+			@Override
+			public void result(WithdrawApplyListResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				boolean isEnd = true;
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						if(obj.getEntities().size()<pagesize){
+							isEnd = false;
+						}
+						withdrawalsView.more(obj.getEntities(), isEnd);
+					}
+					break;
+				default:
+					withdrawalsView.submitFail();
+					SimpleHUD.showInfoMessage(withdrawalsView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	 }
+
+	public void update(final String pay_type, final String payaccount) {
+		UserInfoRequest uir = new UserInfoRequest();
+		uir.setUser_id_by(Member.getInstance().getUser_id());
+		uir.setImei(Constant.IMEI);
+		if (pay_type != null && !payaccount.equals("")) {
+			uir.setPay_type(pay_type);
+			uir.setPayaccount(payaccount);
+		}
+
+		withdrawalsView.showProgressDialog(null);
+		iHwcBizMainImpl.updateUserInfo(uir, withdrawalsView.getContext(),
+				new IResult<MemberUpdateResponse>() {
+
+					@Override
+					public void result(MemberUpdateResponse obj, Code code) {
+						withdrawalsView.dismissProgressDialog();
+						switch (code) {
+							case OK:
+								if (obj.isSuccess()) {
+									SimpleHUD.showSuccessMessage(
+											withdrawalsView.getContext(), "修改成功");
+									Member.getInstance().setPay_type(pay_type);
+									Member.getInstance().setPayaccount(payaccount);
+								} else {
+									SimpleHUD.showErrorMessage(
+											withdrawalsView.getContext(),
+											obj.getMsg());
+								}
+								break;
+
+							default:
+								SimpleHUD.showErrorMessage(
+										withdrawalsView.getContext(), code + "");
+								break;
+						}
+					}
+				});
+	}
+	
+}

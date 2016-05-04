@@ -1,0 +1,33 @@
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.ResponseBase;
+
+public class AccountItemsGroupSearchResponse extends ResponseBase {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -25371507074550211L;
+
+	private List<AccountItemsSearchResponse> items;
+	
+	public Double balance;
+
+	public Double getBalance() {
+		return balance;
+	}
+
+	public void setBalance(Double balance) {
+		this.balance = balance;
+	}
+
+	public List<AccountItemsSearchResponse> getItems() {
+		return items;
+	}
+
+	public void setItems(List<AccountItemsSearchResponse> items) {
+		this.items = items;
+	}
+	
+}

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/white" >
+
+        <ImageView
+            android:id="@+id/shoplogo_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
+            android:src="@drawable/goodsinfo_item2" />
+
+        <TextView
+            android:id="@+id/shopname_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@id/shoplogo_iv"
+            android:text="店铺名称"
+            android:textSize="@dimen/text_14" />
+
+        <TextView
+            android:id="@+id/status_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="18dp"
+            android:text="订单状态"
+            android:textColor="@color/main_color"
+            android:textSize="@dimen/text_14" />
+    </RelativeLayout>
+
+    <View style="@style/divider_horizontal" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/white" >
+
+        <RelativeLayout
+            android:id="@+id/one_good_rl"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:visibility="gone" >
+
+            <ImageView
+                android:id="@+id/goods_iv"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="18dp"
+                android:src="@drawable/icon_defultbg" />
+
+            <TextView
+                android:id="@+id/goodsname_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/goods_iv"
+                android:layout_marginLeft="17dp"
+                android:layout_marginRight="45dp"
+                android:layout_toRightOf="@id/goods_iv"
+                android:ellipsize="end"
+                android:lines="2"
+                android:maxLines="2"
+                android:text=""
+                android:textSize="@dimen/text_14" />
+
+            <TextView
+                android:id="@+id/package_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/goodsname_tv"
+                android:layout_below="@id/goodsname_tv"
+                android:layout_marginTop="4dp"
+                android:text=""
+                android:textColor="@color/text_less_important"
+                android:textSize="@dimen/text_12" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/many_good_ll"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/goods0_iv"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:src="@drawable/icon_defultbg"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/goods1_iv"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:src="@drawable/icon_defultbg"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/goods2_iv"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:src="@drawable/icon_defultbg"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/goods3_iv"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:src="@drawable/icon_defultbg"
+                android:visibility="invisible" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <View style="@style/divider_horizontal" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/white" >
+
+        <TextView
+            android:id="@+id/total_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="18dp"
+            android:text="@string/price_and_number"
+            android:textColor="@color/text_less_important"
+            android:textSize="@dimen/text_12" />
+
+        <TextView
+            android:id="@+id/time_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
+            android:text="@string/order_creat_time"
+            android:textColor="@color/text_less_important"
+            android:textSize="@dimen/text_12" />
+    </RelativeLayout>
+
+</LinearLayout>

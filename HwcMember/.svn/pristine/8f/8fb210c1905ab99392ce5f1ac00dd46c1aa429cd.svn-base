@@ -1,0 +1,178 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import java.util.List;
+
+import android.content.Intent;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.Advert;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.request.ProductRecommendRequest;
+import com.huimodel.api.request.ShopCatGetRequest;
+import com.huimodel.api.response.ShopAndShopProductInfoResponse;
+import com.huimodel.api.response.ShopCatGetResponse;
+import com.huimodel.api.response.SubjectProductReponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.HotGoodsAdapter;
+import com.hwc.member.adapter.ProductCategoryAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.shop.NewShopInfoActivity;
+import com.hwc.member.view.activity.shop.ShopListActivity;
+import com.hwc.member.view.activity.view.INewProductCategoryView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class NewProductCategoryPresenter {
+	
+	private INewProductCategoryView productCategoryView;
+	
+	public HotGoodsAdapter adapter;
+	
+	public ProductCategoryAdapter adapter2;
+	
+	private Gson gson;
+	private IHwcBizMain iHwcBizMainImpl;
+//	private CacheDataUtil cacheDataUtil ;
+	private List<Advert> adList;
+	public NewProductCategoryPresenter(INewProductCategoryView productCategoryView){
+		this.productCategoryView = productCategoryView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+//		this.cacheDataUtil = CacheDataUtil.getInstance(App.mContext);
+		this.gson = new Gson();
+	}
+	
+	/**
+	 * 热卖商品
+	 */
+	public void setPromProdcut(){	
+//	String caheJosn = cacheDataUtil.getStringByKey("PProdcut");
+//	  if(caheJosn==null){//如果缓存数据为空
+		RequestBase t = new RequestBase();
+		t.setLatitude(Constant.latitude);
+		t.setLongitude(Constant.longitude);
+		t.setUser_id_by(Member.getInstance().getUser_id());
+		t.setImei(Constant.IMEI);
+		productCategoryView.showProgressDialog(null);
+		iHwcBizMainImpl.getSubjectProduct(t, productCategoryView.getContext(), new IResult<SubjectProductReponse>() {
+			@Override
+			public void result(SubjectProductReponse obj, Code code) {
+				productCategoryView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					adList = obj.getSubject();
+					adapter = new HotGoodsAdapter(productCategoryView.getContext(), adList, R.layout.item_hotgoods, null);
+					productCategoryView.setHotGridAdapter(adapter);
+//					cacheDataUtil.saveJson("PProdcut", obj, Constant.CACHETIME);
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(productCategoryView.getContext(), code+"");
+					break;
+				}
+				
+			}
+		});
+//	  }else{
+//		  SubjectProductReponse obj = gson.fromJson(caheJosn,SubjectProductReponse.class);
+//		  if(obj!=null){
+//				adList = obj.getSubject();
+//				adapter = new HotGoodsAdapter(productCategoryView.getContext(), adList, R.layout.item_hotgoods, null);
+//				productCategoryView.setHotGridAdapter(adapter);
+//		  }
+//		  productCategoryView.clearLoadPage();
+//	  }
+		
+		
+		
+	}
+	
+	/**
+	 * 获取产品类目
+	 */
+	public void setItemCat(){
+//	 String caheJosn = cacheDataUtil.getStringByKey("ItemCat");
+//	  if(caheJosn==null){//如果缓存数据为空
+		ShopCatGetRequest sc = new ShopCatGetRequest();
+		sc.setLatitude(Constant.latitude);
+		sc.setLongitude(Constant.longitude);
+		sc.setUser_id_by(Member.getInstance().getUser_id());
+		sc.setImei(Constant.IMEI);
+		System.out.println(gson.toJson(sc));
+		iHwcBizMainImpl.getdefaultshopcat(sc, productCategoryView.getContext(), new IResult<ShopCatGetResponse>() {
+			@Override
+			public void result(ShopCatGetResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.getItems() != null && obj.getItems().size() > 0){
+						adapter2 = new ProductCategoryAdapter(productCategoryView.getContext(), obj.getItems(), R.layout.item_product_category, null);
+						productCategoryView.setGridAdapter(adapter2);
+//						cacheDataUtil.saveJson("ItemCat", obj, Constant.CACHETIME);
+						System.out.println(gson.toJson("-------------------"+obj));
+						
+					}
+					productCategoryView.clearLoadPage();
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(productCategoryView.getContext(), code+"");
+					break;
+				}
+			}
+		});	
+//	  }else{
+//		  ShopCatGetResponse obj = gson.fromJson(caheJosn, ShopCatGetResponse.class);
+//			if(obj.getItems() != null && obj.getItems().size() > 0){
+//				adapter2 = new ProductCategoryAdapter(productCategoryView.getContext(), obj.getItems(), R.layout.item_product_category, null);
+//				productCategoryView.setGridAdapter(adapter2);
+//			}
+//			productCategoryView.clearLoadPage();
+//	  }
+		
+	}
+	
+	
+	public void selCategoryGoTo(final Long cid){
+		ProductRecommendRequest pr = new ProductRecommendRequest();
+		pr.setLatitude(Constant.latitude);
+		pr.setLongitude(Constant.longitude);
+		pr.setUser_id_by(Member.getInstance().getUser_id());
+		pr.setCid(cid);
+		pr.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getshopproductbycid(pr, productCategoryView.getContext(), new IResult<ShopAndShopProductInfoResponse>() {
+			@Override
+			public void result(ShopAndShopProductInfoResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.getShops() == null || obj.getShops().size() == 0){
+						SimpleHUD.showInfoMessage(productCategoryView.getContext(), "没有该种类的门店");
+					}else if(obj.getShops().size() <= 1){
+						Intent intent = new Intent(productCategoryView.getContext(), NewShopInfoActivity.class);
+						intent.putExtra("0", obj.getShops().get(0).getSid());
+						productCategoryView.getContext().startActivity(intent);
+					}else if(obj.getShops().size() > 1){
+						Intent intent = new Intent(productCategoryView.getContext(), ShopListActivity.class);
+						intent.putExtra("0", cid);
+						productCategoryView.getContext().startActivity(intent);
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(productCategoryView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+
+}

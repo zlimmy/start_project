@@ -1,0 +1,125 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white" >
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="80dp"
+        android:src="@drawable/logo" />
+
+    <!-- 账号 -->
+
+    <View style="@style/divider_horizontal" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="28dp"
+            android:src="@drawable/login_accnt" />
+
+        <View
+            android:id="@+id/zhanghao_view"
+            style="@style/divider_vertical"
+            android:layout_margin="12dp" />
+
+        <com.hwc.member.widget.EditDelText
+            android:id="@+id/user_et"
+            style="@style/tv14_style"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="12dp"
+            android:background="@null"
+            android:drawableRight="@drawable/del_edit"
+            android:hint="账号"
+            android:phoneNumber="true"
+            android:singleLine="true"
+            android:text="13566778899" />
+    </LinearLayout>
+
+    <View style="@style/divider_horizontal" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="28dp"
+            android:src="@drawable/login_accnt" />
+
+        <View style="@style/divider_vertical"
+            android:layout_margin="12dp" />
+
+        <com.hwc.member.widget.EditDelText
+            android:id="@+id/pwd_et"
+            style="@style/tv14_style"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="12dp"
+            android:background="@null"
+            android:drawableRight="@drawable/del_edit"
+            android:hint="密码"
+            android:phoneNumber="true"
+            android:singleLine="true"
+            android:text="321"
+            android:password="true" />
+    </LinearLayout>
+    
+    <View style="@style/divider_horizontal" />
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:orientation="horizontal"
+        android:layout_marginLeft="28dp"
+        android:layout_marginRight="28dp"
+        android:gravity="center_vertical">
+        
+        <TextView 
+            android:id="@+id/forgetpwd_bt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="忘记密码"
+            android:textColor="@color/gray4"
+            android:textSize="@dimen/text_14"
+            android:padding="10dp"/>
+        
+        <View 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        
+        <TextView 
+            android:id="@+id/reg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="注册账号"
+            android:textColor="@color/gray4"
+            android:textSize="@dimen/text_14"
+            android:padding="10dp"/>
+        
+    </LinearLayout>
+    
+    <Button 
+        android:id="@+id/login_bt"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        style="@style/btn_tv_style"
+        android:text="登录"
+        android:layout_margin="28dp"/>
+
+</LinearLayout>

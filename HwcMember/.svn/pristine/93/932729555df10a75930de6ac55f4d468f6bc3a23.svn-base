@@ -1,0 +1,228 @@
+package com.hwc.member.view.activity.my;
+
+import java.util.List;
+import java.util.regex.Pattern;
+
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+import com.huimodel.api.base.WithdrawApply;
+import com.hwc.member.R;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.presenter.WithdrawalsPresenter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.view.activity.view.IWithdrawalsView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.hwc.member.widget.header.HeadView.Dir;
+import com.hwc.member.widget.header.HeadView.OnHeadClickListener;
+import com.hwc.member.widget.header.LXHeadView;
+import com.hwc.member.widget.photodialog.PayDialog.Builder.PayListener;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+
+
+/**
+ * 提现
+ * @author fzh
+ * @date 2016年3月8日
+ */
+@ContentView(R.layout.activity_withdrawals)
+public class WithdrawalsActivity extends BaseActivity implements IWithdrawalsView{
+
+
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.amount_et)
+	private EditText amount_et;
+	@ViewInject(R.id.submit_but)
+	private Button submit_but;
+	private String count;
+	private WithdrawalsPresenter presenter = new WithdrawalsPresenter(this);
+	@Override
+	protected void initView() {
+		// TODO Auto-generated method stub
+		setBack();
+		count = getIntent().getStringExtra("0");
+		amount_et.setHint("可提现金额:"+CommonUtil.conversionDouble(Double.parseDouble(count)));
+		amount_et.addTextChangedListener(new EditChangedListener());
+	}
+
+	class EditChangedListener implements TextWatcher {
+		private CharSequence temp;//监听前的文本
+		private int editStart;//光标开始位置
+		private int editEnd;//光标结束位置
+
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+			Log.i(TAG, "输入文本之前的状态");
+			temp = s;
+			if (temp.length() == 1 && temp.equals(".")) {
+				temp = "0." ;
+			}
+
+		}
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+			Log.i(TAG, "输入文字中的状态，count是一次性输入字符数");
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+
+			Log.i(TAG, "输入文字后的状态 :"+s);
+			/** 得到光标开始和结束位置 ,超过最大数后记录刚超出的数字索引进行控制 */
+			editStart = amount_et.getSelectionStart();
+			editEnd = amount_et.getSelectionEnd();
+
+
+
+			if (!Pattern.matches("^[0-9]+(.[0-9]{0,2})?$", temp)) {
+				if (temp.length() > 0) {
+					s.delete(editStart - 1, editEnd);
+					int tempSelection = editStart;
+					amount_et.setText(s);
+					amount_et.setSelection(tempSelection);
+				}
+			}
+		}
+	};
+
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+		header.setOnHeadClickListener(new OnHeadClickListener() {
+			@Override
+			public void onHeadClick(Dir dir, View view) {
+				// TODO Auto-generated method stub
+				switch (dir) {
+					case Right:
+						goTo(WithdrawalsListActivity.class);
+						break;
+					default:
+						break;
+				}
+			}
+		});
+	}
+
+
+
+	@OnClick(R.id.submit_but)
+	public void submit_but(View v){
+
+		if(getViewValue(amount_et).equals("")){
+			T("请输入提现金额");
+			return;
+		}
+
+		Double db = Double.parseDouble(getViewValue(amount_et));
+		System.out.println(gson.toJson(Member.getInstance()));
+		if(db<100){
+			T("提现金额必须大于100.00元");
+		}else if(db>Double.parseDouble(count)){
+			T("最大可提现:"+CommonUtil.conversionDouble(Double.parseDouble(count)));
+		}else if (Member.getInstance().getPayaccount() == null ||Member.getInstance().getPayaccount().equals("")) {
+			DialogUtil.showPayDialog(context, new PayListener() {
+
+				@Override
+				public void confirm(String type, String num) {
+					if (type == null) {
+						T("请选择提现方式");
+						return;
+					}
+					if (num == null || num.equals("")) {
+						T("请输入提现账号");
+						return;
+					}
+					presenter.update(type, num);
+				}
+			});
+		}else{
+			submit_but.setClickable(false);
+			presenter.subimt(getViewValue(amount_et));
+		}
+	}
+
+
+
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+
+	}
+
+
+
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+
+	}
+
+
+
+
+	@Override
+	public void submitSuccess() {
+		// TODO Auto-generated method stub
+		submit_but.setClickable(true);
+		amount_et.setText("0.00");
+		DialogUtil.showDialog(Constant.Dialog, "提现申请提交成功，请关注提现进度！", Gravity.CENTER, context, null, new OnClickListener() {
+
+			@Override
+			public void onClick(DialogPlus dialog, View view) {
+				switch (view.getId()) {
+					case R.id.cancel:
+						break;
+
+					case R.id.confirm:
+						goTo(WithdrawalsListActivity.class);
+						break;
+				}
+				dialog.dismiss();
+			}
+		}, null);
+	}
+
+
+	@Override
+	public void submitFail() {
+		// TODO Auto-generated method stub
+		submit_but.setClickable(true);
+
+	}
+
+
+
+
+	@Override
+	public void refresh(List<WithdrawApply> list) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	@Override
+	public void more(List<WithdrawApply> list, boolean isEnd) {
+		// TODO Auto-generated method stub
+
+	}
+}

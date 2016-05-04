@@ -1,0 +1,166 @@
+package com.hwc.member.view.activity.my;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.view.Gravity;
+import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+import com.hwc.member.application.App;
+import com.hwc.member.bean.GetTuiMessage;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.SimpleHUD;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.hwc.member.widget.header.HeadView.Dir;
+import com.hwc.member.widget.header.HeadView.OnHeadClickListener;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+/**
+ * 消息
+ * @author Administrator
+ */
+@ContentView(R.layout.activity_message)
+public class MessageActivity extends BaseActivity {
+	
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.recommend_rl)
+	private RelativeLayout recommend_rl;
+	@ViewInject(R.id.promotion_rl)
+	private RelativeLayout promotion_rl;
+	@ViewInject(R.id.perform_rl)
+	private RelativeLayout perform_rl;
+	@ViewInject(R.id.discount_rl)
+	private RelativeLayout discount_rl;
+	
+	@ViewInject(R.id.hwcnum_tv)
+	private TextView hwcnum_tv; //平台
+	@ViewInject(R.id.cxnum_tv)
+	private TextView cxnum_tv;//促销
+	@ViewInject(R.id.xdnum_tv)
+	private TextView xdnum_tv;//下单
+	@ViewInject(R.id.yhqnum_tv)
+	private TextView yhqnum_tv;//优惠券
+	private DbUtils mdb;
+	private List<GetTuiMessage> list;
+	private List<TextView> textViews = new ArrayList<TextView>();
+	@Override
+	protected void initView() {
+		setBack();
+		initData();
+	}
+
+	//读取消息数据
+	public void initData(){
+		//惠万村推荐
+		mdb = DbUtils.create(App.mContext,Constant.dbName);
+		initTextView();
+		for(int i=0;i<textViews.size();i++){
+			try {
+				list = mdb.findAll(Selector.from(GetTuiMessage.class).where("ishow", "=", false).and("mobile","=", Member.getInstance().getMobile()).and("type", "=", i).orderBy("sendTime",true));			
+				if(list != null){
+					setNums(textViews.get(i), list);
+				}
+			} catch (DbException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		
+	}
+	
+	public void setNums(TextView textView,List<GetTuiMessage> list){
+		if(list!=null&&list.size()>0){
+			textView.setText(list.size()+"");
+			textView.setVisibility(View.VISIBLE);
+		}
+	}
+	
+	public void initTextView(){
+		textViews.clear();
+		textViews.add(hwcnum_tv);
+		textViews.add(cxnum_tv);
+		textViews.add(xdnum_tv);
+		textViews.add(yhqnum_tv);
+	}
+	
+	@Override
+	protected void initListener() {
+		header.setOnHeadClickListener(new OnHeadClickListener() {
+			
+			@Override
+			public void onHeadClick(Dir dir, View view) {
+				switch (dir) {
+				case Right:
+					DialogUtil.showDialog(Constant.Dialog, "确定清空所有类型的消息吗？", Gravity.CENTER, context, null, new OnClickListener() {
+						@Override
+						public void onClick(DialogPlus dialog, View view) {
+							switch (view.getId()) {
+							case R.id.cancel:
+								break;									
+							case R.id.confirm:
+								try {
+									mdb.deleteAll(GetTuiMessage.class);
+									initData();
+									SimpleHUD.showSuccessMessage(context, "消息已清空");
+								} catch (DbException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								break;
+							}
+							dialog.dismiss();
+						}
+					}, null);
+			
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+	}
+	
+	//优惠券
+	@OnClick(R.id.recommend_rl)
+	public void forgetRec(View v){
+		goTo(MessageCommonActivity.class,0,"平台消息");
+	}
+	
+	//优惠券
+	@OnClick(R.id.promotion_rl)
+	public void forgetPro(View v){
+		goTo(MessageCommonActivity.class,1,"促销消息");
+	}
+	
+	//优惠券
+	@OnClick(R.id.perform_rl)
+	public void forgetPer(View v){
+		goTo(MessageCommonActivity.class,2,"优惠码下单");
+	}
+	
+	//优惠券
+	@OnClick(R.id.discount_rl)
+	public void forgetDis(View v){
+		goTo(DiscountActivity.class,3,"新的优惠券");
+	}
+	
+	
+
+}

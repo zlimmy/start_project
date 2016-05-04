@@ -1,0 +1,32 @@
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.widget.ImageView;
+
+import com.huimodel.api.base.PlatformPrize;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.CommonUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+public class PlayIntegralAdapter extends MirAdapter<PlatformPrize>{
+
+	public PlayIntegralAdapter(Context context,
+			List<PlatformPrize> mDatas, int itemLayoutId,
+			BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		
+	}
+
+	@Override
+	public void convert(HolderEntity helper, PlatformPrize item) {
+		ImageView view = helper.getView(R.id.integral_iv);
+		bitmapUtils.display(view, item.getPic_url());
+		helper.setText(R.id.name_tv, item.getDescript());
+		helper.setText(R.id.integral_tv, CommonUtil.conversionInt(item.getPoint()) + "积分");
+	}
+
+}

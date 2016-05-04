@@ -1,0 +1,48 @@
+/**
+ * 
+ */
+package com.hwc.member.widget;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+
+/**
+ * @author FZ
+ */
+public class MirDialog extends Dialog {
+
+	public MirDialog(Context context, String msg) {
+		super(context, R.style.ProgressDialogStyle);
+		init(context, msg);
+	}
+
+	protected void init(Context context, String msg) {
+		Window window = getWindow();
+		setContentView(R.layout.layout_dialog);
+		
+		TextView tv = (TextView) findViewById(R.id.tv);
+		if(msg == null){
+			//tv.setVisibility(View.GONE);
+		}else{
+			tv.setText(msg);
+		}	
+
+		WindowManager.LayoutParams lp = window.getAttributes();
+		lp.width = dip2px(context,200);
+		lp.alpha = 0.8f;// 透明度
+		lp.dimAmount = 1f;// 黑暗度
+		window.setAttributes(lp);
+		window.setBackgroundDrawableResource(R.drawable.bg_dialog);
+	}
+
+	public static int dip2px(Context context, float dpValue) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+		return (int) (dpValue * scale + 0.5f);
+	}
+	
+}

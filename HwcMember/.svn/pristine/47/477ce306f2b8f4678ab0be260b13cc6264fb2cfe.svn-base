@@ -1,0 +1,531 @@
+package com.hwc.member.view.activity.shop;
+
+import android.graphics.drawable.BitmapDrawable;
+import android.text.Layout;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.PlatformPromLottery;
+import com.huimodel.api.base.ProductItem;
+import com.huimodel.api.base.ShopFacepay;
+import com.huimodel.api.response.ShopInfoResponse;
+import com.hwc.member.R;
+import com.hwc.member.adapter.ProductGridAdapter;
+import com.hwc.member.adapter.ShopCatAdapter;
+import com.hwc.member.common.Member;
+import com.hwc.member.presenter.NewShopIndexPresenter;
+import com.hwc.member.util.ScreenUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.view.activity.DialogLoginActivity;
+import com.hwc.member.view.activity.luckdraw.ScratchActivity;
+import com.hwc.member.view.activity.luckdraw.TurntableActivity;
+import com.hwc.member.view.activity.order.PreferentialPayActivity;
+import com.hwc.member.view.activity.product.NewProductInfoActivity;
+import com.hwc.member.view.activity.view.IShopIndexView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.CircleImageView;
+import com.hwc.member.widget.LoadMoreContainerGridViewWithHeader;
+import com.hwc.member.widget.PullToRefreshFooter;
+import com.hwc.member.widget.PullToRefreshHeadView;
+import com.hwc.member.widget.ScrollGridViewWithFooter;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import in.srain.cube.views.loadmore.LoadMoreContainer;
+import in.srain.cube.views.loadmore.LoadMoreHandler;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
+
+@ContentView(R.layout.activity_shop_index)
+public class ShopIndexActivity extends BaseActivity implements IShopIndexView, OnClickListener {
+    // @ViewInject(R.id.gridview)
+    // private MyGridView gridview;
+    private CircleImageView shoplogo_iv;
+    private ImageView shop_pic;
+    private TextView shopname_tv;
+    private TextView addre_tv;
+    private TextView fans_tv;
+
+    private TextView desc_tv;
+    private ImageView desc_iv;
+
+    private ImageView yhmd_btn;
+
+
+    private ImageView attentionshop_iv;
+    private TextView notice_tv;
+    private List<ProductItem> productItemList;
+    private CheckBox show_iv;
+    private RelativeLayout buy_cheaper_rl;
+    private RelativeLayout notice_rl;
+
+    @ViewInject(R.id.category_iv)
+    private ImageView category_iv;
+
+    @ViewInject(R.id.lottery_iv)
+    private ImageView lottery_iv;
+    @ViewInject(R.id.load_more_grid_view_ptr_frame)
+    private PtrFrameLayout mPtrFrameLayout;
+    @ViewInject(R.id.load_more_grid_view)
+    private ScrollGridViewWithFooter mGridView;
+    @ViewInject(R.id.load_more_grid_view_container)
+    private LoadMoreContainerGridViewWithHeader load_more_grid_view_container;
+
+    public ProductGridAdapter adapter;
+
+    private List<DProduct> mList = new ArrayList<DProduct>();
+
+
+    PopupWindow popupWindow;
+    PopupWindow openCatpopupWindow;
+    private NewShopIndexPresenter presenter = new NewShopIndexPresenter(this);
+    private long sid;
+
+    private boolean is_atte;
+    private ShopInfoResponse shopinfo;
+    String bulletin_str = "";
+    public boolean isshow = false;
+    private int fans;
+    private ShopCatAdapter shopCatAdapter;
+    private boolean ispromotions;
+    private boolean notice = false;
+
+    private View headView;
+    private int mIndex;
+
+    @Override
+    protected void initView() {
+        // TODO Auto-generated method stub
+        sid = getIntent().getLongExtra("0", -1);
+
+        headView = LayoutInflater.from(context).inflate(R.layout.activity_shop_head, null);
+        shoplogo_iv = (CircleImageView) headView.findViewById(R.id.shoplogo_iv);
+        shop_pic = (ImageView) headView.findViewById(R.id.shop_pic);
+        shopname_tv = (TextView) headView.findViewById(R.id.shopname_tv);
+        addre_tv = (TextView) headView.findViewById(R.id.addre_tv);
+        fans_tv = (TextView) headView.findViewById(R.id.fans_tv);
+        desc_tv = (TextView) headView.findViewById(R.id.desc_tv);
+        desc_iv = (ImageView) headView.findViewById(R.id.desc_iv);
+        yhmd_btn = (ImageView) headView.findViewById(R.id.yhmd_btn  );
+        attentionshop_iv = (ImageView) headView.findViewById(R.id.attentionshop_iv);
+        notice_tv = (TextView) headView.findViewById(R.id.notice_tv);
+        show_iv = (CheckBox) headView.findViewById(R.id.show_iv);
+        buy_cheaper_rl = (RelativeLayout) headView.findViewById(R.id.buy_cheaper_rl);
+        notice_rl = (RelativeLayout) headView.findViewById(R.id.notice_rl);
+
+        mGridView.addHeaderView(headView);
+        mList = new ArrayList<DProduct>();
+        adapter = new ProductGridAdapter(getContext(), mList, R.layout.item_shop_product, null);
+
+
+        // gridview.setFocusable(false);
+        presenter.setData(sid);
+        presenter.getShopCat(sid);
+
+    }
+
+    @Override
+    protected void initListener() {
+        // TODO Auto-generated method stub
+        setBack();
+
+        ViewTreeObserver vto = notice_tv.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Layout l = notice_tv.getLayout();
+                if (l != null) {
+                    int lines = l.getLineCount();
+                    if (lines > 0)
+                        if (l.getEllipsisCount(lines - 1) > 0)
+                            show_iv.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+
+        mPtrFrameLayout.setDurationToClose(100);
+        PullToRefreshHeadView headView = new PullToRefreshHeadView(getContext());
+        headView.setLastUpdateTimeKey(this.getClass().getSimpleName());
+        mPtrFrameLayout.setHeaderView(headView);
+        mPtrFrameLayout.addPtrUIHandler(headView);
+        mPtrFrameLayout.setPtrHandler(new PtrHandler() {
+            @Override
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+
+                return PtrDefaultHandler.checkContentCanBePulledDown(frame, mGridView, header);
+            }
+
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                mIndex = 1;
+                presenter.refresh(sid, -1, "", false);
+            }
+        });
+
+        load_more_grid_view_container.setAutoLoadMore(true);
+        PullToRefreshFooter footer = new PullToRefreshFooter(getContext());
+        load_more_grid_view_container.setLoadMoreView(footer);
+        load_more_grid_view_container.setLoadMoreUIHandler(footer);
+        mGridView.setAdapter(adapter);//要先设置footview在设置adapter
+        // binding view and data
+        load_more_grid_view_container.setLoadMoreHandler(new LoadMoreHandler() {
+            @Override
+            public void onLoadMore(LoadMoreContainer loadMoreContainer) {
+                mIndex++;
+                presenter.more(sid, -1, "", false, mIndex);
+            }
+        });
+
+        mGridView.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // TODO Auto-generated method stub
+                if(position>=2)
+                goTo(NewProductInfoActivity.class, adapter.getItem(position-2).getPid(), adapter.getItem(position-2).getShop_id(),
+                        adapter.getItem(position-2).getName());
+            }
+        });
+        attentionshop_iv.setOnClickListener(this);
+        yhmd_btn.setOnClickListener(this);
+        show_iv.setOnClickListener(this);
+        lottery_iv.setOnClickListener(this);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        // TODO Auto-generated method stub
+        switch (v.getId()) {
+            case R.id.attentionshop_iv:
+                attentionShop();
+                break;
+            case R.id.yhmd_btn:
+                goBuyCheaper();
+                break;
+            case R.id.lottery_iv:
+                goJoin();
+                break;
+            case R.id.show_iv:
+                show_iv();
+            default:
+                break;
+        }
+
+    }
+
+
+    public void attentionShop() {
+        if (Member.isNull()) {
+            goTo(DialogLoginActivity.class);
+        } else {
+            // 关注店铺
+            if (is_atte) {
+                presenter.cancelAttention(sid);
+            } else {
+                presenter.attention(sid);
+            }
+        }
+    }
+
+    @OnClick(R.id.shop_del)
+    public void shop_del(View v) {
+        goTo(ShopDetailsActivity.class, sid);
+
+    }
+
+    @OnClick(R.id.search_ll)
+    public void goSearch(View v) {
+        goTo(SearchShopGoodsActivity.class, sid);
+    }
+
+    private void goBuyCheaper() {
+
+        if (Member.isNull()) {
+            goTo(DialogLoginActivity.class);
+        } else {
+            goTo(PreferentialPayActivity.class, sid, shopinfo.getShopInfo().getNick());
+        }
+    }
+
+    private void goJoin() {
+        if (ispromotions) {
+            PlatformPromLottery pfpl = shopinfo.getPromlottery().get(0);
+            if (pfpl.getProm_cat().equals("SCR")) {
+                goTo(ScratchActivity.class, pfpl.getProm_code(), shopinfo.getShopInfo().getSid(), shopinfo.getShopInfo().getNick());
+            } else {
+                goTo(TurntableActivity.class, pfpl.getProm_code(), shopinfo.getShopInfo().getSid(), shopinfo.getShopInfo().getNick());
+            }
+        }
+    }
+
+    private void show_iv() {
+        notice_tv.setSingleLine(notice);
+        notice = !notice;
+    }
+
+    @Override
+    public void clearLoadPage() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void showErrorPage() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setGridAdapter(ProductGridAdapter adapter) {
+        // TODO Auto-generated method stub
+        // gridview.setAdapter(adapter);
+    }
+
+    @Override
+    public void setShopMsg(String name, int shopfans, String products, String promotions, String address, String bulletin, boolean hasFacepay, ShopFacepay shopFacepay) {
+        // TODO Auto-generated method stub\
+        shopname_tv.setText(name);
+        fans_tv.setText(shopfans + "");
+        fans = shopfans;
+        addre_tv.setText(address);
+        if (bulletin != null && !bulletin.equals("")) {
+            notice_tv.setText(bulletin);
+            bulletin_str = bulletin;
+        } else {
+            notice_tv.setText("暂无公告");
+        }
+
+        if (hasFacepay) {// 是否有优惠买单
+            VISIBLE(buy_cheaper_rl);
+            if (shopFacepay.getType().equals("ABATEMENT")) {// 蛮贱
+                ViewTransformUtil.layoutImageView(desc_iv, desc_iv.getLayoutParams(), R.drawable.yhmd_j, true, 38, 38);
+                desc_tv.setText("每满" + shopFacepay.getMinimum_charge() + "减" + shopFacepay.getFix());
+            } else {
+                ViewTransformUtil.layoutImageView(desc_iv, desc_iv.getLayoutParams(), R.drawable.yhmd_z, true, 38, 38);
+                desc_tv.setText("满" + shopFacepay.getMinimum_charge() + "打" + shopFacepay.getDiscount() * 10 + "折");
+            }
+
+        } else {
+            GONE(buy_cheaper_rl);
+        }
+
+
+        if (promotions.equals("0")) {// 没有活动
+            ispromotions = false;
+            lottery_iv.setVisibility(View.GONE);
+        } else {// 有活动
+            ispromotions = true;
+            lottery_iv.setVisibility(View.VISIBLE);
+        }
+
+
+        mIndex = 1;
+        presenter.refresh(sid, -1, "", false);
+
+
+    }
+
+    @Override
+    public void setShopIcon(String icon, String shopbg) {
+        // TODO Auto-generated method stub
+        bitmapUtils.display(shoplogo_iv, icon);
+        bitmapUtils.display(shop_pic, shopbg);
+
+    }
+
+    @Override
+    public void setAttention(boolean is_attention) {
+        // TODO Auto-generated method stub
+        is_atte = is_attention;
+        if (is_attention) {
+            attentionshop_iv.setImageResource(R.drawable.icon_iscoll);
+            fans_tv.setText((++fans) + "");
+        } else {
+            attentionshop_iv.setImageResource(R.drawable.icon_nocoll);
+            fans_tv.setText((--fans) + "");
+        }
+
+    }
+
+    @Override
+    public void getShopInfo(ShopInfoResponse obj) {
+        // TODO Auto-generated method stub
+        shopinfo = obj;
+
+    }
+
+    private void showPopupWindow(View view, String notice) {
+        // 一个自定义的布局，作为显示的内容
+        View contentView = LayoutInflater.from(context).inflate(R.layout.notice_pop_window, null);
+        popupWindow = new PopupWindow(contentView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
+        popupWindow.setTouchable(true);
+        TextView notice_tvs = (TextView) contentView.findViewById(R.id.notice_tvs);
+        notice_tvs.setText(notice);
+        ImageView close_iv = (ImageView) contentView.findViewById(R.id.close_iv);
+        close_iv.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                // TODO Auto-generated method stub
+                popupWindow.dismiss();
+            }
+        });
+
+        popupWindow.setTouchInterceptor(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // TODO Auto-generated method stub
+                return false;
+                // 这里如果返回true的话，touch事件将被拦截
+                // 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+            }
+        });
+        setbackgroundAlpha(0.5f);
+        // 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+        // 我觉得这里是API的一个bug
+        popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.iconfont_touming));
+        // 设置好参数之后再show
+        popupWindow.showAsDropDown(view);
+
+    }
+
+    /**
+     * 打开宝贝分类
+     *
+     * @param v
+     */
+    public void openCat(View v, int type) {
+
+        if (productItemList != null) {
+            View contentView = LayoutInflater.from(context).inflate(R.layout.category_pop_window, null);
+            if (type == -1) {
+                contentView.setBackgroundResource(R.drawable.tc);
+            } else {
+                contentView.setBackgroundResource(R.drawable.tc2);
+            }
+            ListView lv = (ListView) contentView.findViewById(R.id.cat_lv);
+            lv.setAdapter(shopCatAdapter);
+
+            lv.setOnItemClickListener(new OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    // TODO Auto-generated method stub
+                    if (shopCatAdapter != null) {
+                        goTo(AllGoodsActivity.class, sid, shopCatAdapter.getItem(position).getCid());
+                        if (openCatpopupWindow != null && openCatpopupWindow.isShowing()) {
+                            openCatpopupWindow.dismiss();
+                        }
+                    }
+
+                }
+            });
+            openCatpopupWindow = new PopupWindow(contentView, ViewTransformUtil.layoutWidth(context, 400), LayoutParams.WRAP_CONTENT, true);
+            openCatpopupWindow.setFocusable(true);
+            openCatpopupWindow.setOutsideTouchable(true);
+            openCatpopupWindow.setBackgroundDrawable(new BitmapDrawable());
+
+            if (type == -1) {
+                openCatpopupWindow.showAsDropDown(v, -50, 0);
+            } else {
+                //T("屏幕款:"+ScreenUtil.screenWidth+"屏幕高:"+ScreenUtil.screenHeight);
+//				openCatpopupWindow.showAsDropDown(v,ViewTransformUtil.layoutWidth(context, 0), ViewTransformUtil.layoutHeigt(context,0) - v.getHeight() * (shopCatAdapter.getCount() + 1) + openCatpopupWindow.getHeight());
+                openCatpopupWindow.showAsDropDown(v, -v.getWidth() / 2 + ScreenUtil.dip2px(25), 5);
+            }
+
+        }
+
+    }
+
+    /**
+     * 设置添加屏幕的背景透明度
+     *
+     * @param bgAlpha
+     */
+    public void setbackgroundAlpha(float bgAlpha) {
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = bgAlpha; // 0.0-1.0
+        getWindow().setAttributes(lp);
+    }
+
+    @OnClick(R.id.category_tv)
+    private void category_tv(View v) {
+
+        if (openCatpopupWindow != null && openCatpopupWindow.isShowing()) {
+            openCatpopupWindow.dismiss();
+        } else {
+            openCat(v, 0);
+            setbackgroundAlpha(1f);
+        }
+
+
+    }
+
+    @OnClick(R.id.category_iv)
+    private void showCategory(View v) {
+        if (openCatpopupWindow != null && openCatpopupWindow.isShowing()) {
+            openCatpopupWindow.dismiss();
+        } else {
+            openCat(v, -1);
+            setbackgroundAlpha(1f);
+        }
+    }
+
+    @Override
+    public void setCat(List<ProductItem> productItem) {
+        // TODO Auto-generated method stub
+        productItemList = productItem;
+        shopCatAdapter = new ShopCatAdapter(context, productItemList, R.layout.item_shopcat, bitmapUtils);
+
+    }
+
+    @Override
+    public void refresh(List<DProduct> list) {
+        mList.clear();
+        mList.addAll(list);
+        adapter.notifyDataSetChanged();
+        mPtrFrameLayout.refreshComplete();
+        // load more
+        if (mList.size() <= 0) {
+        } else if (mList.size() < 10) {
+            load_more_grid_view_container.loadMoreFinish(true, false);
+        } else {
+            load_more_grid_view_container.loadMoreFinish(false, true);
+        }
+    }
+
+    @Override
+    public void more(List<DProduct> list, boolean isEnd) {
+
+        mList.addAll(list);
+        mPtrFrameLayout.refreshComplete();
+        // load more
+        load_more_grid_view_container.loadMoreFinish(false, isEnd);
+        adapter.notifyDataSetChanged();
+    }
+
+
+}

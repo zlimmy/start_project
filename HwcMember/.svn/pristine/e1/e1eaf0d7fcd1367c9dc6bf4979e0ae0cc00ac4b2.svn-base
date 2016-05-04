@@ -1,0 +1,9 @@
+package com.hwc.member.view.activity.view;
+
+import com.hwc.member.adapter.MessageAdapter;
+
+public interface IMessageView extends LoadDataView {
+	
+	void setListAdapter(MessageAdapter adapter);
+
+}

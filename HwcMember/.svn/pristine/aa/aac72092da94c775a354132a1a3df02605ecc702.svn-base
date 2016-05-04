@@ -1,0 +1,50 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.huimodel.api.base.PlatformPromLottery;
+import com.hwc.member.R;
+import com.hwc.member.R.color;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class PromLotteryAdapter extends MirAdapter<PlatformPromLottery> {
+
+	public PromLotteryAdapter(Context context, List<PlatformPromLottery> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, PlatformPromLottery item) {
+		helper.setText(R.id.promtime_tv, "活动时间:"+item.getProm_begin()+"至"+item.getProm_end());
+		TextView  state = helper.getView(R.id.state_iv);
+		if(item.getStatus().equals("I")){
+			state.setText("进行中");
+			state.setTextColor(color.main_color);
+		}else if(item.getStatus().equals("X")){
+			state.setText("活动暂停");
+			state.setTextColor(color.gray5);
+		}
+		ImageView pic = helper.getView(R.id.pic_iv);
+		if(item.getProm_cat().equals("SCR")){
+			helper.setText(R.id.name_tv, "刮刮乐");
+			pic.setImageResource(R.drawable.icon_gua);
+		}else if(item.getProm_cat().equals("TURN")){
+			helper.setText(R.id.name_tv, "大转盘");
+			pic.setImageResource(R.drawable.icon_pan);
+		}
+	}
+
+}

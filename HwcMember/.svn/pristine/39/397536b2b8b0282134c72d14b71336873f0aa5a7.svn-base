@@ -1,0 +1,42 @@
+package com.hwc.member.util;
+
+import java.io.File;
+
+import android.os.Environment;
+
+public class FileUtils {
+
+	
+	
+    
+    /**
+     * 创建文件夹
+     * @param filePath
+     * @return
+     */
+    public static boolean makeDirs(String filePath) {
+    	System.out.println("filePath"+filePath);
+    	if(cheadSdcard()){
+    	 File destDir = new File(filePath);
+      	  if (!destDir.exists()) {
+      	     destDir.mkdirs();
+      	     return true;
+      	  }
+    	}
+		return false;
+    }
+    
+    
+    
+    
+    /**
+     * 盘点sdcard是否存在
+     * @return
+     */
+    public static boolean cheadSdcard(){
+    	String status = Environment.getExternalStorageState();
+		return status.equals(Environment.MEDIA_MOUNTED);
+    }
+    
+    
+}

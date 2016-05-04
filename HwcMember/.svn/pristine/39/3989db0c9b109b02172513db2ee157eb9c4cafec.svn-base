@@ -1,0 +1,27 @@
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.bean.MLocation;
+import com.lidroid.xutils.BitmapUtils;
+
+
+public class LoactionAdapter extends MirAdapter<MLocation> {
+
+	public LoactionAdapter(Context context, List<MLocation> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, MLocation item) {
+		helper.setText(R.id.address_tv, item.getAddress());
+	}
+
+
+}

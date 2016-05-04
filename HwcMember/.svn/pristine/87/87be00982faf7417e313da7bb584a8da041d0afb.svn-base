@@ -1,0 +1,40 @@
+package com.hwc.member.common;
+
+import android.widget.Toast;
+
+import com.hwc.member.application.App;
+import com.hwc.member.bean.MLocation;
+import com.hwc.member.util.PreferenceUtils;
+
+/**
+ * Created by fangzehua on 2016/4/29.
+ */
+public class Mlocation {
+    private static MLocation mLocation;
+
+    public Mlocation() {
+
+    }
+    public static synchronized MLocation getInstance() {
+        if (mLocation == null) {
+            mLocation = new MLocation();
+            mLocation.setId(PreferenceUtils.getPrefInt(App.mContext, "Id", 0));
+            mLocation.setCity(PreferenceUtils.getPrefString(App.mContext, "city", null));
+            mLocation.setDistrict(PreferenceUtils.getPrefString(App.mContext, "district", null));
+            mLocation.setLatitude(PreferenceUtils.getPrefString(App.mContext, "latitude", null));
+            mLocation.setLongitude(PreferenceUtils.getPrefString(App.mContext, "longitude", null));
+        }
+        return mLocation;
+    }
+
+    public static void setMlocation(MLocation bdmLocation) {
+
+        mLocation = bdmLocation;
+    }
+
+    public static boolean isNull() {
+
+        return Mlocation.getInstance().getId()==0?true:false;
+    }
+
+}

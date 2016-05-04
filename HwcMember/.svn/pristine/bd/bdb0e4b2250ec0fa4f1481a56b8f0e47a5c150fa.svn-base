@@ -1,0 +1,13 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+/**
+ * @author FZ
+ */
+public interface IAddressInfoView extends LoadDataView {
+
+	void Success();
+	
+}

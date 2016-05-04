@@ -1,0 +1,201 @@
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.huimodel.api.base.Order;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.common.Constant;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+public class MyOrderAdapter extends MirAdapter<Order> {
+
+	public MyOrderAdapter(Context context, List<Order> mDatas, int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void convert(HolderEntity helper, Order item) {
+		// TODO Auto-generated method stub
+		
+		ImageView iv = helper.getView(R.id.shoplogo_iv);
+		ViewTransformUtil.layoutParams(iv, iv.getLayoutParams(), 40, 40);
+		
+
+		if (item.getSeller_shop_nike() != null) {
+			helper.setText(R.id.shopname_tv, item.getSeller_shop_nike());
+		} else {
+			helper.setText(R.id.shopname_tv, "门店进货");
+		}
+
+		TextView time_tv = helper.getView(R.id.time_tv);
+
+		time_tv.setText(String.format(mContext.getString(R.string.order_creat_time), item.getCreated()));
+		TextView tv = helper.getView(R.id.status_tv);
+		tv.setTextColor(mContext.getResources().getColor(R.color.text_main));
+		
+		if (item.getStatus().equals("N")) {
+			helper.setText(R.id.status_tv, "待付款");
+		} else if (item.getStatus().equals("C")) {
+			helper.setText(R.id.status_tv, "确认订单");
+		} else if (item.getStatus().equals("U")) {
+			helper.setText(R.id.status_tv, "待付款");
+		} else if (item.getStatus().equals("P")) {
+			helper.setText(R.id.status_tv, "已付款");
+		} else if (item.getStatus().equals("D")) {
+			helper.setText(R.id.status_tv, "已发货");
+		} else if (item.getStatus().equals("X")) {
+			helper.setText(R.id.status_tv, "已取消");
+		} else if (item.getStatus().equals("R")) {
+			helper.setText(R.id.status_tv, "已退款");
+		} else if (item.getStatus().equals("O")) {
+			
+			tv.setTextColor(mContext.getResources().getColor(R.color.text_less_important));
+			helper.setText(R.id.status_tv, "已完成");
+		}
+
+		
+
+		// ImageView goods_iv = helper.getView(R.id.goods_iv);
+		// if (item.getDetails() != null && item.getDetails().size() > 0) {
+		// int total = 0;
+		// for (int i = 0; i < item.getDetails().size(); i++) {
+		// total += item.getDetails().get(i).getNum();
+		// }
+		//
+		// bitmapUtils.display(goods_iv, item.getDetails().get(0).getImgurl() +
+		// Constant.IMAGE_SIZE_100);
+		// helper.setText(R.id.goodsname_tv,
+		// item.getDetails().get(0).getTitle());
+		// helper.setText(R.id.promprice_tv, "￥" +
+		// CommonUtil.conversionDouble(Double.parseDouble(item.getDetails().get(0).getPrice())));
+		// helper.setText(R.id.num_tv, "x" + item.getDetails().get(0).getNum());
+		// helper.setText(R.id.total_tv, "共" + total + "件商品  合计：￥" +
+		// CommonUtil.conversionDouble(Double.parseDouble(item.getTotal_fee() +
+		// "")));
+		// if (item.getDetails().get(0).getSuite_descript() != null) {
+		// helper.setText(R.id.package_tv,
+		// item.getDetails().get(0).getSuite_descript());
+		// } else {
+		// helper.setText(R.id.package_tv, "");
+		// }
+		// }
+		
+		RelativeLayout one_good_rl = helper.getView(R.id.one_good_rl);
+		LinearLayout many_good_ll = helper.getView(R.id.many_good_ll);
+
+		if (item.getDetails() != null && item.getDetails().size() == 1) {
+			one_good_rl.setVisibility(View.VISIBLE);
+			many_good_ll.setVisibility(View.GONE);
+
+			
+
+			ImageView goods_iv = helper.getView(R.id.goods_iv);
+			
+			ViewTransformUtil.layoutParams(goods_iv, goods_iv.getLayoutParams(), 160, 160);
+			
+			if ("FACEPAY".equals(item.getTradefrom())) {
+				// 优惠买单
+				goods_iv.setImageResource(R.drawable.default_buy_cheaper);
+				helper.setText(R.id.goodsname_tv, item.getDetails().get(0).getTitle());
+				helper.getView(R.id.total_tv).setVisibility(View.GONE);
+			}else {
+				
+				helper.getView(R.id.total_tv).setVisibility(View.VISIBLE);
+				int total = 0;
+				for (int i = 0; i < item.getDetails().size(); i++) {
+					total += item.getDetails().get(i).getNum();
+				}
+
+				bitmapUtils.display(goods_iv, item.getDetails().get(0).getImgurl() + Constant.IMAGE_SIZE_100);
+				helper.setText(R.id.goodsname_tv, item.getDetails().get(0).getTitle());
+				String string = String.format(mContext.getString(R.string.price_and_number), total,
+						CommonUtil.conversionDouble(Double.parseDouble(item.getTotal_fee() + "")));
+				SpannableString ss = new SpannableString(string);
+				ss.setSpan(new ForegroundColorSpan(Color.rgb(231, 56, 40)), string.indexOf("共")+1, string.indexOf("件"),Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+				ss.setSpan(new ForegroundColorSpan(Color.rgb(231, 56, 40)), string.indexOf("￥"), string.length()-1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+				helper.setText(
+						R.id.total_tv,ss
+						);
+				if (item.getDetails().get(0).getSuite_descript() != null) {
+					helper.setText(R.id.package_tv, item.getDetails().get(0).getSuite_descript());
+				} else {
+					helper.setText(R.id.package_tv, "");
+				}
+			}
+
+			
+			
+			
+		} else if (item.getDetails() != null && item.getDetails().size() > 1) {
+
+			one_good_rl.setVisibility(View.GONE);
+			many_good_ll.setVisibility(View.VISIBLE);
+			ImageView goods0_iv = helper.getView(R.id.goods0_iv);
+			ImageView goods1_iv = helper.getView(R.id.goods1_iv);
+			ImageView goods2_iv = helper.getView(R.id.goods2_iv);
+			ImageView goods3_iv = helper.getView(R.id.goods3_iv);
+			
+			ViewTransformUtil.layoutParams(goods0_iv, goods0_iv.getLayoutParams(), 160, 160);
+			ViewTransformUtil.layoutParams(goods1_iv, goods1_iv.getLayoutParams(), 160, 160);
+			ViewTransformUtil.layoutParams(goods2_iv, goods2_iv.getLayoutParams(), 160, 160);
+			ViewTransformUtil.layoutParams(goods3_iv, goods3_iv.getLayoutParams(), 160, 160);
+
+			int total = 0;
+			for (int i = 0; i < item.getDetails().size(); i++) {
+				total += item.getDetails().get(i).getNum();
+				switch (i) {
+				case 0:
+					goods0_iv.setVisibility(View.VISIBLE);
+					bitmapUtils.display(goods0_iv, item.getDetails().get(0).getImgurl() + Constant.IMAGE_SIZE_100);
+					break;
+				case 1:
+					goods1_iv.setVisibility(View.VISIBLE);
+					bitmapUtils.display(goods1_iv, item.getDetails().get(1).getImgurl() + Constant.IMAGE_SIZE_100);
+					break;
+				case 2:
+					goods2_iv.setVisibility(View.VISIBLE);
+					bitmapUtils.display(goods2_iv, item.getDetails().get(2).getImgurl() + Constant.IMAGE_SIZE_100);
+					break;
+				case 3:
+					goods3_iv.setVisibility(View.VISIBLE);
+					bitmapUtils.display(goods3_iv, item.getDetails().get(3).getImgurl() + Constant.IMAGE_SIZE_100);
+					break;
+				default:
+					break;
+				}
+			}
+			
+			String string = String.format(mContext.getString(R.string.price_and_number), total,
+					CommonUtil.conversionDouble(Double.parseDouble(item.getTotal_fee() + "")));
+			SpannableString ss = new SpannableString(string);
+			ss.setSpan(new ForegroundColorSpan(Color.rgb(231, 56, 40)), string.indexOf("共")+1, string.indexOf("件"),Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+			ss.setSpan(new ForegroundColorSpan(Color.rgb(231, 56, 40)), string.indexOf("￥"), string.length()-1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			helper.setText(
+					R.id.total_tv,ss
+					);
+			if (item.getDetails().get(0).getSuite_descript() != null) {
+				helper.setText(R.id.package_tv, item.getDetails().get(0).getSuite_descript());
+			} else {
+				helper.setText(R.id.package_tv, "");
+			}
+
+		}
+
+	}
+}

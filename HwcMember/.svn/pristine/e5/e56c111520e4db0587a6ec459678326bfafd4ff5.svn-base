@@ -1,0 +1,20 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.response.SmsMessageResponse;
+
+/**
+ * @author FZ
+ */
+public interface IRegistView extends LoadDataView {
+
+    /**
+     * 验证码获取成功
+     * @param smsMessageResponse
+     */
+    void sendSmssuccee(SmsMessageResponse smsMessageResponse);
+
+    void validPhone(boolean isValid, String phone);
+}

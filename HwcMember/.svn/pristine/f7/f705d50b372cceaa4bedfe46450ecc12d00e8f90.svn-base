@@ -1,0 +1,131 @@
+package com.hwc.member.presenter;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.CollectionsRequest;
+import com.huimodel.api.request.DiscoveryDetailRequest;
+import com.huimodel.api.response.DiscoveryDetailResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IRareProductView;
+import com.hwc.member.widget.SimpleHUD;
+
+public class RareProductPresenter {
+	
+	private IRareProductView iRareProductView;
+	private IHwcBizMain iHwcBizMainImpl;
+
+	public RareProductPresenter(IRareProductView iRareProductView){
+		this.iRareProductView = iRareProductView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	
+	
+	
+	/**
+	 * 关注发现商品
+	 * @param pid
+	 * @param shop_id
+	 */
+	public void updateCollection(Long codeid){
+		CollectionsRequest cr = new CollectionsRequest();
+		cr.setContent_id(codeid);
+		cr.setUser_id_by(Member.getInstance().getUser_id());
+		cr.setCat("TOPIC");
+		cr.setImei(Constant.IMEI);
+	
+		iRareProductView.showProgressDialog(null);
+		iHwcBizMainImpl.updateCollection(cr, iRareProductView.getContext(), new IResult<ResponseBase>() {
+			
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				iRareProductView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						SimpleHUD.showSuccessMessage(iRareProductView.getContext(), "关注成功！");
+						iRareProductView.collectionSuccess();
+					}else{
+						SimpleHUD.showInfoMessage(iRareProductView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(iRareProductView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	public void delCollection(Long codeid){
+		CollectionsRequest cr = new CollectionsRequest();
+		cr.setUser_id_by(Member.getInstance().getUser_id());
+		cr.setContent_id(codeid);
+		cr.setCat("TOPIC");
+		cr.setImei(Constant.IMEI);
+		iRareProductView.showProgressDialog(null);
+		iHwcBizMainImpl.deleteCollection(cr, iRareProductView.getContext(), new IResult<ResponseBase>() {
+
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				iRareProductView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						SimpleHUD.showSuccessMessage(iRareProductView.getContext(), "取消关注成功");
+						iRareProductView.collectionFaile();
+						
+					}else{
+						SimpleHUD.showInfoMessage(iRareProductView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(iRareProductView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 获取广告ID
+	 * @param postid
+	 */
+	public void getDiscoveryDetail(Long postid ){
+		
+		DiscoveryDetailRequest dcr = new DiscoveryDetailRequest();
+		dcr.setDiscovery_id(postid);
+		dcr.setImei(Constant.IMEI);
+		
+		if(!Member.isNull()){
+			dcr.setUser_id_by(Member.getInstance().getUser_id());
+		}
+		iHwcBizMainImpl.getDiscoveryDetail(dcr, iRareProductView.getContext(), new IResult<DiscoveryDetailResponse>() {
+
+			@Override
+			public void result(DiscoveryDetailResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						if(!Member.isNull()){
+//							iRareProductView.setButIsShow(obj.getDiscovery().getEarned());
+						}
+						
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+		} );
+	}
+		
+}

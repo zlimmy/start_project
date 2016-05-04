@@ -1,0 +1,113 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.BustlingProductListAdapter;
+import com.hwc.member.view.activity.view.IBustlingFragView;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.hwc.member.widget.header.LXHeadView;
+import com.hwc.member.widget.smarttablaout.SmartTabLayout;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentStatePagerItemAdapter;
+
+/**
+ * 看热闹
+ * 
+ * @author FZ
+ */
+public class Bustling_Fragment extends FormBaseFragment implements
+		IBustlingFragView {
+
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.viewpager)
+	private ViewPager viewPager;
+	@ViewInject(R.id.viewpagertab)
+	private SmartTabLayout viewPagerTab;
+	private FragmentStatePagerItemAdapter adapter = null;
+	private int page = 0;
+	@Override
+	public int getLayoutId() {
+		return R.layout.fm_new_bustling;
+	}
+
+	@Override
+	protected void init() {
+		
+		adapter = new FragmentStatePagerItemAdapter(
+				getChildFragmentManager(), FragmentPagerItems.with(getActivity())
+		        .add("惠赚钱", MakeMoney_Fragment.class)
+		        .add("发现", Find_Fragment.class)
+		        .create());
+		viewPager.setAdapter(adapter);
+		viewPagerTab.setViewPager(viewPager);
+	}
+	
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public void initListener() {
+		viewPager.setOnPageChangeListener(new OnPageChangeListener() {
+			
+			@Override
+			public void onPageSelected(int arg0) {
+				page = arg0;
+			}
+			
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setPostProdct(BustlingProductListAdapter adapter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void refreshEnd() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (page == 0) {
+			init();
+		}
+	}
+	
+	
+
+
+}

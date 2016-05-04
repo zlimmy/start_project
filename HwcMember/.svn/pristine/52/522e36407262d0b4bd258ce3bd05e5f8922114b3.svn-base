@@ -1,0 +1,30 @@
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.HomeFunction;
+import com.huimodel.api.base.ResponseBase;
+
+public class FunctionConfigResponse extends ResponseBase {
+
+	private static final long serialVersionUID = 1L;
+	private String mode;
+	private List<HomeFunction> funtions;
+
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+
+	public List<HomeFunction> getFuntions() {
+		return funtions;
+	}
+
+	public void setFuntions(List<HomeFunction> funtions) {
+		this.funtions = funtions;
+	}
+
+}

@@ -1,0 +1,34 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.widget.ImageView;
+
+import com.huimodel.api.base.Shopproductimg;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.common.Constant;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class MagazineAdapter extends MirAdapter<Shopproductimg> {
+
+	public MagazineAdapter(Context context, List<Shopproductimg> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, Shopproductimg item) {
+		ImageView iv = helper.getView(R.id.iv);
+		bitmapUtils.display(iv, item.getUrl()+Constant.IMAGE_SIZE_720);
+	}
+
+}

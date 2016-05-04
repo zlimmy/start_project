@@ -1,0 +1,34 @@
+/**
+ * 
+ */
+package com.huimodel.api.base;
+
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public class ShopPids {
+
+	private List<Long> pid;
+	private long sid;
+
+	public List<Long> getPid() {
+		return pid;
+	}
+
+	public void setPid(List<Long> pid) {
+		this.pid = pid;
+	}
+
+	public long getSid() {
+		return sid;
+	}
+
+	public void setSid(long sid) {
+		this.sid = sid;
+	}
+	
+	
+	
+}

@@ -1,0 +1,35 @@
+package com.hwc.member.adapter;
+import java.util.List;
+
+import android.content.Context;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.bean.GetTuiMessage;
+import com.lidroid.xutils.BitmapUtils;
+
+public class MessageAdapter extends MirAdapter<GetTuiMessage>{
+
+	public MessageAdapter(Context context, List<GetTuiMessage> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, GetTuiMessage item) {
+		
+		if(item.getType()==0){
+			helper.setImageResource(R.id.message_iv, R.drawable.bg_logo);
+		}else if(item.getType()==1){
+			helper.setImageResource(R.id.message_iv, R.drawable.message_2);
+		}else {
+			helper.setImageResource(R.id.message_iv, R.drawable.message_3);
+		}
+
+		helper.setText(R.id.name_tv, item.getTitle()+"");
+		helper.setText(R.id.content_tv, item.getMsgbody()+"");
+		helper.setText(R.id.data_tv, "发送时间"+item.getSendTime());
+	}
+
+}

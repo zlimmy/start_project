@@ -1,0 +1,46 @@
+package com.huimodel.api.base;
+
+import java.io.Serializable;
+
+public class ProductPropImg implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Long pic_id;
+	private Long pid;
+	private String url;
+	private Integer position;
+	private String cat;
+	public Long getPic_id() {
+		return pic_id;
+	}
+	public void setPic_id(Long pic_id) {
+		this.pic_id = pic_id;
+	}
+	public Long getPid() {
+		return pid;
+	}
+	public void setPid(Long pid) {
+		this.pid = pid;
+	}
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	public Integer getPosition() {
+		return position;
+	}
+	public void setPosition(Integer position) {
+		this.position = position;
+	}
+	public String getCat() {
+		return cat;
+	}
+	public void setCat(String cat) {
+		this.cat = cat;
+	}
+	
+}

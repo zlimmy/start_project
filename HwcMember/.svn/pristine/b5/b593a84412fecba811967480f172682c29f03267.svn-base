@@ -1,0 +1,18 @@
+package com.hwc.member.view.activity.view;
+
+import java.util.List;
+
+import com.huimodel.api.base.DShop;
+
+/**
+ * @author qqx
+ */
+public interface IFollowShopView extends LoadDataView  {
+	
+	// 刷新
+	void refresh(List<DShop> list);
+
+	// 加载
+	void more(List<DShop> list, boolean isEnd);
+	
+}

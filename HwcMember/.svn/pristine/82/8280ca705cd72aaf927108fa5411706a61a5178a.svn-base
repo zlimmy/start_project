@@ -1,0 +1,51 @@
+/**
+ * 
+ */
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.Hwcpay;
+import com.huimodel.api.base.ResponseBase;
+
+/**
+ * @author FZ
+ */
+public class MemberExtsResponse extends ResponseBase {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5504999521328545863L;
+
+	private double point;
+	
+	private int coupon;
+	
+	private Hwcpay hwcpay;
+
+	public double getPoint() {
+		return point;
+	}
+
+	public void setPoint(double point) {
+		this.point = point;
+	}
+
+	public int getCoupon() {
+		return coupon;
+	}
+
+	public void setCoupon(int coupon) {
+		this.coupon = coupon;
+	}
+
+	public Hwcpay getHwcpay() {
+		return hwcpay;
+	}
+
+	public void setHwcpay(Hwcpay hwcpay) {
+		this.hwcpay = hwcpay;
+	}
+	
+	
+	
+}

@@ -1,0 +1,97 @@
+package com.huimodel.api.base;
+
+
+
+public class ShopFacepay extends ShopStrategy {
+	/**
+	 * 策略开始的时间 例如：09:00
+	 */
+	private String strategy_start;
+	/**
+	 * 策略结束的时间 例如：21:00
+	 */
+	private String strategy_end;
+	/**
+	 * 优惠买单类型<br/>
+	 * DISCOUNT 折扣优惠<br/>
+	 * ABATEMENT 满减优惠
+	 */
+	private String type="ABATEMENT";
+	/**
+	 * 如果是折扣优惠则为最小消费<br/>
+	 * 如果是满减优惠则为固定返点金额
+	 */
+	private Double minimum_charge=0D;
+	/**
+	 * 折扣
+	 */
+	private Double discount=1D;
+	/**
+	 * 固定返点金额
+	 */
+	private Double fix=0D;
+	
+	/**
+	 * 说明
+	 */
+	private String notice;
+	
+	public String getNotice() {
+		return notice;
+	}
+	public void setNotice(String notice) {
+		this.notice = notice;
+	}
+	public String getStrategy_start() {
+		return strategy_start;
+	}
+	public void setStrategy_start(String strategy_start) {
+		this.strategy_start = strategy_start;
+	}
+	public String getStrategy_end() {
+		return strategy_end;
+	}
+	public void setStrategy_end(String strategy_end) {
+		this.strategy_end = strategy_end;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public Double getMinimum_charge() {
+		return minimum_charge;
+	}
+	public void setMinimum_charge(Double minimum_charge) {
+		this.minimum_charge = minimum_charge;
+	}
+	public Double getDiscount() {
+		return discount;
+	}
+	public void setDiscount(Double discount) {
+		this.discount = discount;
+	}
+	public Double getFix() {
+		return fix;
+	}
+	public void setFix(Double fix) {
+		this.fix = fix;
+	}
+	
+	public void reset(){
+		if(minimum_charge==null){
+			minimum_charge=0D;
+		}
+		if(discount==null){
+			discount=1D;
+		}
+		if(fix==null){
+			fix=0D;
+		}
+		if(type==null){
+			type="ABATEMENT";
+		}
+	}
+}
+

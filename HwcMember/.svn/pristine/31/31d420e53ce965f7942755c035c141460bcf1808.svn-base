@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:lotter="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/guagualebg"
+    android:orientation="vertical">
+    
+    <com.hwc.member.widget.header.LXHeadView
+        xmlns:my="http://schemas.android.com/apk/res/com.hwc.member"
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        my:centertitle="刮刮乐" />
+    
+    <LinearLayout
+        android:id="@+id/gua_titles"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:background="@drawable/guaguale1"
+        android:gravity="center"
+        android:orientation="horizontal" >
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/gua_bg"
+        android:layout_width="fill_parent"
+        android:layout_height="140dp"
+        android:background="@drawable/guaguale2"
+        android:gravity="center" >
+
+        <com.hwc.member.widget.gua.GuagualeView
+            android:id="@+id/lottery_myview"
+            android:layout_width="280dp"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:textSize="25sp"
+            lotter:lheight="100dp"
+            lotter:lwidget="300dp" >
+        </com.hwc.member.widget.gua.GuagualeView>
+
+        <TextView
+            android:id="@+id/nomore_tv"
+            android:layout_width="280dp"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:text="本次活动已结束"
+            android:textSize="25sp"
+            android:visibility="gone" />
+        
+         <TextView
+            android:id="@+id/doscratch_tv"
+            android:layout_width="280dp"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:text="刮开查看抽奖结果"
+            android:textColor="@color/gray5"
+            android:textSize="25sp"/>
+        
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/again_btn"
+        style="@style/btn_tv_style"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_margin="28dp"
+        android:text="@string/zaichouyici"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_16"
+        android:visibility="gone"
+        android:background="@drawable/shape_scratch_button" />
+    
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="本次活动奖品"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <com.hwc.member.widget.MyListView
+                android:id="@+id/listview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/shopname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

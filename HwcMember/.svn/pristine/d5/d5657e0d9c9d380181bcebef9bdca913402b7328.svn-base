@@ -1,0 +1,289 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+import android.view.View;
+import android.view.View.OnClickListener;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.ProductItem;
+import com.hwc.member.adapter.ProductGridAdapter;
+import com.hwc.member.view.activity.view.IAllGoodsView;
+import com.hwc.member.view.base.FormBaseFragment;
+
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public class NewAllGoodsFragment extends FormBaseFragment implements IAllGoodsView,OnClickListener {
+	@Override
+	protected void init() {
+
+	}
+
+	@Override
+	public int getLayoutId() {
+		return 0;
+	}
+
+	@Override
+	public void setGridAdapter(ProductGridAdapter adapter) {
+
+	}
+
+	@Override
+	public void refresh(List<DProduct> list) {
+
+	}
+
+	@Override
+	public void more(List<DProduct> lis, boolean isEnd) {
+
+	}
+
+	@Override
+	public void setIsCanMore(boolean b) {
+
+	}
+
+	@Override
+	public void setCat(List<ProductItem> productItem) {
+
+	}
+
+	@Override
+	public void clearLoadPage() {
+
+	}
+
+	@Override
+	public void showErrorPage() {
+
+	}
+
+	@Override
+	public void onClick(View v) {
+
+	}
+
+//	@ViewInject(R.id.comprehensive_rt)
+//	private RadioButton comprehensive_rt;
+//	@ViewInject(R.id.salesvol_rt)
+//	private RadioButton salesvol_rt;
+//	@ViewInject(R.id.price_rt)
+//	private RadioButton price_rt;
+//	@ViewInject(R.id.top_bt)
+//	private Button top_bt;
+//
+//	private Long sid;
+//	private AllGoodsPresenter presenter = new AllGoodsPresenter(this);
+//
+//	private PopMenu popMenu;
+//	private String[] items_str = new String[]{"从高到低", "从低到高"};
+//
+//	@ViewInject(R.id.gridview)
+//	private PullableGridView gridview;
+//	@ViewInject(R.id.refresh_view)
+//	private PullToRefreshLayout refresh_view;
+//	private int mIndex = 1;
+//	private long cid;
+//	private String order;
+//	private boolean desc;
+//	private boolean iscanmore = true;
+//
+//	private MyRefreshListener myRefreshListener;
+//
+//	@Override
+//	protected void init() {
+//		sid = getActivity().getIntent().getLongExtra("0", -1);
+//		presenter.setData(sid, -1,"",false, 1, null);
+//		initPage(-1, "", false);
+//		presenter.getShopCat(sid);
+//		comprehensive_rt.setChecked(true);
+//	}
+//
+//	@Override
+//	public void initListener() {
+//		comprehensive_rt.setOnClickListener(this);
+//		salesvol_rt.setOnClickListener(this);
+//		price_rt.setOnClickListener(this);
+//
+//		myRefreshListener = new MyRefreshListener(getActivity(), new Callback() {
+//
+//			@Override
+//			public void refresh(PullToRefreshLayout pullToRefreshLayout) {
+//				mIndex = 1;
+//				presenter.setData(sid, cid, order, desc, mIndex, pullToRefreshLayout);
+//			}
+//
+//			@Override
+//			public void loadMore(PullToRefreshLayout pullToRefreshLayout) {
+//				pullToRefreshLayout.loadmoreFinish(PullToRefreshLayout.SUCCEED);
+////				mIndex += 1;
+////				presenter.setData(sid, cid, order, desc, mIndex, pullToRefreshLayout);
+//			}
+//		});
+//		refresh_view.setOnRefreshListener(myRefreshListener);
+//		gridview.setOnScrollListener(new OnScrollListener() {
+//
+//			@Override
+//			public void onScrollStateChanged(AbsListView view, int scrollState) {}
+//
+//			@Override
+//			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+//				/*
+//				 * firstVisibleItem:表示在现时屏幕第一个ListItem(部分显示的ListItem也算)在整个ListView的位置(下标从0开始)
+//				 * visibleItemCount:表示在现时屏幕可以见到的ListItem(部分显示的ListItem也算)总数
+//				 * totalItemCount:表示ListView的ListItem总数
+//				 * listView.getFirstVisiblePosition()表示在现时屏幕第一个ListItem(第一个ListItem部分显示也算)在整个ListView的位置(下标从0开始)
+//				 * listView.getLastVisiblePosition()表示在现时屏幕最后一个ListItem(最后ListItem要完全显示出来才算)在整个ListView的位置(下标从0开始)
+//				 */
+//
+//				if(presenter.totalcount <= 4){
+//					top_bt.setText(presenter.totalcount + "/" + presenter.totalcount);
+//				}else{
+//					top_bt.setText(firstVisibleItem + "/" + presenter.totalcount);
+//				}
+//				if(presenter.totalcount - firstVisibleItem > 8){//剩余2屏之后就不再刷新列表
+//                if(visibleItemCount+firstVisibleItem > totalItemCount-3){
+//                	if(visibleItemCount != 0){
+//                		if(iscanmore){
+//                			mIndex += 1;
+//                			presenter.setData(sid, cid, order, desc, mIndex, null);
+//                		}
+//                	}
+//                }
+//               }
+//			}
+//		});
+//	}
+//
+//	@Override
+//	public int getLayoutId() {
+//		return R.layout.fm_newallgoods;
+//	}
+//
+//	@Override
+//	public void setGridAdapter(ProductGridAdapter adapter) {
+//		gridview.setAdapter(adapter);
+//	}
+//
+//	@OnItemClick(R.id.gridview)
+//	public void onGridItemClick(AdapterView<?> parent, View view, int position,
+//			long id) {
+//		goTo(NewProductInfoActivity.class, presenter.adapter.getItem(position).getPid(), presenter.adapter.getItem(position).getShop_id(),  presenter.adapter.getItem(position).getName());
+//	}
+//
+//	@Override
+//	public void clearLoadPage() {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public void showErrorPage() {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public void onClick(View v) {
+//		switch (v.getId()) {
+//		case R.id.comprehensive_rt:
+//			showDesc(comprehensive_rt, presenter.items, null, -1);
+//			break;
+//		case R.id.salesvol_rt:
+//			showDesc(salesvol_rt, null, items_str, 1);
+//			break;
+//		case R.id.price_rt:
+//			showDesc(price_rt, null, items_str, 2);
+//			break;
+//		}
+//	}
+//
+//	public void showDesc(View v, final List<ProductItem> items, final String[] strs, final int type) {
+//		// 初始化弹出菜单
+//		popMenu = new PopMenu(mContext);
+//		if(items == null && strs != null){
+//			popMenu.addItems(strs);
+//		}else if(strs == null && items != null){
+//			for (int i = 0; i < items.size(); i++) {
+//				popMenu.addItem(items.get(i).getName());
+//			}
+//
+//		}
+//		popMenu.setOnItemClickListener(new OnItemClickListener() {
+//
+//			@Override
+//			public void onItemClick(AdapterView<?> parent, View view,
+//					int position, long id) {
+//				if(items == null && strs != null){
+//					if(strs[position].equals("从高到低")){
+//						if(type == 1){
+//							presenter.setData(sid, -1, "order_sort", false, 1, null);
+//							initPage(-1, "order_sort", false);
+//						}else if(type == 2){
+//							presenter.setData(sid, -1, "sale_price", false, 1, null);
+//							initPage(-1, "sale_price", false);
+//						}
+//					}else if(strs[position].equals("从低到高")){
+//						if(type == 1){
+//							presenter.setData(sid, -1, "order_sort", true, 1, null);
+//							initPage(-1, "order_sort", true);
+//						}else if(type == 2){
+//							presenter.setData(sid, -1, "sale_price", true, 1, null);
+//							initPage(-1, "sale_price", true);
+//						}
+//					}
+//
+//				}else if(strs == null && items != null){
+//					comprehensive_rt.setText(items.get(position).getName());
+//					presenter.setData(sid, items.get(position).getCid(), "", false, 1, null);
+//					initPage(items.get(position).getCid(), "", false);
+//				}
+//				popMenu.dismiss();
+//			}
+//		});
+//
+//		popMenu.showAsDropDown(v);
+//
+//	}
+//
+//	public void initPage(long cid_l, String order_s, boolean desc_b){
+//		cid = cid_l;
+//		order = order_s;
+//		desc = desc_b;
+//		mIndex = 1;
+//	}
+//
+//	@Override
+//	public void setIsCanMore(boolean b) {
+//		iscanmore = b;
+//	}
+//
+//	@OnClick(R.id.top_bt)
+//	public void goTop(View v){
+//		gridview.smoothScrollToPosition(0);
+//	}
+//
+//	@Override
+//	public void refresh(ProductGridAdapter adapter) {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public void more(boolean isEnd) {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public void setCat(List<ProductItem> productItem) {
+//		// TODO Auto-generated method stub
+//
+//	}
+
+}

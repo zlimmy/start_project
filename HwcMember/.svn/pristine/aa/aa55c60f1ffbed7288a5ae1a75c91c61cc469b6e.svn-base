@@ -1,0 +1,10 @@
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.ResponseBaseEntity;
+import com.huimodel.api.base.ShopFacepay;
+
+
+
+public class ShopFacepayGetResponse extends ResponseBaseEntity<ShopFacepay> {
+
+}

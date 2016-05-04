@@ -1,0 +1,32 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import java.util.List;
+
+import com.huimodel.api.base.Advert;
+import com.huimodel.api.base.ResponseBase;
+import com.hwc.member.adapter.HotGoodsAdapter;
+import com.hwc.member.adapter.MainProductsAdapter;
+
+/**
+ * @author FZ
+ */
+public interface IMainFragView extends LoadDataView {
+
+	/**
+	 * 首页广告
+	 */
+	void setPromAd(List<Advert> adList, int[] pic);
+	
+	void setMenu(HotGoodsAdapter adapter);
+	
+	void setGridAdapter(MainProductsAdapter adapter);
+	
+	void setIsCanMore(boolean b);
+	
+	void notifyCarNum();
+
+	void validateLocation(ResponseBase responseBase);
+}

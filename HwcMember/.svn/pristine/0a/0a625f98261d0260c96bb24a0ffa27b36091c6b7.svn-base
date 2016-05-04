@@ -1,0 +1,19 @@
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.base.ShopFacepay;
+
+public interface IPreferentialView extends LoadDataView{
+	
+	
+	
+	void setPreferential(ShopFacepay shopFacepay);
+	
+	
+	
+	void calculateFacepayment(ResponseBase obj);
+	
+	
+	
+	void doCounterInfo();
+}

@@ -1,0 +1,38 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="head_height">48dp</dimen>
+    <dimen name="default_center_margin">16dp</dimen>
+    <dimen name="cpb_stroke_width">4dp</dimen>
+    <dimen name="parallax_image_height">300dp</dimen>
+    <dimen name="header_height">60dp</dimen>
+    <dimen name="footer_height">90dp</dimen>
+    <dimen name="footer_padding">10dp</dimen>
+
+    <!-- body content -->
+    <dimen name="body_padding_medium">10dp</dimen>
+    <dimen name="body_padding_large">10dp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_medium">18sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+    <dimen name="text_size_xlarge">18sp</dimen>
+    <dimen name="speaker_image_size">36dp</dimen>
+    <dimen name="speaker_image_padding">8dp</dimen>
+    <dimen name="vendor_image_size">100dp</dimen>
+
+    <!-- 通用字体大小 -->
+    <dimen name="text_10">8sp</dimen>
+    <dimen name="text_12">10sp</dimen>
+    <dimen name="text_14">12sp</dimen>
+    <dimen name="text_16">14sp</dimen>
+    <dimen name="text_18">16sp</dimen>
+    <dimen name="text_20">18sp</dimen>
+    <dimen name="text_15">14sp</dimen>
+    <dimen name="text_45">40sp</dimen>
+    <dimen name="actionbar_height">40dip</dimen>
+    <dimen name="actionbar_item_height">45dip</dimen>
+    <dimen name="actionbar_item_width">45dip</dimen>
+
+</resources>

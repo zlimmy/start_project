@@ -1,0 +1,41 @@
+package com.hwc.member.common;
+
+import com.huimodel.api.response.UserLoginResponse;
+import com.hwc.member.application.App;
+import com.hwc.member.util.PreferenceUtils;
+
+public class Member {
+
+	private static UserLoginResponse member = null;
+
+	private Member() {
+
+	}
+
+	public static synchronized UserLoginResponse getInstance() {
+		if (member == null) {
+			member = new UserLoginResponse();
+				member.setUser_id(PreferenceUtils.getPrefLong(App.mContext, "uid", 0l));
+				member.setShop_id(PreferenceUtils.getPrefLong(App.mContext, "sid", 0l));
+				member.setMobile(PreferenceUtils.getPrefString(App.mContext, "mobile", "0"));
+				member.setInvitation_code(PreferenceUtils.getPrefString(App.mContext, "invitation_code", ""));
+				member.setNick(PreferenceUtils.getPrefString(App.mContext, "nick",""));
+				member.setPoint(PreferenceUtils.getPrefFloat(App.mContext, "point", 0l));
+				member.setSign(PreferenceUtils.getPrefBoolean(App.mContext,"sign",false));
+				member.setAvatar(PreferenceUtils.getPrefString(App.mContext,"avatar","user/man.png"));
+				member.setVip_info(PreferenceUtils.getPrefString(App.mContext,"vip",""));
+		}
+		return member;
+
+	}
+
+	public static void setMember(UserLoginResponse loginResponse) {
+
+		member = loginResponse;
+	}
+
+	public static boolean isNull() {
+		// return Member.getInstance.getUser_id()==0?true:false;
+		return Member.getInstance().getUser_id() == 0 ? true : false;
+	}
+}

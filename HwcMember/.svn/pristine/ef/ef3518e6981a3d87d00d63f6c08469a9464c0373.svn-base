@@ -1,0 +1,22 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import java.util.List;
+
+import com.huimodel.api.response.MemberExtsResponse;
+
+/**
+ * @author FZ
+ */
+public interface IMyView extends LoadDataView {
+	
+	void setAutoTest(List<String> list);
+	
+	void setPointBt();
+	
+	void setPointText(Double point);
+	
+	void setWallet(MemberExtsResponse obj);
+}

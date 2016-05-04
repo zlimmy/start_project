@@ -1,0 +1,64 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.request.PromLotteryDrawGetRequest;
+import com.huimodel.api.response.PlatformPromLotteryDrawGetResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.PromLotteryAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IPlatFormListView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class PlatFormListPresenter {
+
+	private IPlatFormListView view;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public PromLotteryAdapter adapter;
+	
+	public PlatFormListPresenter(IPlatFormListView view){
+		this.view = view;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void getData(){
+		PromLotteryDrawGetRequest request = new PromLotteryDrawGetRequest();
+		request.setUser_id_by(Member.getInstance().getUser_id());
+		request.setPage(1);
+		request.setPage_size(5);
+		request.setImei(Constant.IMEI);
+		iHwcBizMainImpl.promLotteryList(request, view.getContext(), new IResult<PlatformPromLotteryDrawGetResponse>() {
+			
+			@Override
+			public void result(PlatformPromLotteryDrawGetResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.getPromlottery() != null && obj.getPromlottery().size() > 0){
+						adapter = new PromLotteryAdapter(view.getContext(), obj.getPromlottery(), R.layout.item_prom_list, null);
+						view.setList(adapter);
+					}else{
+						view.showErrorPage();
+					}
+					
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+}

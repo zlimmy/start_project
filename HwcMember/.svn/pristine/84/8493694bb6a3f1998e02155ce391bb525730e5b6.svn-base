@@ -1,0 +1,40 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+
+import com.huimodel.api.base.UserBean;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.TimeUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.widget.CircleImageView;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class Team_Adapter extends MirAdapter<UserBean> {
+
+	public Team_Adapter(Context context, List<UserBean> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, UserBean item) {
+		helper.setText(R.id.nick_tv, "昵称：" + item.getNick());
+		helper.setText(R.id.mobile_tv, "手机：" + item.getMobile());
+		helper.setText(R.id.date_tv, "加入时间：" + TimeUtil.getDateTime(item.getCreated(), "yyyy-MM-dd"));
+		helper.setText(R.id.rebate_tv, item.getRebate()+"");
+		CircleImageView iv = helper.getView(R.id.iv);
+		bitmapUtils.display(iv, item.getAvatar());
+		ViewTransformUtil.layoutParams(iv, iv.getLayoutParams(), 144, 144);
+	}
+
+}

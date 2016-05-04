@@ -1,0 +1,72 @@
+package com.hwc.member.util;
+
+import android.content.Context;
+
+import com.hwc.member.common.Constant;
+import com.igexin.sdk.PushConsts;
+import com.igexin.sdk.PushManager;
+import com.igexin.sdk.Tag;
+
+public class GeTuiUtil {
+	
+	/** 绑定别名 **/
+	public static boolean bindAlias(Context context, String alias){
+		//同一个别名最多绑定10个cid
+		//当ClientID已绑定了别名A，若调用此接口绑定别名B，则与别名A的绑定关系会自动解除
+		//此接口与unBindAlias一天内最多调用100次，两次调用的间隔需大于5s
+		//getCID(context);
+		boolean flag = false;
+		
+		if(!Constant.bindAlias){
+			flag =  PushManager.getInstance().bindAlias(context, alias);
+			//Toast.makeText(context, "绑定:"+flag+"--"+alias, 11111).show();
+			Constant.bindAlias = flag;
+		}else{
+			//Toast.makeText(context, "已经绑定成功了 不用再绑定", 11111).show();
+		}
+		return flag;
+	}
+	
+	/** 解绑别名 **/
+	public static boolean unbindAlias(Context context, String alias){
+		Constant.bindAlias = false;
+		return PushManager.getInstance().unBindAlias(context, alias, true);//如果是true，只对当前cid做解绑；如果是false，对所有绑定该别名的cid列表做解绑
+	}
+		
+	/** 新增标签 **/
+	public static void addTag(Context context, String tagStr){
+		//新增标签以，隔开
+		//标签的设定，一定要在获取到Clientid之后才可以设定。标签的设定，服务端限制一天只能成功设置一次 
+		String[] tags = tagStr.split(",");
+        Tag[] tagParam = new Tag[tags.length];
+        for (int i = 0; i < tags.length; i++) {
+            Tag t = new Tag();
+            t.setName(tags[i]);
+            tagParam[i] = t;
+        }      
+        int i = PushManager.getInstance().setTag(context, tagParam);
+        String text = "ERROR";
+
+        switch (i) {
+            case PushConsts.SETTAG_SUCCESS:
+                text = "设置标签成功";
+                break;
+
+            case PushConsts.SETTAG_ERROR_COUNT:
+                text = "设置标签失败，tag数量过大";
+                break;
+  
+            default:
+                text = "设置标签失败，setTag异常";
+                break;
+        }  
+        //Toast.makeText(context, tagStr+"---"+text, Toast.LENGTH_LONG).show();     
+	}
+	
+	/** 获取CID **/
+	public static String getCID(Context context){
+		
+		return PushManager.getInstance().getClientid(context);
+	}
+	
+}

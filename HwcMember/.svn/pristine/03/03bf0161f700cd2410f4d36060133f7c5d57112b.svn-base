@@ -1,0 +1,10 @@
+package com.hwc.member.view.activity.view;
+
+import com.hwc.member.adapter.LocationListAdapter;
+
+/**
+ * Created by xtsxx on 2016/4/28.
+ */
+public interface ILocationView extends LoadDataView {
+    void setLocation(LocationListAdapter locationListAdapter);
+}

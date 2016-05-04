@@ -1,0 +1,20 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+/***
+ * 获取消费券的明细信息
+ * @author lxk
+ *
+ */
+public class CouponDetailGetRequest extends RequestBase {
+	private String coupon_id;
+
+	public String getCoupon_id() {
+		return coupon_id;
+	}
+
+	public void setCoupon_id(String coupon_id) {
+		this.coupon_id = coupon_id;
+	}
+}

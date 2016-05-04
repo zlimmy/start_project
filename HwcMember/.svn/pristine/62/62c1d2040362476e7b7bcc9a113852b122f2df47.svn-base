@@ -1,0 +1,95 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.widget.ImageView;
+
+import com.huimodel.api.base.DProduct;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.common.Constant;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.view.activity.view.IConfirmOrderView;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class ConfirmOrderAdapter extends MirAdapter<DProduct> {
+
+	private List<DProduct> cmDatas;
+	private IConfirmOrderView iv;
+	public ConfirmOrderAdapter(Context context, List<DProduct> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils,IConfirmOrderView iv) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		this.cmDatas = mDatas;
+		this.iv = iv;
+	}
+
+	@Override
+	public void convert(final HolderEntity helper, final DProduct item) {
+		
+		ImageView imageView = helper.getView(R.id.iv);
+		bitmapUtils.display(imageView, item.getImageurl()+Constant.IMAGE_SIZE_100);
+		helper.setText(R.id.goodsname_tv, item.getName()+"");
+		
+		if(item.getPsuite()!=null){
+			helper.setText(R.id.package_tv, item.getPsuite().getDescript());
+			helper.setText(R.id.price_tv, "￥"+CommonUtil.conversionDouble(item.getPsuite().getSale_price()));
+		}else if(item.getProminfo()!=null){
+			helper.setText(R.id.package_tv, ""+item.getProminfo().getProm_des());
+			helper.setText(R.id.price_tv, "￥"+CommonUtil.conversionDouble(item.getProminfo().getProm_price()));
+		}else{
+//			helper.setText(R.id.package_tv, ""+item.getSellPt()==null?"":item.getSellPt());
+			helper.setText(R.id.price_tv, "￥"+CommonUtil.conversionDouble(item.getPrice()));
+		}
+		helper.setText(R.id.num_tv, "X" + item.getSale_num());
+		
+		
+//		LinearLayout addandsub_ll = helper.getView(R.id.addandsub_ll);
+//		final AddAndSubView addAndSubView = new AddAndSubView(mContext);
+//		addAndSubView.setButtonBgResource(R.drawable.bt_add, R.drawable.bt_remove);
+//		addandsub_ll.addView(addAndSubView);
+//		addAndSubView.setNum(item.getSale_num());
+//		addAndSubView.setOnNumChangeListener(new OnNumChangeListener() {
+//			
+//			@Override
+//			public void onNumChange(View view, int num) {
+//				// TODO Auto-generated method stub
+//				if(item.getPsuite()!=null){
+//					if(num>item.getPsuite().getNum()){//如果大于套餐数量
+//						Toast.makeText(iv.getContext(), "库存数不足"+item.getPsuite().getNum()+"件",1).show();;
+//						cmDatas.get(helper.getPosition()).setSale_num(item.getPsuite().getNum());
+//						addAndSubView.setNum(item.getPsuite().getNum());
+//					}else{
+//						cmDatas.get(helper.getPosition()).setSale_num(num);;
+//						iv.alculation();
+//					}
+//				}else{//普通商品
+//					if(num>item.getNum()){
+//						Toast.makeText(iv.getContext(), "库存数不足"+item.getNum()+"件",1).show();;;
+//						cmDatas.get(helper.getPosition()).setSale_num(item.getNum());
+//						addAndSubView.setNum(item.getNum());
+//					}else{
+//						cmDatas.get(helper.getPosition()).setSale_num(num);;
+//						iv.alculation();
+//					}
+//				}
+//				
+//			}
+//		});
+
+	}
+
+	
+	
+	public List<DProduct>  getListData(){
+	  
+		return cmDatas;
+	}
+}

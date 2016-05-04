@@ -1,0 +1,82 @@
+package com.hwc.member.widget.header;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.util.AttributeSet;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+import com.hwc.member.util.ViewTransformUtil;
+
+
+/**
+ * @version 2015-6-29
+ * @author FZ
+ * @Mark
+ */
+public class LXHeadView extends HeadView {
+
+	public LXHeadView(Context context) {
+		super(context);
+	}
+
+	public LXHeadView(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+	}
+
+	public LXHeadView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
+ 
+	@Override
+	protected void init(Context context, AttributeSet attrs) {
+		super.init(context, attrs);
+		RelativeLayout layout = layout();
+		RelativeLayout.LayoutParams lp = (LayoutParams) layout.getLayoutParams();
+		lp.height = (int) getResources().getDimension(R.dimen.head_height);
+		layout.setLayoutParams(lp);
+		ViewTransformUtil.layoutParams(layout, layout.getLayoutParams(), LayoutParams.MATCH_PARENT, 90);
+		setBackgroundColor(Color.rgb(231, 56, 40));
+		title().setTextColor(Color.WHITE);
+		leftText().setTextColor(Color.WHITE);
+		rightText().setTextColor(Color.WHITE);
+		leftText().setOnTouchListener(null);
+	}
+
+	/**
+	 * 将px值转换为sp值，保证文字大小不变
+	 * 
+	 * @param spValue
+	 * @param fontScale
+	 * @return
+	 */
+	public static int sp2px(Context context, float spValue) {
+		final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+		return (int) (spValue * fontScale + 0.5f);
+	}
+	
+	@Override
+	public void returnTextViewClickEffect(TextView view) {
+		view.setTextColor(Color.WHITE);
+	}
+	
+	@Override
+	public void setTextViewClickEffect(TextView view) {
+		view.setTextColor(Color.GRAY);
+	}
+
+	@Override
+	public void setImageViewClickEffect(ImageView view) {
+		super.setImageViewClickEffect(view);
+	}
+	
+	@Override
+	public void returnImageViewClickEffect(ImageView view) {
+		super.returnImageViewClickEffect(view);
+	}
+	
+	
+
+}

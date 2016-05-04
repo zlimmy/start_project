@@ -1,0 +1,80 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import android.content.Context;
+import android.graphics.Bitmap.Config;
+import android.graphics.Paint;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DProduct;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.common.Constant;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public class MainProductsAdapter extends MirAdapter<DProduct> {
+
+	private BitmapUtils utils;
+	
+	public MainProductsAdapter(Context context, List<DProduct> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		utils = new BitmapUtils(mContext);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, DProduct item) {
+		utils.configDefaultBitmapConfig(Config.ARGB_8888);
+		utils.configDefaultLoadingImage(R.drawable.icon_defultbg);
+		utils.configDefaultLoadFailedImage(R.drawable.icon_defultbg);
+		utils.configDefaultBitmapMaxSize(300, 300);
+		
+		View  view = helper.getView(R.id.prolist_rl);
+		ViewTransformUtil.layoutParams(view, view.getLayoutParams(), 340,LayoutParams.WRAP_CONTENT);
+		
+		ImageView iv = helper.getView(R.id.pro_iv);
+		
+		try {
+			
+			utils.display(iv, item.getImageurl()+Constant.IMAGE_SIZE_340);		
+			ViewTransformUtil.layoutParams(iv, iv.getLayoutParams(), 340,340);
+			if(item.getSellPt() != null && !item.getSellPt().equals("")){
+				helper.setText(R.id.name_tv, item.getName() + "  " + item.getSellPt().replace("\n", ""));
+			}else{
+				helper.setText(R.id.name_tv, item.getName().replace("\n", "") +"");
+			}
+			
+			TextView t = helper.getView(R.id.price_tv);
+			TextView newprice = helper.getView(R.id.prom_price);
+			if(item.getProminfo()!=null){
+				newprice.setText("￥"+CommonUtil.conversionDouble(item.getPrice())+"");
+				newprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG|Paint.ANTI_ALIAS_FLAG);
+				helper.setText(R.id.price_tv, "￥"+CommonUtil.conversionDouble(item.getProminfo().getProm_price())+"");
+				newprice.setVisibility(View.VISIBLE);
+			}else{	
+				newprice.setVisibility(View.INVISIBLE);
+				t.setText("￥"+CommonUtil.conversionDouble(item.getPrice())+"");
+				t.getPaint().setFlags(0|Paint.ANTI_ALIAS_FLAG);
+			}
+			
+			helper.setText(R.id.distance, CommonUtil.conversionDistance(item.getDistance()));
+			helper.setText(R.id.views_tv,String.valueOf(item.getViews_num()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+}

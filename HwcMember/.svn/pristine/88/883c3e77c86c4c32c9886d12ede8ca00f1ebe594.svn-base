@@ -1,0 +1,25 @@
+package com.hwc.member.view.activity.view;
+
+import java.util.List;
+
+import com.huimodel.api.base.DShop;
+import com.huimodel.api.base.UserBean;
+import com.huimodel.api.response.ProfitInfoGetResponse;
+
+public interface IMyDataView extends LoadDataView {
+	
+	//刷新
+	 void refreshShop(List<UserBean> list);
+		
+	 
+	//刷新
+	 void refreshTeam(List<DShop> list);
+		
+	 
+	 /**
+	  * 初始化数据
+	  * @param obj
+	  */
+	 void initData(ProfitInfoGetResponse obj);
+
+}

@@ -1,0 +1,240 @@
+package com.hwc.member.view.activity;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.telephony.SmsMessage;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+
+import com.huimodel.api.response.SmsMessageResponse;
+import com.hwc.member.R;
+import com.hwc.member.application.App;
+import com.hwc.member.presenter.ForgetPwdPresenter;
+import com.hwc.member.util.PreferenceUtils;
+import com.hwc.member.util.UtilActivity;
+import com.hwc.member.view.activity.view.IForgetPwdView;
+import com.hwc.member.view.base.BaseActivity;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
+/**
+ * 找回密码
+ * @author Administrator
+ *
+ */
+@ContentView(R.layout.activity_forget_pwd)
+public class ForgetPwdActivity extends BaseActivity implements IForgetPwdView {
+
+	@ViewInject(R.id.user_et)
+	private EditText user_et;
+	@ViewInject(R.id.checkcode)
+	private EditText checkcode;
+	@ViewInject(R.id.pwd_et)
+	private EditText pwd_et;
+	@ViewInject(R.id.showpwd)
+	private CheckBox showpwd;
+	@ViewInject(R.id.getcode)
+	private Button getcode;
+	private String sms_code,sms_mobile;
+	private ForgetPwdPresenter presenter = new ForgetPwdPresenter(this);
+	String uname = "";
+
+	@Override
+	protected void initView() {
+		uname = getIntent().getStringExtra("0");
+		user_et.setText(uname);
+		registSmsReciver();
+	}
+
+	@Override
+	protected void initListener() {
+
+	}
+
+	// 修改密码
+	@OnClick(R.id.sure_bt)
+	public void goLogin(View v) {
+		if(isEmpty(getViewValue(user_et))){
+			user_et.startAnimation(shake);
+			return;
+		}
+		if(isEmpty(getViewValue(checkcode))){
+			checkcode.startAnimation(shake);
+			return;
+		}
+		if(isEmpty(getViewValue(pwd_et))){
+			pwd_et.startAnimation(shake);
+			return;
+		}
+
+		if(getViewValue(user_et).equals(sms_mobile)&&getViewValue(checkcode).equals(sms_code)){
+			presenter.update();
+		}else{
+			T("验证码输入错误");
+		}
+
+	}
+
+
+	// 返回
+	@OnClick(R.id.back_bt)
+	public void forgetPwd(View v) {
+		finish();
+	}
+
+	@Override
+	public String getUserName() {
+		return getViewValue(user_et);
+	}
+
+	@Override
+	public String getPassword() {
+		return getViewValue(pwd_et);
+	}
+
+	@Override
+	public void clearEditText() {
+		user_et.setText("");
+		pwd_et.setText("");
+	}
+	
+	@OnClick(R.id.showpwd)
+	public void showPwd(View v){
+		if(showpwd.isChecked()){
+			//设置成明文  
+			pwd_et.setTransformationMethod(HideReturnsTransformationMethod.getInstance());  
+		}else{
+			//设置成密文 
+			pwd_et.setTransformationMethod(PasswordTransformationMethod.getInstance());  
+		}
+	}
+	
+	@OnClick(R.id.getcode)
+	public void getCode(View v){
+		if(isEmpty(getViewValue(user_et))){
+			user_et.startAnimation(shake);
+			return;
+		}
+		presenter.sendSms(getViewValue(user_et));
+		setDownTime(getcode);
+		timer.start();
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (smsReciver != null) {
+			unregisterReceiver(smsReciver);
+			smsReciver = null;
+		}
+	}
+
+	@Override
+	public void finishView() {
+		PreferenceUtils.setPrefString(App.mContext,"name", getViewValue(user_et));
+		PreferenceUtils.setPrefString(App.mContext,"pwd", getViewValue(pwd_et));
+		if("".equals(uname)){
+			finish();
+		}else{//第一次登陆
+			UtilActivity.finishNum(2);
+			finish();
+		}
+		
+	}
+
+	@Override
+	public void sendSmssuccee(SmsMessageResponse obj) {
+		if(obj.isSuccess()){
+			sms_code  =  obj.getCode();
+			sms_mobile = obj.getMobile();
+		}else{
+			T("获取验证码失败");
+		}
+	}
+
+
+	private SmsReciver smsReciver = new SmsReciver();
+	/**
+	 * 收到短信Action
+	 **/
+	String ACTION_SMS_RECIVER = "android.provider.Telephony.SMS_RECEIVED";
+
+	/**
+	 * 注册广播接受者监听短信验证码自动回写  可在onCreate()中进行注册;
+	 */
+	private void registSmsReciver() {
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(ACTION_SMS_RECIVER);
+		// 设置优先级 不然监听不到短信
+		filter.setPriority(1000);
+		registerReceiver(smsReciver, filter);
+	}
+
+	/**
+	 * 短信广播接受者 用户监听短信，自动填写验证码
+	 */
+	private class SmsReciver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Object[] objs = (Object[]) intent.getExtras().get("pdus");
+			for (Object obj : objs) {
+				byte[] pdu = (byte[]) obj;
+				SmsMessage sms = SmsMessage.createFromPdu(pdu);
+				// 短信的内容
+				String message = sms.getMessageBody();
+				Log.d("log", "message     " + message);
+				// 短息的手机号，如果你们公司发送验证码的号码是固定的这里可以进行一个号码的校验
+				String from = sms.getOriginatingAddress();
+				Log.d("log", "from     " + from);
+				analysisVerify(message);
+
+			}
+		}
+
+	}
+
+	/**
+	 * 解析短信并且回写
+	 *
+	 * @param message
+	 */
+	private void analysisVerify(String message) {
+		Pattern continuousNumberPattern = Pattern.compile("[0-9\\.]+");
+		Matcher m = continuousNumberPattern.matcher(message);
+		String dynamicPassword = "";
+		while(m.find()){
+			if(m.group().length() == 4) {
+				System.out.print(m.group());
+				dynamicPassword = m.group();
+			}
+		}
+
+		checkcode.setText(dynamicPassword);
+	}
+
+}

@@ -1,0 +1,67 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.CollectionsRequest;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.util.ToastUtil;
+import com.hwc.member.view.activity.view.ICaptureView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class CapturePresenter {
+	
+	private ICaptureView view;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public CapturePresenter(ICaptureView view){
+		this.view = view;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void attention(String sid){
+		if(Member.getInstance().getUser_id() == null){
+			SimpleHUD.showErrorMessage(view.getContext(), "请先登录");
+			return;
+		}
+		
+		CollectionsRequest cr = new CollectionsRequest();
+		cr.setShop_id(Long.parseLong(sid));
+		cr.setUser_id_by(Member.getInstance().getUser_id());
+		cr.setCat("SHOP");
+		cr.setImei(Constant.IMEI);
+		view.showProgressDialog(null);
+		iHwcBizMainImpl.attentionShop(cr, view.getContext(), new IResult<ResponseBase>() {
+			
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				view.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						ToastUtil.show("店铺关注成功！");
+					}else{
+						ToastUtil.show(obj.getMsg());
+					}
+					view.Success();
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+
+}

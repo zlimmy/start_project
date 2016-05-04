@@ -1,0 +1,52 @@
+package com.hwc.member.util;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import android.content.Context;
+import android.widget.Toast;
+
+import com.hwc.member.application.App;
+
+/**
+ * @version 2015-10-25
+ * @author FZ
+ * @Mark Toast工具类
+ */
+public class ToastUtil {
+
+	private static Toast toast = null;
+
+	/** 显示Toast信息，保证整个App只有一个toast实例 存在 **/
+	public synchronized static void show(Object text) {
+		show(App.mContext, text);
+	}
+
+	/** 显示Toast信息，保证整个App只有一个toast实例 存在 **/
+	public synchronized static void show(Context context, Object text) {
+		boolean needCreate = false;
+		if (toast == null) {
+			needCreate = true;
+		} else {
+			try {
+				Field mTNField = Toast.class.getDeclaredField("mTN");
+				Object mTN = mTNField.get(toast);
+				Class<?> mTNCls = mTN.getClass();
+				Method hide = mTNCls.getMethod("hide");
+				hide.setAccessible(true);
+				hide.invoke(mTN);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (toast.getView().getContext() != context) {
+				needCreate = true;
+			}
+		}
+		if (needCreate) {
+			toast = Toast.makeText(context, text + "", Toast.LENGTH_SHORT);
+		} else {
+			toast.setText(text + "");
+		}
+		toast.show();
+	}
+}

@@ -1,0 +1,121 @@
+package com.hwc.member.presenter;
+
+import com.huimodel.api.request.PrizeListGetRequest;
+import com.huimodel.api.response.MyConponResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.ICodeVIew;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * 未使用
+ * 
+ * @author Administrator
+ * 
+ */
+public class UnUserCodePresenter {
+
+	private ICodeVIew codeVIew;
+	private int pagesize = 5;
+//	private List<DPrizeCoupon> list;
+//	private List<DPrizeCoupon> morelist;
+//	public CodeFragAdapter adapter;
+	private IHwcBizMain iHwcBizMainImpl;
+
+	public UnUserCodePresenter(ICodeVIew codeVIew) {
+		this.codeVIew = codeVIew;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+
+	/**
+	 * 
+	 * @param position
+	 * @return
+	 */
+//	public DPrizeCoupon getDPrizeCoupon(int position) {
+//
+//		return list.get(position);
+//	}
+
+	/**
+	 * 未使用的礼券
+	 */
+	public void setListData() {
+		PrizeListGetRequest rb = new PrizeListGetRequest();
+		rb.setUser_id_by(Member.getInstance().getUser_id());
+		rb.setStatus("I");
+		// showAll 需要增加 0309
+		rb.setPage(1);
+		rb.setPage_size(pagesize);
+		rb.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getMyCoupon(rb, codeVIew.getContext(), new IResult<MyConponResponse>() {
+			@Override
+			public void result(MyConponResponse obj, Code code) {
+				codeVIew.dismissProgressDialog();
+				switch (code) {
+					case OK:
+					if (obj.getPrizecoupon() != null ) {
+
+//						adapter = new CodeFragAdapter(codeVIew.getContext(), list, R.layout.item_coupon, null);
+						codeVIew.refresh(obj.getPrizecoupon());
+					} else {
+						// 显示没数据图片
+						// if (pullToRefreshListView != null) {
+						// pullToRefreshListView.setPullRefreshEnabled(false);
+						// }
+						codeVIew.setNodataPage();
+					}
+
+					break;
+
+				default:
+					codeVIew.showErrorPage();
+					SimpleHUD.showErrorMessage(codeVIew.getContext(), code + "");
+					break;
+				}
+			}
+		});
+	}
+
+	/**
+	 * 加载更多
+	 * 
+	 * @param pageno
+	 */
+	public void setListMoreData(int pageno) {
+		PrizeListGetRequest rb = new PrizeListGetRequest();
+		rb.setUser_id_by(Member.getInstance().getUser_id());
+		rb.setStatus("I");
+		rb.setPage(pageno);
+		rb.setPage_size(pagesize);
+		rb.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getMyCoupon(rb, codeVIew.getContext(), new IResult<MyConponResponse>() {
+			@Override
+			public void result(MyConponResponse obj, Code code) {
+				boolean isEnd = true;
+				switch (code) {
+				case OK:
+					codeVIew.clearLoadPage();
+					if (obj.getPrizecoupon() != null && obj.getPrizecoupon().size() < pagesize) {
+						isEnd = false;
+					}
+					codeVIew.more(obj.getPrizecoupon(),isEnd);
+					break;
+
+				default:
+					codeVIew.showErrorPage();
+					SimpleHUD.showErrorMessage(codeVIew.getContext(), code + "");
+					break;
+				}
+			}
+		});
+	}
+
+
+
+}

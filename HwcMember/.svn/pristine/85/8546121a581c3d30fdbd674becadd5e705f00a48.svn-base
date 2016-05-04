@@ -1,0 +1,249 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.DShop;
+import com.huimodel.api.base.ShopItem;
+import com.huimodel.api.request.ProductRecommendRequest;
+import com.huimodel.api.request.ShopCatGetRequest;
+import com.huimodel.api.response.ShopAndShopProductInfoResponse;
+import com.huimodel.api.response.ShopCatGetResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.ProductCategoryAdapter;
+import com.hwc.member.adapter.ShopListAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.common.Mlocation;
+import com.hwc.member.util.CacheDataUtil;
+import com.hwc.member.view.activity.view.INearView;
+import com.hwc.member.view.activity.view.IShopListView;
+import com.hwc.member.widget.SimpleHUD;
+
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public class ShopListPresenter {
+
+	private IShopListView shopListView;
+	private INearView iNearView;
+	private IHwcBizMain iHwcBizMainImpl;
+	public ShopListAdapter adapter;
+	//商品类目 
+	public ProductCategoryAdapter adapter2;
+	public List<DShop> shops;
+	private int pagesize = 12;
+	public Gson gson;
+	private CacheDataUtil cacheDataUtil ;
+	public ShopListPresenter(IShopListView shopListView){
+		this.shopListView = shopListView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		this.cacheDataUtil = CacheDataUtil.getInstance(App.mContext);
+		this.gson = new Gson();
+	}
+	
+	public ShopListPresenter(INearView iNearView){
+		this.iNearView = iNearView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		this.gson = new Gson();
+		this.cacheDataUtil = CacheDataUtil.getInstance(App.mContext);
+	}
+	
+//	public void setData(Long cid,final PullToRefreshLayout pullToRefreshLayout,String key){
+//		ProductRecommendRequest pr = new ProductRecommendRequest();
+//		pr.setLatitude(Constant.latitude);
+//		pr.setLongitude(Constant.longitude);
+//		if(Member.getInstance().getUser_id() != null){
+//			pr.setUser_id_by(Member.getInstance().getUser_id());
+//		}
+//		pr.setCid(cid);
+//		pr.setPage(0);
+//		pr.setNum(3);
+//		pr.setPage_size(pagesize);
+//		pr.setImei(Constant.IMEI);
+//		pr.setQuery(key);
+//		iHwcBizMainImpl.searchShopsWithProducts(pr, shopListView.getContext(), new IResult<ShopAndShopProductInfoResponse>() {
+//			
+//			@Override
+//			public void result(ShopAndShopProductInfoResponse obj, Code code) {
+//				pullToRefreshLayout.refreshFinish(PullToRefreshLayout.SUCCEED);
+//				switch (code) {
+//				case OK:
+//					if(obj.getShops() != null){	
+//						shops = obj.getShops();
+//						if(obj.getShops().size() > 0){
+//							adapter = new ShopListAdapter(shopListView.getContext(), obj.getShops(), R.layout.item_shoplist, null);						
+//							shopListView.setListAdapter(adapter);
+//						}else{
+//							shopListView.notFind();
+//						}
+//					}else{
+//						shopListView.showErrorPage();
+//					}
+//					
+//					break;
+//
+//				default:
+//					SimpleHUD.showErrorMessage(shopListView.getContext(), code+"");
+//					break;
+//				}
+//			}
+//		});
+//		
+//		
+//	}
+	
+	
+
+	
+	
+	/**
+	 *  刷新
+	 * @param cid
+	 * @param key
+	 */
+	public void refresh(Long cid,final String key){
+		ProductRecommendRequest pr = new ProductRecommendRequest();
+		pr.setLatitude(Constant.latitude);
+		pr.setLongitude(Constant.longitude);
+		pr.setGcity(Mlocation.getInstance().getCity());
+		pr.setGdistrict(Mlocation.getInstance().getDistrict());
+		if(Member.getInstance().getUser_id() != null){
+			pr.setUser_id_by(Member.getInstance().getUser_id());
+		}
+		pr.setCid(cid);
+		pr.setPage(1);
+		pr.setNum(3);
+		pr.setPage_size(pagesize);
+		pr.setImei(Constant.IMEI);
+		pr.setQuery(key);
+		iHwcBizMainImpl.searchShopsWithProducts(pr, iNearView.getContext(), new IResult<ShopAndShopProductInfoResponse>() {
+			
+			@Override
+			public void result(ShopAndShopProductInfoResponse obj, Code code) {
+				iNearView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){	
+//						if(obj.getShops().size()>0){
+							iNearView.refresh(obj.getShops());
+							if(key==null||key.equals("")){
+								cacheDataUtil.saveString("ShopAndShopProductInfoResponse", gson.toJson(obj),Constant.second);
+							}
+//						}else{
+//							iNearView.notFind(key);
+//						}
+					}
+					break;
+				default:
+					SimpleHUD.showErrorMessage(iNearView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+
+	}
+	
+	/**
+	 * 获取更多
+	 * @param mCurIndex
+	 * @param cid
+	 * @param key
+	 */
+	public void more(int mCurIndex,Long cid,String key){
+		ProductRecommendRequest pr = new ProductRecommendRequest();
+		pr.setLatitude(Constant.latitude);
+		pr.setLongitude(Constant.longitude);
+		pr.setGcity(Mlocation.getInstance().getCity());
+		pr.setGdistrict(Mlocation.getInstance().getDistrict());
+		if(Member.getInstance().getUser_id() != null){
+			pr.setUser_id_by(Member.getInstance().getUser_id());
+		}
+		pr.setCid(cid);
+		pr.setPage(mCurIndex);
+		pr.setNum(3);
+		pr.setPage_size(pagesize);
+		pr.setImei(Constant.IMEI);
+		pr.setQuery(key);
+		iHwcBizMainImpl.searchShopsWithProducts(pr, iNearView.getContext(), new IResult<ShopAndShopProductInfoResponse>() {
+			
+			@Override
+			public void result(ShopAndShopProductInfoResponse obj, Code code) {
+				boolean isEnd = true;
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						if(obj.getShops().size()==0){
+							isEnd = false;
+						}
+						iNearView.more(obj.getShops(), isEnd);
+					}
+					break;
+				default:
+					SimpleHUD.showErrorMessage(iNearView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+
+	}
+	
+	
+	
+	
+	
+	/**
+	 * 获取产品类目
+	 */
+	public void setItemCat(){
+//	 String caheJosn = cacheDataUtil.getStringByKey("ItemCat");
+//	  if(caheJosn==null){//如果缓存数据为空
+		ShopCatGetRequest sc = new ShopCatGetRequest();
+		sc.setLatitude(Constant.latitude);
+		sc.setLongitude(Constant.longitude);
+		sc.setGcity(Mlocation.getInstance().getCity());
+		sc.setGdistrict(Mlocation.getInstance().getDistrict());
+		sc.setUser_id_by(Member.getInstance().getUser_id());
+		sc.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getdefaultshopcat(sc, iNearView.getContext(), new IResult<ShopCatGetResponse>() {
+			@Override
+			public void result(ShopCatGetResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.getItems() != null && obj.getItems().size() > 0){
+						ShopItem si = new ShopItem();
+						si.setCid(null);
+						si.setName("全部");
+						obj.getItems().add(0, si);
+						adapter2 = new ProductCategoryAdapter(iNearView.getContext(), obj.getItems(), R.layout.item_product_category, null);
+						iNearView.setCatAdapter(adapter2);
+					}
+					
+					iNearView.clearLoadPage();
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(iNearView.getContext(), code+"");
+					break;
+				}
+			}
+		});	
+//	  }else{
+//		  ShopCatGetResponse obj = gson.fromJson(caheJosn, ShopCatGetResponse.class);
+//			if(obj.getItems() != null && obj.getItems().size() > 0){
+//				adapter2 = new ProductCategoryAdapter(productCategoryView.getContext(), obj.getItems(), R.layout.item_product_category, null);
+//				productCategoryView.setGridAdapter(adapter2);
+//			}
+//			productCategoryView.clearLoadPage();
+//	  }
+		
+	}
+}

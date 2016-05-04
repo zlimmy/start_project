@@ -1,0 +1,175 @@
+package com.hwc.member.view.activity.my;
+
+import android.content.Intent;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.huimodel.api.base.Discovery;
+import com.hwc.member.R;
+import com.hwc.member.adapter.BustlingProductListAdapter;
+import com.hwc.member.presenter.FollowDiascoveriesPresenter;
+import com.hwc.member.view.activity.bustling.RareProductInfoActivity;
+import com.hwc.member.view.activity.view.IFollowDiascoveriesView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.PullToRefreshFooter;
+import com.hwc.member.widget.PullToRefreshHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import in.srain.cube.views.loadmore.LoadMoreContainer;
+import in.srain.cube.views.loadmore.LoadMoreHandler;
+import in.srain.cube.views.loadmore.LoadMoreListViewContainer;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
+
+@ContentView(R.layout.activity_follow_diascoveries)
+public class FollowDiascoveriesActivity extends BaseActivity implements IFollowDiascoveriesView {
+
+    @ViewInject(R.id.load_more_list_view_ptr_frame)
+    private PtrFrameLayout mPtrFrameLayout;
+
+    @ViewInject(R.id.load_more_container)
+    LoadMoreListViewContainer load_more_container;
+
+    @ViewInject(R.id.listview)
+    private ListView mListView;
+
+
+    private BustlingProductListAdapter bustlingProductListAdapter;
+    private List<Discovery> discoveryList;
+    private int mIndex = 1;
+
+    @ViewInject(R.id.nodata_page)
+    private View nodata_page;
+    @ViewInject(R.id.nodata_tv)
+    private TextView nodata_tv;
+    @ViewInject(R.id.nodata_but)
+    private Button nodata_but;
+
+    private FollowDiascoveriesPresenter presenter = new FollowDiascoveriesPresenter(this);
+
+    @Override
+    protected void initView() {
+        discoveryList = new ArrayList<Discovery>();
+        bustlingProductListAdapter = new BustlingProductListAdapter(getContext(), discoveryList,
+                R.layout.item_bustlingproduct, null);
+        mListView.setAdapter(bustlingProductListAdapter);
+
+        mListView.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // TODO Auto-generated method stub
+                if (bustlingProductListAdapter.getItem(position).getContent_url() != null) {
+                    Intent intent = new Intent();
+                    intent.putExtra("attention", true);
+                    intent.putExtra("id", bustlingProductListAdapter.getItem(position).getId());
+                    intent.putExtra("url", bustlingProductListAdapter.getItem(position).getContent_url());
+                    intent.putExtra("img", bustlingProductListAdapter.getItem(position).getPics().get(0));
+                    intent.putExtra("title", bustlingProductListAdapter.getItem(position).getTitle());
+                    intent.putExtra("excerpt", bustlingProductListAdapter.getItem(position).getExcerpt());
+                    intent.setClass(context, RareProductInfoActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+
+
+    @Override
+    protected void initListener() {
+        setBack();
+        PullToRefreshHeadView headView = new PullToRefreshHeadView(getContext());
+        headView.setLastUpdateTimeKey(this.getClass().getSimpleName());
+        mPtrFrameLayout.setHeaderView(headView);
+        mPtrFrameLayout.addPtrUIHandler(headView);
+        mPtrFrameLayout.setPtrHandler(new PtrHandler() {
+            @Override
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+
+                return PtrDefaultHandler.checkContentCanBePulledDown(frame, mListView, header);
+            }
+
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                presenter.refresh();
+            }
+        });
+
+        load_more_container.setAutoLoadMore(true);
+        final PullToRefreshFooter footer = new PullToRefreshFooter(getContext());
+        load_more_container.setLoadMoreView(footer);
+        load_more_container.setLoadMoreUIHandler(footer);
+
+        // binding view and data
+        load_more_container.setLoadMoreHandler(new LoadMoreHandler() {
+            @Override
+            public void onLoadMore(LoadMoreContainer loadMoreContainer) {
+                mIndex++;
+                presenter.more(mIndex);
+            }
+        });
+
+
+        showProgressDialog(null);
+        presenter.refresh();
+
+    }
+
+    @Override
+    public void clearLoadPage() {
+    }
+
+    @Override
+    public void showErrorPage() {
+
+        discoveryList.clear();
+        GONE(load_more_container);
+        bustlingProductListAdapter.notifyDataSetChanged();
+        VISIBLE(nodata_page);
+        nodata_tv.setText("没有关注的发现呢!");
+        nodata_but.setText("马上去看看");
+        INVISIBLE(nodata_but);
+    }
+
+    @Override
+    public void refresh(List<Discovery> list) {
+        // TODO Auto-generated method stub
+
+        GONE(nodata_page);
+        VISIBLE(load_more_container);
+        discoveryList.clear();
+        discoveryList.addAll(list);
+        bustlingProductListAdapter.notifyDataSetChanged();
+        mPtrFrameLayout.refreshComplete();
+        // load more
+        if (discoveryList.size() <= 0) {
+            showErrorPage();
+        } else if (discoveryList.size() < 10) {
+            load_more_container.loadMoreFinish(true, false);
+        } else {
+            load_more_container.loadMoreFinish(false, true);
+        }
+        mIndex = 1;
+    }
+
+    @Override
+    public void more(List<Discovery> list, boolean isEnd) {
+        // TODO Auto-generated method stub
+
+        discoveryList.addAll(list);
+        mPtrFrameLayout.refreshComplete();
+        // load more
+        load_more_container.loadMoreFinish(false, isEnd);
+        bustlingProductListAdapter.notifyDataSetChanged();
+    }
+
+}

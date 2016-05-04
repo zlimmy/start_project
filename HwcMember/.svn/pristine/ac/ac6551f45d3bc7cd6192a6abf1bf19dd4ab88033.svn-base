@@ -1,0 +1,18 @@
+/**
+ * 
+ */
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.PointExchange;
+
+/**
+ * @author FZ
+ */
+public class PointExchangeResponse extends ResponseBaseList<PointExchange> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2066950747505084946L;
+
+}

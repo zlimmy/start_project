@@ -1,0 +1,123 @@
+/*
+ * 
+ */
+
+package com.hwc.member.util;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import android.content.Context;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+
+// TODO: Auto-generated Javadoc
+/**
+ * 可以设置缓存超时时间，缓存超时自动失效，并被删除。支持String、json等的格式.
+ * 
+ * @ClassName: CacheDataUtil
+ * @Description:
+ */
+public class CacheDataUtil {
+
+    /** The a cache. */
+    private ACache aCache;
+    private String TAG = "aCache";
+    private Gson gson;
+    /** The lock. */
+    final Lock lock = new ReentrantLock();
+
+    /**
+     * Instantiates a new cache data util.
+     * 
+     * @param context the context
+     */
+    private CacheDataUtil(Context context) {
+        lock.lock();
+        try {
+            aCache = ACache.get(context);
+            //gson = new Gson();
+        } catch (Exception e) {
+            // TODO: handle exception
+           // LogsUtil.(e.getMessage(), e);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * 配置是不区分用户名存储的，即�?��用户都共享这份存�?
+     * 
+     * @param context the context
+     * @return single instance of CacheDataUtil
+     */
+    public static CacheDataUtil getInstance(Context context) {
+        return new CacheDataUtil(context);
+    }
+
+    /**
+     * Gets the a cache.
+     * @return the a cache
+     */
+    public ACache getACache() {
+        return aCache;
+    }
+
+  
+    /**
+     * 保存字符串 
+     * @param key
+     * @param value
+     * @param savetime 分钟
+     */
+    public void saveString(String key,String value,int savetime){
+    	
+    	aCache.put(key,value,savetime);
+    	
+    }
+    
+    /**
+     * 保存json字符串 
+     * @param key
+     * @param value
+     * @param savetime 分钟
+     */
+    public void saveJson(String key,JsonObject value,int savetime){
+   
+    	Gson gson = new Gson();
+    	aCache.put(key,gson.toJson(value),savetime);
+    	
+    }
+   
+    /**
+     * 保存json字符串 
+     * @param <T>
+     * @param key
+     * @param value
+     * @param savetime 分钟
+     */
+    public <T> void saveJson(String key,T value,int savetime){
+    	Gson gson = new Gson();
+    	aCache.put(key,gson.toJson(value),savetime);
+    	
+    }
+    
+
+    
+    public String getStringByKey(String key){
+    	return aCache.getAsString(key);
+    }
+    
+ 
+    /**
+     * 清空�?��数据.
+     */
+    public void clearAllData() {
+    	LogsUtil.i(TAG,"清除缓存文件");
+        aCache.clear();
+    }
+
+ 
+}

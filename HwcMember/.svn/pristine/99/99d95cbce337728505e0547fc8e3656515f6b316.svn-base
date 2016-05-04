@@ -1,0 +1,71 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Paint;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DProduct;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class HotProductListAdapter extends MirAdapter<DProduct> {
+
+	public HotProductListAdapter(Context context, List<DProduct> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		// TODO Auto-generated constructor stub
+	}
+
+	@SuppressLint("InlinedApi")
+	@Override
+	public void convert(HolderEntity helper, DProduct item) {
+		ImageView iv = helper.getView(R.id.iv);
+		ViewTransformUtil.layoutParams(iv, iv.getLayoutParams(), android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 300);
+		bitmapUtils.display(iv, item.getImageurl());
+		helper.setText(R.id.name, item.getName());
+		TextView oldprice = helper.getView(R.id.oldprice_tv);
+		TextView newprice = helper.getView(R.id.nowprice_tv);
+		if(item.getProminfo() != null){
+			helper.setText(R.id.nowprice_tv, "￥" + CommonUtil.conversionDouble(item.getProminfo().getProm_price()));	
+			oldprice.setText("￥" + CommonUtil.conversionDouble(item.getPrice()));
+			oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG|Paint.ANTI_ALIAS_FLAG); 
+			newprice.setVisibility(View.VISIBLE);
+		}else{		
+			newprice.setVisibility(View.GONE);
+			oldprice.setText("￥" + CommonUtil.conversionDouble(item.getPrice()));
+			oldprice.getPaint().setFlags(Paint.HINTING_ON);
+		}
+		
+		TextView num_flag = helper.getView(R.id.num_flag);
+		TextView stock_flag = helper.getView(R.id.stock_flag);
+		if(item.getNum_flag() != null && !item.getNum_flag().equals("")){
+			num_flag.setText(item.getNum_flag());
+			num_flag.setVisibility(View.VISIBLE);
+		}else{
+			num_flag.setVisibility(View.INVISIBLE);
+		}
+		
+		if(item.getStock_flag() != null && !item.getStock_flag().equals("")){
+			stock_flag.setText(item.getStock_flag());
+			stock_flag.setVisibility(View.VISIBLE);
+		}else{
+			stock_flag.setVisibility(View.INVISIBLE);
+		}
+	}
+
+}

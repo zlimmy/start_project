@@ -1,0 +1,116 @@
+package com.hwc.member.presenter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.huimodel.api.base.PlatformPrize;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.request.PlatformPrizeRequest;
+import com.huimodel.api.request.SignPointRequest;
+import com.huimodel.api.response.MemberExtsResponse;
+import com.huimodel.api.response.PlatformPrizeResponse;
+import com.huimodel.api.response.SignPointResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.PlayIntegralAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IPlayIntegralView;
+import com.hwc.member.widget.SimpleHUD;
+
+public class PlayIntegralPresenter {
+	
+	private IPlayIntegralView playIntegralView;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public PlayIntegralAdapter adapter;
+	private List<PlatformPrize> list;
+	
+	public PlayIntegralPresenter(IPlayIntegralView playIntegralView){
+		this.playIntegralView = playIntegralView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void setGridData(){
+		PlatformPrizeRequest ppr = new PlatformPrizeRequest();
+		ppr.setCids(new Long[]{1l,2l,3l,4l});
+		ppr.setImei(Constant.IMEI);
+		
+		iHwcBizMainImpl.getPlatformPrizes(ppr, playIntegralView.getContext(), new IResult<PlatformPrizeResponse>() {
+			
+			@Override
+			public void result(PlatformPrizeResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						list = new ArrayList<PlatformPrize>();
+						for (int i = 0; i < (obj.getEntities().size() <= 9 ? obj.getEntities().size() : 9); i++) {
+							list.add(obj.getEntities().get(i));
+						}
+						adapter = new PlayIntegralAdapter(playIntegralView.getContext(), list, R.layout.item_play_intrgral_grid, null);
+						playIntegralView.setGridAdapter(adapter);
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(playIntegralView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	public void signPoint(){
+		SignPointRequest spr = new SignPointRequest();
+		spr.setUser_id_by(Member.getInstance().getUser_id());
+		spr.setImei(Constant.IMEI);
+		iHwcBizMainImpl.signpoint(spr, playIntegralView.getContext(), new IResult<SignPointResponse>() {
+			
+			@Override
+			public void result(SignPointResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						SimpleHUD.showSuccessMessage(playIntegralView.getContext(), obj.getMsg());
+						playIntegralView.setPointText(obj.getPoint());
+					}else{
+						SimpleHUD.showErrorMessage(playIntegralView.getContext(), obj.getMsg());
+					}
+					playIntegralView.setPointBt();
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(playIntegralView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	public void getExts(){
+		RequestBase request = new RequestBase();
+		request.setUser_id_by(Member.getInstance().getUser_id());
+		iHwcBizMainImpl.getMemberExts(request, playIntegralView.getContext(), new IResult<MemberExtsResponse>() {
+			
+			@Override
+			public void result(MemberExtsResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						playIntegralView.setPointText(obj.getPoint());
+					}else{
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+	}
+
+}

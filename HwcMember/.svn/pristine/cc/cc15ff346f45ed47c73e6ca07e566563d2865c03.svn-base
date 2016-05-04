@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp" >
+
+        <ImageView
+            android:id="@+id/pic_iv"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_launcher" />
+
+        <ImageView
+            android:id="@+id/delete_iv"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:paddingLeft="12dp"
+            android:paddingBottom="12dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/delete" />
+
+        <TextView
+            android:id="@+id/former_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/pic_iv"
+            android:layout_toRightOf="@id/pic_iv"
+            android:layout_marginLeft="12dp"
+            android:text="￥0.0"
+            android:textColor="@color/gray4"
+            android:textSize="@dimen/text_18" />
+        
+        <TextView
+            android:id="@+id/newprice_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/pic_iv"
+            android:layout_toRightOf="@id/former_tv"
+            android:text="￥0.0"
+            android:textColor="@color/main_color"
+            android:textSize="@dimen/text_20"
+            android:layout_marginLeft="20dp" />
+
+        <TextView
+            android:id="@+id/describe_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/pic_iv"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:text="描述信息"
+            android:visibility="gone"
+            android:textColor="@color/gray4"
+            android:textSize="@dimen/text_14"
+            android:layout_marginLeft="12dp" />
+
+        <TextView
+            android:id="@+id/name_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_toRightOf="@+id/pic_iv"
+            android:layout_toLeftOf="@+id/delete_iv"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="11111"
+            android:textSize="@dimen/text_16" />
+
+    </RelativeLayout>
+

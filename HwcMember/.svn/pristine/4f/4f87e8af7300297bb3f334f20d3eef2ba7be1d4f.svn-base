@@ -1,0 +1,359 @@
+package com.hwc.member.view.fragment;
+
+import android.content.Context;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DShop;
+import com.huimodel.api.response.ShopAndShopProductInfoResponse;
+import com.hwc.member.R;
+import com.hwc.member.adapter.ProductCategoryAdapter;
+import com.hwc.member.adapter.ShopListAdapter;
+import com.hwc.member.presenter.ShopListPresenter;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.view.activity.view.INearView;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.hwc.member.widget.MyGridView;
+import com.hwc.member.widget.PullToRefreshFooter;
+import com.hwc.member.widget.PullToRefreshHeadView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import in.srain.cube.views.loadmore.LoadMoreContainer;
+import in.srain.cube.views.loadmore.LoadMoreHandler;
+import in.srain.cube.views.loadmore.LoadMoreListViewContainer;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
+
+/**
+ * 周边店
+ *
+ * @author Administrator
+ */
+public class NearbyFragment extends FormBaseFragment implements INearView {
+
+    private ShopListPresenter presenter = new ShopListPresenter(this);
+
+    @ViewInject(R.id.load_more_list_view_ptr_frame)
+    private PtrFrameLayout mPtrFrameLayout;
+
+    @ViewInject(R.id.load_more_container)
+    LoadMoreListViewContainer load_more_container;
+
+    @ViewInject(R.id.listview)
+    private ListView mListView;
+
+
+    private ShopListAdapter shopListAdapter;
+    private List<DShop> mList;
+    private int mCurIndex = 1;//
+    private Long cid = null;
+    @ViewInject(R.id.select_tv)
+    private TextView select_tv;
+
+    @ViewInject(R.id.nodata_page)
+    private View nodata_page;
+    @ViewInject(R.id.nodata_tv)
+    private TextView nodata_tv;
+    @ViewInject(R.id.nodata_but)
+    private Button nodata_but; // / 没有数据时的提示布局
+    @ViewInject(R.id.nodata_iv)
+    private ImageView nodata_iv;
+
+    @ViewInject(R.id.search_et)
+    private EditText search_et;
+    @ViewInject(R.id.head_ll)
+    private RelativeLayout head_ll;
+    private MyGridView cat_gridview;
+    private ProductCategoryAdapter cat_adapter;
+    private String cname = null;
+    private boolean init = false;
+
+    private String keyWords = "";
+
+    @Override
+    protected void init() {
+
+        ViewTransformUtil.layoutParams(search_et, search_et.getLayoutParams(),
+                400, 60);
+
+        ViewTransformUtil.layoutParams(nodata_iv, nodata_iv.getLayoutParams(),
+                280, 280);
+
+        mList = new ArrayList<DShop>();
+        shopListAdapter = new ShopListAdapter(getActivity(), mList,
+                R.layout.item_shoplist, null);
+        mListView.setAdapter(shopListAdapter);
+        //缓存
+        String data = cacheDataUtil.getStringByKey("ShopAndShopProductInfoResponse");
+        if (data == null) {
+            showProgressDialog(null);
+            presenter.refresh(cid, keyWords);
+        } else {
+            ShopAndShopProductInfoResponse response = gson.fromJson(data, ShopAndShopProductInfoResponse.class);
+            refresh(response.getShops());
+        }
+
+
+        initListeners();
+        presenter.setItemCat();
+        init = true;
+    }
+
+    @Override
+    public int getLayoutId() {
+
+        return R.layout.fm_nearby;
+    }
+
+    public void initListeners() {
+
+
+        PullToRefreshHeadView headView = new PullToRefreshHeadView(getContext());
+        headView.setLastUpdateTimeKey(this.getClass().getSimpleName());
+        mPtrFrameLayout.setHeaderView(headView);
+        mPtrFrameLayout.addPtrUIHandler(headView);
+        mPtrFrameLayout.setPtrHandler(new PtrHandler() {
+            @Override
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+
+                return PtrDefaultHandler.checkContentCanBePulledDown(frame, mListView, header);
+            }
+
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                presenter.refresh(cid, keyWords);
+            }
+        });
+
+        load_more_container.setAutoLoadMore(true);
+        PullToRefreshFooter footer = new PullToRefreshFooter(getContext());
+        load_more_container.setLoadMoreView(footer);
+        load_more_container.setLoadMoreUIHandler(footer);
+
+        // binding view and data
+        load_more_container.setLoadMoreHandler(new LoadMoreHandler() {
+            @Override
+            public void onLoadMore(LoadMoreContainer loadMoreContainer) {
+                mCurIndex = mCurIndex + 1;
+                presenter.more(mCurIndex, cid, keyWords);
+            }
+        });
+
+
+//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//
+//            @Override
+//            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+//                                    long arg3) {
+//                // TODO Auto-generated method stub
+//
+//            }
+//
+//        });
+
+
+        search_et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                /* 判断是否是“GO”键 */
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    /* 隐藏软键盘 */
+                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm.isActive()) {
+                        imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+                    }
+                    keyWords = getViewValue(search_et);
+                    presenter.refresh(cid, keyWords);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+
+    @Override
+    public void clearLoadPage() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void showErrorPage() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @OnClick(R.id.search_but)
+    private void search_but(View v) {
+        if (search_et.getText().toString().length() > 0) {
+            keyWords = getViewValue(search_et);
+            presenter.refresh(cid, keyWords);
+        } else {
+            keyWords = "";
+            presenter.refresh(cid, keyWords);
+        }
+    }
+
+    @Override
+    public void refresh(List<DShop> list) {
+        // TODO Auto-generated method stub
+
+
+        GONE(nodata_page);
+        VISIBLE(load_more_container);
+        mList.clear();
+        mList.addAll(list);
+        shopListAdapter.notifyDataSetChanged();
+        mPtrFrameLayout.refreshComplete();
+        // load more
+        if (mList.size() <= 0) {
+            notFind("");
+        } else if (mList.size() < 12) {
+            load_more_container.loadMoreFinish(true, false);
+        } else {
+            load_more_container.loadMoreFinish(false, true);
+        }
+        mCurIndex = 1;
+
+    }
+
+    @Override
+    public void more(List<DShop> list, boolean isEnd) {
+        // TODO Auto-generated method stub
+
+        mList.addAll(list);
+        mPtrFrameLayout.refreshComplete();
+        // load more
+        load_more_container.loadMoreFinish(false, isEnd);
+        shopListAdapter.notifyDataSetChanged();
+        GONE(nodata_page);
+    }
+
+    @OnClick(R.id.select_tv)
+    public void select_tv(View v) {
+        showPopupWindow(head_ll);
+    }
+
+    private void showPopupWindow(View view) {
+
+        // 一个自定义的布局，作为显示的内容
+        View contentView = LayoutInflater.from(mContext).inflate(
+                R.layout.cat_pop_window, null);
+        cat_gridview = (MyGridView) contentView.findViewById(R.id.cat_gridview);
+        cat_gridview.setAdapter(cat_adapter);
+        final PopupWindow popupWindow = new PopupWindow(contentView,
+                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
+        popupWindow.setTouchable(true);
+        popupWindow.setTouchInterceptor(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // TODO Auto-generated method stub
+                return false;
+                // 这里如果返回true的话，touch事件将被拦截
+                // 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+            }
+        });
+
+        // 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+        // 我觉得这里是API的一个bug
+        popupWindow.setBackgroundDrawable(getResources().getDrawable(
+                R.drawable.iconfont_touming));
+        // 点击其他地方消失
+        contentView.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // TODO Auto-generated method stub  
+                if (popupWindow != null && popupWindow.isShowing()) {
+                    popupWindow.dismiss();
+                }
+                return false;
+            }
+        });
+        // 设置好参数之后再show
+        popupWindow.showAsDropDown(view, 0, -2);
+        cat_gridview = (MyGridView) contentView.findViewById(R.id.cat_gridview);
+        cat_gridview.setAdapter(cat_adapter);
+        cat_gridview
+                .setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> arg0, View v,
+                                            int position, long arg3) {
+                        // GONE(nodata_page);
+                        cid = cat_adapter.getItem(position).getCid();
+                        cname = cat_adapter.getItem(position).getName();
+                        select_tv.setText(cat_adapter.getItem(position)
+                                .getName() + "");
+                        cat_adapter.setSeclection(position);
+                        cat_adapter.notifyDataSetChanged();
+                        presenter.refresh(cid, getViewValue(search_et));
+                        popupWindow.dismiss();
+                    }
+                });
+
+
+    }
+
+    /**
+     * 设置添加屏幕的背景透明度
+     *
+     * @param bgAlpha
+     */
+    public void setbackgroundAlpha(float bgAlpha) {
+        WindowManager.LayoutParams lp = getActivity().getWindow()
+                .getAttributes();
+        lp.alpha = bgAlpha; // 0.0-1.0
+        getActivity().getWindow().setAttributes(lp);
+    }
+
+    @Override
+    public void setCatAdapter(ProductCategoryAdapter adapter) {
+        // TODO Auto-generated method stub
+        cat_adapter = adapter;
+    }
+
+    @Override
+    public void notFind(String catname) {
+        // TODO Auto-generated method stub
+        mList.clear();
+        shopListAdapter.notifyDataSetChanged();
+        // T(cname+":找不到");
+        GONE(load_more_container);
+        VISIBLE(nodata_page);
+        nodata_tv.setText(getString(R.string.no_shop));
+        INVISIBLE(nodata_but);
+
+
+
+
+    }
+
+	@Override
+	public void onResume() {
+		super.onResume();
+        if(mPtrFrameLayout!=null){
+            mPtrFrameLayout.refreshComplete();
+        }
+	}
+}

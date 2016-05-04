@@ -1,0 +1,28 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.base.Order;
+import com.huimodel.api.response.OrderDetailResponse;
+import com.hwc.member.adapter.NewOrderInfoAdapter;
+
+/**
+ * @author FZ
+ */
+public interface IOrderInfoView extends LoadDataView {
+
+	void setList(NewOrderInfoAdapter adapter);
+	
+	void setOrderData(Order order);
+	
+	void setOrderDetail(OrderDetailResponse order);
+	
+	void setMobile(String mobile);
+	
+	void closeOrder(String str);
+	
+	
+
+	
+}

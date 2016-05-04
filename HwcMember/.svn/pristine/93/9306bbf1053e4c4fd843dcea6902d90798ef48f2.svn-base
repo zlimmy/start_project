@@ -1,0 +1,17 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.base.Address;
+
+/**
+ * @author FZ
+ */
+public interface IUpdateAddressView extends LoadDataView {
+
+	void setAddressData(Address address);
+	
+	void finishActivity();
+	
+}

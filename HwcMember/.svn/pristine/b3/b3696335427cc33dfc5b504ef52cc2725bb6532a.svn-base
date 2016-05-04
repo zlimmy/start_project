@@ -1,0 +1,140 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import android.widget.Toast;
+
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.DefaultGetRequest;
+import com.huimodel.api.request.UserLoginRequest;
+import com.huimodel.api.response.UserLoginResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.util.GeTuiUtil;
+import com.hwc.member.util.PreferenceUtils;
+import com.hwc.member.view.activity.view.ILoginView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class UserLoginPresenter {
+
+	private IHwcBizMain iHwcBizMainImpl;
+	private ILoginView loginView;
+	private String version_str;
+
+	public UserLoginPresenter(ILoginView loginView) {
+		this.loginView = loginView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+
+	/**
+	 * 登录
+	 *
+	 **/
+	public void login(final String username, final String password, String version) {
+		version_str = version;
+		UserLoginRequest u = new UserLoginRequest();
+		u.setAccnt(username);
+		u.setPwd(password);
+		u.setChannel(Constant.LOGIN_CHANNEL_MEMBER);
+		u.setImei(Constant.IMEI);
+		u.setVersion(version);
+		loginView.showProgressDialog("登录中...");
+		iHwcBizMainImpl.login(u, loginView.getContext(), new IResult<UserLoginResponse>() {
+			@Override
+			public void result(UserLoginResponse obj, Code code) {
+				loginView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if (obj.isSuccess()) {
+						Constant.USERIMG = "user/" + "FACE_" + obj.getUser_id() + ".jpg";
+						GeTuiUtil.bindAlias(loginView.getContext(), "alias_" + obj.getMobile());
+						PreferenceUtils.setPrefString(App.mContext, "name", username);
+						PreferenceUtils.setPrefString(App.mContext, "pwd", password);
+						PreferenceUtils.setSettingLong(App.mContext, "uid", obj.getUser_id());
+						PreferenceUtils.setPrefString(App.mContext, "mobile", obj.getMobile());
+						PreferenceUtils.setPrefString(App.mContext, "invitation_code", obj.getInvitation_code());
+						PreferenceUtils.setPrefString(App.mContext, "nick", obj.getNick());
+						PreferenceUtils.setPrefFloat(App.mContext, "point", (float)obj.getPoint());
+						PreferenceUtils.setPrefFloat(App.mContext, "point", (float)obj.getPoint());
+						PreferenceUtils.setPrefBoolean(App.mContext, "sign", obj.isSign());
+						PreferenceUtils.setPrefString(App.mContext, "avatar", obj.getAvatar());
+						PreferenceUtils.setPrefString(App.mContext,"sex",obj.getSex());
+						PreferenceUtils.setPrefString(App.mContext,"vip",obj.getVip_info());
+						if (obj.getShop_id() != null) {
+							PreferenceUtils.setSettingLong(App.mContext, "sid", obj.getShop_id());
+						}
+						
+						Member.setMember(obj);
+						loginView.loginSuccess();
+					} else {
+
+						if (obj.getErrorCode().equals("10100006")) {
+							loginView.reset(username);
+
+						} else {
+							SimpleHUD.showErrorMessage(loginView.getContext(), obj.getMsg());
+						}
+					}
+
+					break;
+				default:
+					// SimpleHUD.showErrorMessage(loginView.getContext(),
+					// code+"");
+					Toast.makeText(loginView.getContext(), code + "", Toast.LENGTH_SHORT).show();
+					break;
+				}
+			}
+
+		});
+	}
+
+	// 自动登录
+	public void auto() {
+		String uname = PreferenceUtils.getPrefString(App.mContext, "name", "");
+		String upass = PreferenceUtils.getPrefString(App.mContext, "pwd", "");
+		if (!uname.equals("") && !upass.equals("")) {
+			loginView.setUserinfo(uname, upass);
+			login(uname, upass, version_str);
+		}
+	}
+
+	/** 清空 **/
+	public void clear() {
+		loginView.clearEditText();
+	}
+
+
+	/**
+	 * 获取短信通道配置
+	 */
+	public void getDefaultValue(){
+		DefaultGetRequest base = new  DefaultGetRequest();
+		base.setCode("verifycode");
+		iHwcBizMainImpl.getDefaultValue(base, loginView.getContext(), new IResult<ResponseBase>() {
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				loginView.dismissProgressDialog();
+				switch (code) {
+					case OK:
+						if (obj.isSuccess()) {
+							loginView.doRegist(obj);
+						}
+						break;
+					default:
+						Toast.makeText(loginView.getContext(), code + "", Toast.LENGTH_SHORT).show();
+						break;
+				}
+			}
+
+		});
+	}
+}

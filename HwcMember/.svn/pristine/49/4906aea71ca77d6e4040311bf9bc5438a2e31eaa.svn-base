@@ -1,0 +1,54 @@
+package com.huimodel.net;
+
+/**
+ * @version 2015-6-25
+ * @author FZ
+ * @Mark 接口状态码
+ */
+public enum Code {
+
+	OK("请求成功！"), //
+	TIME_OUT("加载超时"), //
+	NET_ERROR("网络错误"), //
+	REQUEST_FAILURE("服务器异常"), //
+
+	// 以上错误属网络相关错误，以下错误属本地处理错误，当无法辨识错误类型时，统一作ERROR标示
+
+	NO_INTERNET("当前网络不可用"), //
+	ENCODE_ERROR("编码错误"), //
+	DATA_ERROR("数据转化错误"), //
+	CANCEL("请求被取消"), //
+	ERROR("服务器繁忙，请稍后再试"),
+	
+	START("开始请求！"), //
+	FINISH("结束请求！"); //
+
+	// 信息说明
+	String message;
+
+	// 服务器返回code码
+	String result = null;
+
+	Code(String msg) {
+		this.message = msg;
+	}
+
+	/** 设置提示信息 **/
+	public void setMsg(String msg) {
+		this.message = msg;
+	}
+
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String ret) {
+		this.result = ret;
+	}
+
+	@Override
+	public String toString() {
+		return message;
+	}
+
+}

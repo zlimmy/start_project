@@ -1,0 +1,31 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+
+import com.huimodel.api.base.ResponseBase;
+
+/**
+ * @author FZ
+ */
+public interface ILoginView extends LoadDataView {
+
+    void clearEditText();
+	
+    void loginSuccess();
+    
+    void setUserinfo(String username, String password);
+    
+    /**
+     * 跳转重置密码
+     * @param uname
+     */
+    void reset(String uname);
+
+    /**
+     * 跳转注册界面
+     * @param responseBase
+     */
+    void doRegist(ResponseBase responseBase);
+}

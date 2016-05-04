@@ -1,0 +1,206 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.Cart;
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.ProductSuite;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.base.ShoppingCart1;
+import com.huimodel.api.request.CartRequest;
+import com.huimodel.api.response.ShoppingCartAddGroupShopResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.bean.ShoppingCartBean;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IShopCarView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class ShopCarPresenter {
+
+	private IShopCarView view;
+	private IHwcBizMain iHwcBizMainImpl;
+	private List<ShoppingCartBean> data;
+	private Gson gson;
+	public ShopCarPresenter(IShopCarView view) {
+		this.view = view;
+		this.gson = new Gson();
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	
+	
+	public void getCartList(){
+		RequestBase request = new RequestBase();
+		request.setImei(Constant.IMEI);
+		request.setUser_id_by(Member.getInstance().getUser_id());
+		iHwcBizMainImpl.getShoppingcardlist(request, view.getContext(), new IResult<ShoppingCartAddGroupShopResponse>() {
+			
+			@Override
+			public void result(ShoppingCartAddGroupShopResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						if(obj.getCarts() != null && obj.getCarts().size() > 0){
+							data = new ArrayList<ShoppingCartBean>();
+							for (int i = 0; i < obj.getCarts().size(); i++) {
+								data.add(setBean(obj.getCarts().get(i), i));
+							}	
+					    view.setShopCarData(data);
+						}
+					}else{
+						SimpleHUD.showInfoMessage(view.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+
+	
+	
+	
+	public void updateShopCart(final DProduct dp, final String action){
+		CartRequest request = new CartRequest();
+		Cart cart = new Cart();
+		cart.setId(dp.getCart_id());
+		cart.setTitle(dp.getName());
+		cart.setAction("modify");
+		cart.setShop_name(dp.getShop_name());
+		cart.setUser_id(Member.getInstance().getUser_id());
+		cart.setSid(dp.getShop_id());
+		cart.setPid(dp.getPid());
+		cart.setPrice(dp.getPrice());
+		cart.setNum(dp.getSale_num());
+		if(dp.getPsuite() != null){
+			cart.setSuite_id(dp.getPsuite().getSuite_id());
+			cart.setSuite_descript(dp.getPsuite().getDescript());
+		}
+		request.setCarts(cart);
+		
+		view.showProgressDialog("正在修改购物车信息");
+		iHwcBizMainImpl.addorupdateShoppingcart(request, view.getContext(), new IResult<ResponseBase>() {
+			
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				view.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						view.noity();
+					}else{
+						SimpleHUD.showInfoMessage(view.getContext(), obj.getMsg());
+						view.updateError(dp, action);
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code+"");
+					view.updateError(dp, action);
+					break;
+				}
+			}
+		});
+	}
+	
+	public void delShopCart(DProduct obj, final int groupPosition, final int childPosition){
+		CartRequest request = new CartRequest();
+		Cart cart = new Cart();
+		cart.setId(obj.getCart_id());
+		cart.setTitle(obj.getName());
+		cart.setAction("delete");
+		cart.setShop_name(obj.getShop_name());
+		cart.setUser_id(Member.getInstance().getUser_id());
+		cart.setSid(obj.getShop_id());
+		cart.setPid(obj.getPid());
+		cart.setPrice(obj.getPrice());
+		cart.setNum(obj.getSale_num());
+		if(obj.getPsuite() != null){
+			cart.setSuite_id(obj.getPsuite().getSuite_id());
+			cart.setSuite_descript(obj.getPsuite().getDescript());
+		}
+		request.setCarts(cart);
+		
+		view.showProgressDialog("正在删除该商品");
+		iHwcBizMainImpl.addorupdateShoppingcart(request, view.getContext(), new IResult<ResponseBase>() {
+			
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				view.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						view.delAfter(groupPosition, childPosition);
+					}else{
+						SimpleHUD.showInfoMessage(view.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	
+	
+	public ShoppingCartBean setBean(ShoppingCart1 shoppingCart, int i){
+		ShoppingCartBean scbean = new ShoppingCartBean();
+		List<DProduct> goods = null;
+		goods = new ArrayList<DProduct>();
+		DProduct good = null;
+		for(int k =0;k<shoppingCart.getCarts().size();k++){
+			good = new DProduct();
+			good.setCart_id(shoppingCart.getCarts().get(k).getId());
+			good.setSale_num(shoppingCart.getCarts().get(k).getNum());
+			good.setPid(shoppingCart.getCarts().get(k).getPid());
+			good.setPrice(shoppingCart.getCarts().get(k).getPrice());
+			good.setShop_name(shoppingCart.getCarts().get(k).getShop_name());
+			good.setShop_id(shoppingCart.getCarts().get(k).getSid());
+			good.setName(shoppingCart.getCarts().get(k).getTitle());
+			good.setImageurl(shoppingCart.getCarts().get(k).getPic_path());
+			good.setPurchase_price(shoppingCart.getCarts().get(k).getPrice());
+			good.setStatus(shoppingCart.getCarts().get(k).getStatus());
+			if(shoppingCart.getCarts().get(k).getSuite_id() != null && shoppingCart.getCarts().get(k).getSuite_descript() != null){
+				ProductSuite ps = new ProductSuite();
+				ps.setSuite_id(shoppingCart.getCarts().get(k).getSuite_id());
+				ps.setDescript(shoppingCart.getCarts().get(k).getSuite_descript());
+				ps.setSale_price(shoppingCart.getCarts().get(k).getPrice());
+				ps.setNum(shoppingCart.getCarts().get(k).getNum());
+				ps.setPurchase_price(shoppingCart.getCarts().get(k).getPrice());
+				good.setPsuite(ps);
+			}
+			
+			goods.add(good);
+		}
+		
+		
+	
+	
+		scbean.setGoods(goods);
+		scbean.setNick(shoppingCart.getShop_name());
+		scbean.setSid(shoppingCart.getSid());
+//		scbean.setCartid(shoppingCart.getId());
+		return scbean;
+	}
+	
+}

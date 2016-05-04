@@ -1,0 +1,160 @@
+/**
+ * 
+ */
+package com.hwc.member.util;
+
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import android.annotation.SuppressLint;
+
+/**
+ * @author FZ
+ * @date 2015年9月14日
+ */
+public class CommonUtil {
+
+	/** 转换成小数点后两位 **/
+	public static String conversionDouble(double d) {
+		if (d < 0.005 && d > -0.005) {
+			return "0.00";
+		} else if (d >= 0.005 && d < 0.995) {
+			DecimalFormat df = new DecimalFormat("########.00 ");
+			String dff = df.format(d);
+			return "0" + dff;
+		} else if (d >= 0.995 && d < 1) {
+			DecimalFormat df = new DecimalFormat("########.00 ");
+			String dff = df.format(d);
+			return dff;
+		} else if (d <= -0.005 && d > -0.995) {
+			DecimalFormat df = new DecimalFormat("########.00 ");
+			String dff = df.format(d);
+			return "-0" + dff.substring(1);
+		} else {
+			DecimalFormat df = new DecimalFormat("########.00 ");
+			String dff = df.format(d);
+			return dff;
+		}
+	}
+
+	/** 转换成整形 **/
+	public static int conversionInt(double d) {
+		int i = (int) (d + 0.5);
+		return i;
+	}
+
+	/** 判断是否为数值型字符串 */
+	public static void isNum(String s) {
+		if (s.matches("\\d+(.\\d+)?")) {
+			if (s.indexOf(".") > 0) {
+				System.out.println("浮点类型");
+			} else {
+				System.out.println("整形类型");
+			}
+			conversionDouble(Double.parseDouble(s));
+		} else {
+			throw new ClassCastException("不是数值类型");
+		}
+	}
+
+	/** 去除重复元素 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static LinkedList removeDuplicatedElements(LinkedList list) {
+		HashSet set = new HashSet();
+		Iterator iter = list.listIterator();
+		while (iter.hasNext()) {
+			String str = (String) iter.next();
+			if (!set.contains(str))
+				set.add(str);
+			else
+				iter.remove();
+		}
+		return list;
+	}
+	
+	
+	/**
+	 * 转换距离
+	 * @param distance
+	 * @return
+	 */
+	public static String conversionDistance(Double distance) {
+		
+		double dis = 0;
+		dis = Math.round(distance/100d)/10d;
+		if(distance<100){
+			return 0.1+"公里";
+		}else{
+			return dis+"公里";
+		}
+
+	}
+	
+
+	/** 转换时间格式 **/
+	@SuppressLint("SimpleDateFormat")
+	public static String conversionTime(String str) {
+		SimpleDateFormat sdf = new SimpleDateFormat(
+				"EEE MMM dd HH:mm:ss z yyyy", Locale.US);
+		Date d = null;
+		try {
+			d = sdf.parse(str);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		return sdf.format(d);
+	}
+
+	/**
+	 * 判断 date 1 和date2 哪个日期大 如果date1>date2 1 如果date1 =date2 0 如果date1<date2 -1
+	 * 要求date1,date2 格式为 YYYY-MM-DD
+	 * 
+	 * @param date1
+	 * @param date2
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressLint("SimpleDateFormat")
+	public static int compareDateByString(String date1, String date2)
+			throws Exception {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		int result = 0;
+		if (date1.equals(date2)) {
+			return result;
+		}
+		try {
+			Date date1Str = format.parse(date1); 
+			Date date2Str = format.parse(date2);
+			if (date1Str.after(date2Str)) {
+				result = 1;
+			} else {
+				result = -1;
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	/**
+     * 将Unix时间戳转换成日期
+     * @param long timestamp 时间戳
+     * @return String 日期字符串
+     */
+    @SuppressLint("SimpleDateFormat")
+	public static String unixTimestampToDate(String timestamp) {
+        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sd.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+        return sd.format(new Date(Long.parseLong(timestamp)));
+    }
+    
+}

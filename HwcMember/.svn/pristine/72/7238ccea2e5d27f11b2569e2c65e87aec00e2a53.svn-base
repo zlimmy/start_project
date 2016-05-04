@@ -1,0 +1,500 @@
+package com.huimodel.biz;
+
+import android.content.Context;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.HotSearch;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.AccountItemSearchRequest;
+import com.huimodel.api.request.AttentionShopCancelReuqest;
+import com.huimodel.api.request.CartRequest;
+import com.huimodel.api.request.ClearShoppingCartRequest;
+import com.huimodel.api.request.CollectionsRequest;
+import com.huimodel.api.request.CouponDetailGetRequest;
+import com.huimodel.api.request.CouponDonationRequest;
+import com.huimodel.api.request.DefaultGetRequest;
+import com.huimodel.api.request.DiscoveryCollectRequest;
+import com.huimodel.api.request.DiscoveryDetailRequest;
+import com.huimodel.api.request.FunctionConfigRequest;
+import com.huimodel.api.request.InvitationCodeRequest;
+import com.huimodel.api.request.LocationRequest;
+import com.huimodel.api.request.OrderCreateRequest;
+import com.huimodel.api.request.OrderGetRequest;
+import com.huimodel.api.request.OrderSearchRequest;
+import com.huimodel.api.request.OrderUpdateRequest;
+import com.huimodel.api.request.PlatformPrizeRequest;
+import com.huimodel.api.request.PointExchangeRequest;
+import com.huimodel.api.request.PrizeListGetRequest;
+import com.huimodel.api.request.ProductGetDetailRequest;
+import com.huimodel.api.request.ProductRecommendRequest;
+import com.huimodel.api.request.ProductSearchRequest;
+import com.huimodel.api.request.ProductSuiteGetRequest;
+import com.huimodel.api.request.PromLotteryDrawGetRequest;
+import com.huimodel.api.request.PromLotteryPrizeAddRequest;
+import com.huimodel.api.request.PromotionADGetRequest;
+import com.huimodel.api.request.ResetPasswordRequest;
+import com.huimodel.api.request.ShopCarRequest;
+import com.huimodel.api.request.ShopCatGetRequest;
+import com.huimodel.api.request.ShopInfoRequest;
+import com.huimodel.api.request.ShopsIndicatorsGetRequest;
+import com.huimodel.api.request.SignPointRequest;
+import com.huimodel.api.request.SmsMessageRequest;
+import com.huimodel.api.request.UserAddressCreateRequest;
+import com.huimodel.api.request.UserAddressDeltRequest;
+import com.huimodel.api.request.UserAddressGetRequest;
+import com.huimodel.api.request.UserAddressUpdateRequest;
+import com.huimodel.api.request.UserInfoGetByMobileRequest;
+import com.huimodel.api.request.UserInfoRequest;
+import com.huimodel.api.request.UserLoginRequest;
+import com.huimodel.api.request.UserRegisterRequest;
+import com.huimodel.api.request.WithdrawApplyRequest;
+import com.huimodel.api.response.AccountItemsGroupSearchResponse;
+import com.huimodel.api.response.AccountItemsSearchResponse;
+import com.huimodel.api.response.CollectionShopResponse;
+import com.huimodel.api.response.CouponDetailGetResponse;
+import com.huimodel.api.response.DiscoveryDetailResponse;
+import com.huimodel.api.response.DiscoveryGetResponse;
+import com.huimodel.api.response.FunctionConfigResponse;
+import com.huimodel.api.response.HomeResponse;
+import com.huimodel.api.response.IndicatorsDailyResponse;
+import com.huimodel.api.response.InvCodeListResponse;
+import com.huimodel.api.response.LocationsGetResponse;
+import com.huimodel.api.response.MagazineResponse;
+import com.huimodel.api.response.MemberExtsResponse;
+import com.huimodel.api.response.MemberUpdateResponse;
+import com.huimodel.api.response.MyConponResponse;
+import com.huimodel.api.response.OrderDetailResponse;
+import com.huimodel.api.response.OrderGetPayInfoResponse;
+import com.huimodel.api.response.PayTypeResponse;
+import com.huimodel.api.response.PlatformPrizeDetailResponse;
+import com.huimodel.api.response.PlatformPrizeResponse;
+import com.huimodel.api.response.PlatformPromLotteryDrawGetResponse;
+import com.huimodel.api.response.PointExchangeResponse;
+import com.huimodel.api.response.ProductRecommendResponse;
+import com.huimodel.api.response.ProductSearchResponse;
+import com.huimodel.api.response.ProductSuiteGetResponse;
+import com.huimodel.api.response.ProfitInfoGetResponse;
+import com.huimodel.api.response.PromLotteryDrawRequest;
+import com.huimodel.api.response.PromLotteryDrawResponse;
+import com.huimodel.api.response.PromotionADGetResponse;
+import com.huimodel.api.response.ShopAndShopProductInfoResponse;
+import com.huimodel.api.response.ShopCarResponse;
+import com.huimodel.api.response.ShopCatGetResponse;
+import com.huimodel.api.response.ShopFacepayGetResponse;
+import com.huimodel.api.response.ShopInfoResponse;
+import com.huimodel.api.response.ShopPostFeeStrategyResponse;
+import com.huimodel.api.response.ShopProductItemGetResponse;
+import com.huimodel.api.response.ShopPromLotteryDrawGetResponse;
+import com.huimodel.api.response.ShopUserSearchResponse;
+import com.huimodel.api.response.ShoppingCartAddGroupShopResponse;
+import com.huimodel.api.response.ShopsGetResponse;
+import com.huimodel.api.response.SignPointResponse;
+import com.huimodel.api.response.SmsMessageResponse;
+import com.huimodel.api.response.SubjectProductReponse;
+import com.huimodel.api.response.TradeSearchResponse;
+import com.huimodel.api.response.UserAddressGetOneResponse;
+import com.huimodel.api.response.UserAddressGetResponse;
+import com.huimodel.api.response.UserInfoGetByMobileResponse;
+import com.huimodel.api.response.UserLoginResponse;
+import com.huimodel.api.response.UserRegisterResponse;
+import com.huimodel.api.response.WithdrawApplyListResponse;
+import com.huimodel.net.IResult;
+
+/**
+ * 首页
+ * @author Administrator
+
+ *
+ */
+public interface IHwcBizMain  {
+
+	
+	/**
+	 * 加载首页数据
+	 * @param t
+	 * @param context
+	 * @param result
+	 */
+	void getHomeData(RequestBase t, Context context, IResult<HomeResponse> result);
+	
+	
+	/**获取主界面广告   需要缓存**/
+	void getMainAd(PromotionADGetRequest t, Context context, IResult<PromotionADGetResponse> result);
+	
+	/**获取菜单列表   需要缓存**/
+	void getMenuList(FunctionConfigRequest t, Context context, IResult<FunctionConfigResponse> result);
+	
+	/**获取主界面促销商品 需要缓存**/
+	void getMainPromotionList(ProductRecommendRequest t, Context context, IResult<ProductRecommendResponse> result);
+
+	/**获取小喇叭广告  需要缓存**/
+	void getHornList();
+	
+
+	/**版本检查**/
+	void checkVersion();
+	
+	/**获取我可以看到的门店分类类型 比如 手机，小家电，大家电，母婴等**/
+	void getdefaultshopcat(ShopCatGetRequest t, Context context, IResult<ShopCatGetResponse> result);
+	
+	/**热卖商品**/
+	void gethotsaleShopProduct(ProductRecommendRequest t, Context context, IResult<ProductRecommendResponse> result);
+	
+	/**单店店铺首页**/
+	void getshopproductbycid(ProductRecommendRequest t, Context context, IResult<ShopAndShopProductInfoResponse> result);
+	
+	/**关注店铺**/
+	void attentionShop(CollectionsRequest t, Context context, IResult<ResponseBase> result);
+	
+	/**取消关注店铺**/
+	void cancelAttentionShop(AttentionShopCancelReuqest t, Context context, IResult<ResponseBase> result);
+	
+	/**商品详情**/
+	void getproductbyid(ProductGetDetailRequest t, Context context, IResult<DProduct> result);
+	
+	
+	/**商品杂杂志图**/
+	void getOneProductImages(ProductGetDetailRequest t, Context context, IResult<MagazineResponse> result);
+	
+	
+	/**商品 套餐**/
+	void getShopProductSuites(ProductSuiteGetRequest t, Context context, IResult<ProductSuiteGetResponse> result);
+	
+	
+	
+	/**进店浏览全部商品**/
+	void getOneShopProduct(ProductSearchRequest t, Context context, IResult<ProductSearchResponse> result);
+	
+	/**获取某店的产品分类**/
+	void getProductItemCat(RequestBase t, Context context, IResult<ShopProductItemGetResponse> result);
+	
+	/**收藏商品**/
+	void updateCollection(CollectionsRequest t, Context context, IResult<ResponseBase> result);
+	
+	/**获取收藏的店铺 **/
+	void searchCollectionShops(RequestBase t, Context context, IResult<CollectionShopResponse> result);
+	
+	/**获取收藏的商品**/
+	void searchCollectionProducts(RequestBase t, Context context, IResult<ProductSearchResponse> result);
+	
+	/**取消收藏商品**/
+	void deleteCollection(CollectionsRequest t, Context context, IResult<ResponseBase> result);
+	
+	/**获取店铺信息 **/
+	void searchShopInfo(ShopInfoRequest t, Context context, IResult<ShopInfoResponse> result);
+	
+	/**修改用户信息 **/
+	void updateUserInfo(UserInfoRequest t, Context context, IResult<MemberUpdateResponse> result);
+	
+	/**登录 **/
+	void login(UserLoginRequest t, Context context, IResult<UserLoginResponse> result);
+	
+	
+	/**获取我的优惠券 **/
+	void getMyCoupon(PrizeListGetRequest t, Context context, IResult<MyConponResponse> result);
+	
+	/**根据ID 获取我的优惠券 **/
+	void getCouponByNo(CouponDetailGetRequest t, Context context, IResult<CouponDetailGetResponse> result);
+	
+	
+	/**根据ID 获取我的优惠券 **/
+	void getuserinfobymobile(UserInfoGetByMobileRequest t, Context context, IResult<UserInfoGetByMobileResponse> result);
+	
+	/** 优惠券转赠 **/
+	void coupondonation(CouponDonationRequest t, Context context, IResult<ResponseBase> result);
+	
+	
+	
+//	
+//	/**获取单个优惠券 **/ //未实现
+//	public void getMyCodeById(UserLoginRequest t,Context context,IResult<UserLoginResponse> result);
+	
+	/**重置密码 **/
+	void restpasswrod(ResetPasswordRequest t, Context context, IResult<ResponseBase> result);
+	
+	/**每日签到**/
+	void signpoint(SignPointRequest t, Context context, IResult<SignPointResponse> result);
+	
+	/** 注册账号 **/
+	void regist(UserRegisterRequest t, Context context, IResult<UserRegisterResponse> result);
+
+
+	/** 检测注册帐号 **/
+	void checkRegister(UserRegisterRequest t, Context context, IResult<ResponseBase> result);
+	
+	/** 销售员获取销售单子 **/
+	void getOrders(OrderSearchRequest t, Context context, IResult<TradeSearchResponse> result);
+	
+	/** 读取平台活动列表 **/
+	void promLotteryList(PromLotteryDrawGetRequest t, Context context, IResult<PlatformPromLotteryDrawGetResponse> result);
+	
+	/** 读取平台活动 --获取单个抽奖活动**/
+	void promLotteryDetail(PromLotteryDrawRequest t, Context context, IResult<PlatformPromLotteryDrawGetResponse> result);
+	
+	/** 读取平台活动 --用户抽奖**/
+	void getpromlotterydraw(PromLotteryDrawRequest t, Context context, IResult<PromLotteryDrawResponse> result);
+	
+	/*** 用户中奖绑定奖品 */
+	void winlotterydraw(PromLotteryPrizeAddRequest t, Context context, IResult<ResponseBase> result);
+	
+	/** 读取店铺活动 --获取单个抽奖活动**/
+	void shopPromLotteryDetail(PromLotteryDrawRequest t, Context context, IResult<ShopPromLotteryDrawGetResponse> result);
+	
+	/** 读取店铺活动 --用户抽奖**/
+	void shopGetpromlotterydraw(PromLotteryDrawRequest t, Context context, IResult<PromLotteryDrawResponse> result);
+	
+	/*** 用户店铺活动中奖绑定奖品 */
+	void shopWinlotterydraw(PromLotteryPrizeAddRequest t, Context context, IResult<ResponseBase> result);
+	
+	
+	/** 逛街获取类目 **/
+	void getSubjectProduct(RequestBase t, Context context, IResult<SubjectProductReponse> result);
+	
+	/** 搜索商品 **/
+	void searchProductList(ProductSearchRequest t, Context context, IResult<ProductSearchResponse> result);
+	
+	/** 获取邀请码 **/
+	void createInvitationCode(InvitationCodeRequest t, Context context, IResult<ResponseBase> result);
+	
+	/** 获取邀请码 **/
+	void updateInvitationCode(InvitationCodeRequest t, Context context, IResult<ResponseBase> result);
+	
+	/** 会员获取优惠码列表 **/
+	void searchInvitationCode(InvitationCodeRequest t, Context context, IResult<InvCodeListResponse> result);
+	
+	
+	
+	/**
+	 * 会员下单
+	 * @param t
+	 * @param context
+	 * @param result
+	 */
+	void createOrderWithBuyer(OrderCreateRequest t, Context context, IResult<ResponseBase> result);
+	
+	
+	/**
+	 * 会员查询订单
+	 * @param t
+	 * @param context
+	 * @param result
+	 */
+	void getMemberOrders(OrderSearchRequest t, Context context, IResult<TradeSearchResponse> result);
+	
+	/**
+	 * 更具ID取出订单详情
+	 * @param t
+	 * @param context
+	 * @param result
+	 */
+	void getOrderDetail(OrderGetRequest t, Context context, IResult<OrderDetailResponse> result);
+	
+	
+	/** 根据shopid获取店铺信息 **/
+	void searchSimpleShopInfo(ShopInfoRequest t, Context context, IResult<ShopInfoResponse> result);
+	
+	/** 获取收藏的发现 **/
+	void searchCollectionDiascoveries(RequestBase t, Context context, IResult<DiscoveryGetResponse> result);
+	
+	/** 首页商品 **/
+	void queryShopProducts(ProductSearchRequest t, Context context, IResult<ProductSearchResponse> result);
+	
+	/** 获取兑换商品 **/
+	void getPlatformPrizes(PlatformPrizeRequest t, Context context, IResult<PlatformPrizeResponse> result);
+	
+	/** 获取兑换商品详情  **/
+	void getPlatformPrizeDetail(PlatformPrizeRequest t, Context context, IResult<PlatformPrizeDetailResponse> result);
+	
+	/** 验证积分是否可以兑换  **/
+	void validateExchange(PointExchangeRequest t, Context context, IResult<ResponseBase> result);
+	
+	/** 兑换物品通过积分  **/
+	void exchangeWithPoint(PointExchangeRequest t, Context context, IResult<ResponseBase> result);
+	
+	/** 获取兑换列表  **/
+	void searchPointExchanges(PointExchangeRequest t, Context context, IResult<PointExchangeResponse> result);
+	
+	/** 添加收货地址  **/
+	void addAddress(UserAddressCreateRequest t, Context context, IResult<ResponseBase> result);
+	
+	/** 删除收货地址  **/
+	void delAddress(UserAddressDeltRequest t, Context context, IResult<ResponseBase> result);
+	
+	/** 根据ID取出收货地址  **/
+	void findAddressById(UserAddressGetRequest t, Context context, IResult<UserAddressGetOneResponse> result);
+	
+	/** 获取默认收货地址 **/
+	void getDefaultAddress(UserAddressGetRequest t, Context context, IResult<UserAddressGetOneResponse> result);
+	
+	/** 读取用户收货地址 **/
+	void getUserAddress(UserAddressGetRequest t, Context context, IResult<UserAddressGetResponse> result);
+	
+	/** 修改收货地址 **/
+	void updatelAddress(UserAddressUpdateRequest t, Context context, IResult<ResponseBase> result);
+	
+	/** 获取用户详细信息 **/
+	void searchMemberInfo(RequestBase t, Context context, IResult<MemberUpdateResponse> result);
+	
+	/** 获取指标信息 **/
+	void getShopsSumSalesVolume(ShopsIndicatorsGetRequest t, Context context, IResult<IndicatorsDailyResponse> result);
+	
+	/** 获取指标信息 **/
+	void getShopSalesVolumes(ShopsIndicatorsGetRequest t, Context context, IResult<IndicatorsDailyResponse> result);
+	
+	/** 获取在线支付类型的接口 **/
+	void getBasecodeWithCat(RequestBase t, Context context, IResult<PayTypeResponse> result);
+	
+	/**
+	 * 取消订单
+	 * @param t
+	 * @param context
+	 * @param result
+	 */
+	void cancelOrder(OrderUpdateRequest t, Context context, IResult<ResponseBase> result);
+	
+	//2.0.3
+	/**获取周边的店铺**/
+	void searchShopsWithProducts(RequestBase t, Context context, IResult<ShopAndShopProductInfoResponse> result);
+	
+	/**购物车商品信息**/
+	void ShopProductInfofromShoppingCat(ShopCarRequest t, Context context, IResult<ShopCarResponse> result);
+	
+	/**购物车增删改**/
+	void addorupdateShoppingcart(CartRequest t, Context context, IResult<ResponseBase> result);
+	
+	/**获取购物车**/
+	void getShoppingcardlist(RequestBase t, Context context, IResult<ShoppingCartAddGroupShopResponse> result);
+	
+	/**清理购物车商品**/
+	void clearShoppingcart(ClearShoppingCartRequest t, Context context, IResult<ResponseBase> result);
+	
+	 
+	/**获取可用礼跟余额**/
+	void getPayInfoWithOrder(OrderCreateRequest t, Context context, IResult<OrderGetPayInfoResponse> result);
+	
+	/**交易记录查询 **/
+	void searchGroupMonthAccountItems(AccountItemSearchRequest t, Context context, IResult<AccountItemsGroupSearchResponse> result);
+	
+
+	/**我的钱包 **/
+	void getMemberExts(RequestBase t, Context context, IResult<MemberExtsResponse> result);
+	
+	
+	/**获取我的团队 团队返利**/
+	void getMyTeamList(RequestBase t, Context context, IResult<ShopUserSearchResponse> result);
+	
+	
+	/**获取我的团队 团队返利**/
+	void getMyShopList(RequestBase t, Context context, IResult<ShopsGetResponse> result);
+
+	
+	/** 提交提现申请 **/
+	void submitWithdrawApply(WithdrawApplyRequest t, Context context, IResult<ResponseBase> result);
+
+	
+	/** 获取提现申请记录 **/
+	void getWithdrawApplies(WithdrawApplyRequest t, Context context, IResult<WithdrawApplyListResponse> result);
+
+	
+	
+	
+	/** 获取提现申请记录 **/
+	void getProfitInfo(RequestBase t, Context context, IResult<ProfitInfoGetResponse> result);
+
+	
+	
+	/** 点击领取广告 **/
+	void advertEarn(RequestBase t, Context context, IResult<ResponseBase> result);
+
+	
+	/**
+	 * 点击获取广告详情
+	 */
+	void getDiscoveryDetail(DiscoveryDetailRequest t, Context context, IResult<DiscoveryDetailResponse> result);
+	
+	
+	
+	 /**
+	  * 获取店铺优惠策略
+	  * 
+	  **/
+	 void getFacepayWithShop(RequestBase t, Context context, IResult<ShopFacepayGetResponse> result);
+	
+	
+	
+	 /**
+	  * 计算优惠买单
+	  * 
+	  **/
+	 void calculateFacepayment(OrderUpdateRequest t, Context context, IResult<ResponseBase> result);
+	
+	
+	 /**
+	  * 提交订单
+	  * 
+	  **/
+	 void confirmOrder(OrderUpdateRequest t, Context context, IResult<ResponseBase> result);
+	
+	 /**
+	  *  完成收货
+	  * 
+	  **/
+	 void submitOrder(OrderUpdateRequest t, Context context, IResult<ResponseBase> result);
+	
+	/**
+	 *  热门搜索
+	 * 
+	 */
+	void getHotSearch(RequestBase t, Context context, IResult<HotSearch> result);
+	
+	/**
+	 * 上传数据
+	 * @param t
+	 * @param context
+	 * @param result
+	 */
+	void appEntryPushStack(RequestBase t, Context context, IResult<ResponseBase> result);
+
+
+	/**
+	 * 短信验证码
+	 * @param t
+	 * @param context
+	 * @param result
+     */
+	void smsMessageNotify(SmsMessageRequest t, Context context, IResult<SmsMessageResponse> result);
+
+	/**
+	 * 验证坐标
+	 * @param t
+	 * @param context
+	 * @param result
+     */
+	void validateLocation(RequestBase t,Context context,IResult<ResponseBase> result);
+
+	/**
+	 * 获取分公司地址
+	 * @param t
+	 * @param context
+	 * @param result
+     */
+	void searchLocations(LocationRequest t, Context context, IResult<LocationsGetResponse> result);
+
+	/**
+	 * 获取店铺配置信息
+	 * @param t
+	 * @param context
+	 * @param result
+     */
+	void getShopPostStrategy(RequestBase t, Context context, IResult<ShopPostFeeStrategyResponse> result);
+
+
+	/**
+	 * 获取短信通道配置
+	 * @param t
+	 * @param context
+	 * @param result
+     */
+	void getDefaultValue(DefaultGetRequest t,Context context, IResult<ResponseBase> result);
+}

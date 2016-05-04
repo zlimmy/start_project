@@ -1,0 +1,136 @@
+package com.hwc.member.common;
+
+import android.os.Environment;
+
+import com.hwc.member.bean.GetTuiMessage;
+import com.hwc.member.bean.MLocation;
+
+
+public class Constant {
+	
+	//一些常量定义在这里
+	      
+	public static final String dbName ="hwc_member"; 
+	
+	public static final boolean  isDebug = true;  //调试开关
+	
+	public static final int width = 720;		//屏幕宽
+		
+	public static final int height = 1280;		//屏幕高
+	
+	public static final int timeout = 30*1000;   //延迟时间
+	
+	public static final String rootFilePatch  = Environment.getExternalStorageDirectory()+"/hwc"; //文件跟目录
+	
+	public static final String cacheFilePatch  = Environment.getExternalStorageDirectory()+"/hwc/cache"; //文件跟目录
+	
+	public static final String plugFilePatch  = Environment.getExternalStorageDirectory()+"/hwc/plug"; //文件跟目录
+	
+	public static final int Dialog  = 0;
+	public static final int listDialog  = 1;
+	public static final int gridDialog  = 2;	
+	
+	public static final int VILIDATE_TIME = 60*1000;// 短信验证间隔时间，单位(秒)
+	
+	public static final int CACHETIME = 60*24; //数据缓存时间  单位(分钟)
+	
+	public static final String RESOFTWARE_RECEIVER = "com.hwc.member.RESOFTWARE_RECEIVER";
+	public static final String packageName = "com.hwc.member";
+	public static final int start_code= 1;
+	
+	// 填写从短信SDK应用后台注册得到的APPKEY 
+	public static final String APPKEY = "e1b460823ffe";
+	// 填写从短信SDK应用后台注册得到的APPSECRET
+	public static final String APPSECRET = "405e2c827b2109f8bc86e0603077766e";
+	
+	
+//	public static String latitude= "27.816207394912";
+//	public static String longitude= "114.40675863309";
+	
+	public static String latitude= "30.22";
+	public static String longitude= "120.18";
+
+	//public static MLocation mLocation = null;
+
+	//测试经纬度
+	public static String test_latitude= "-1";
+	public static String test_longitude= "-1";
+	
+	//activity返回成功
+	public static int RESULT_OK  = 200;
+	
+	//友盟分享
+	public static final String appID = "wxb63de46ea8e4c01c";
+	public static final String appSecret = "876eb4aec23f14ecda61b6fc3cc95411";
+	
+	// 阿里oss AK
+	public static final String accessKey = "JzCBKPL5GzJTzt1a"; // 测试代码没有考虑AK/SK的安全性
+	// 阿里oss SK
+	public static final String screctKey = "CHNWB9c9cGtLMdYgEkFRCvozK4Te8W";
+	
+	
+	
+	
+	// 阿里oss bucketname
+	public static final String bucketname = "hwcimg";
+//	public static final String bucketname = "hwcimgtest";
+	// 阿里oss url
+//
+	public static final String OSSURL ="http://hwcimg.oss-cn-hangzhou.aliyuncs.com/";
+	
+	// 阿里oss url 测试
+//	public static final String OSSURL ="http://hwcimgtest.oss-cn-hangzhou.aliyuncs.com/";
+	//用户头像命名
+	public static String  USERIMG = "";
+
+	
+	public static int second = 60*5; //默认缓存时间 5分钟
+	
+	public static String app="app";
+	public static String web="web";
+	
+	
+	public static String PAYONLINE = "ONLINE";//线上订单
+	public static String PAYOFFLINE = "OFFLINE";//线下订单
+	
+	public static String POSTDELIVERY = "DELIVERY"; //送货上门
+	public static String POSTOFFLINE ="OFFLINE";	//上门自提
+	
+	public final static String LOGIN_CHANNEL_SHOP="SHOP";
+	
+	public final static String LOGIN_CHANNEL_SUPPLIER="SUPPLIER";
+	
+	public final static String LOGIN_CHANNEL_MEMBER="MEMBER";
+	
+	//临时消息存放
+	public static GetTuiMessage gm = null;	
+	
+	//本机IMEI号
+	public static String IMEI = "";
+
+
+	// 手机设备号
+	public static String device_number  = "";
+	//系统版本
+	public static String os_version  = "";
+	//
+
+	//oss图片尺寸
+	public static String IMAGE_SIZE_340 = "@!341w";
+	
+	public static String IMAGE_SIZE_520 = "@!520w";
+	
+	public static String IMAGE_SIZE_100 = "@!100w";
+	
+	public static String IMAGE_SIZE_720 = "@!720w";
+
+	public static String IMAGE_SIZE_240 = "@!240w";
+	
+	public static Integer shopcareNum = 0 ;
+
+	public static boolean bindAlias = false;
+
+
+	//APP 应用宝下载地址
+	public static String shareAppUrl = "http://a.app.qq.com/o/simple.jsp?pkgname=com.hwc.member";
+}

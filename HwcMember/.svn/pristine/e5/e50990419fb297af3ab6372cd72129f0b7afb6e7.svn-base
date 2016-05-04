@@ -1,0 +1,133 @@
+/**
+ *
+ */
+package com.hwc.member.adapter;
+
+import android.content.Context;
+import android.content.Intent;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.DShop;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.view.activity.product.NewProductInfoActivity;
+import com.hwc.member.view.activity.shop.ShopIndexActivity;
+import com.hwc.member.widget.CircleImageView;
+import com.lidroid.xutils.BitmapUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public class ShopListAdapter extends MirAdapter<DShop> {
+
+    //private SubListViewAdapter adapter;
+    private List<DProduct> list;
+
+    public ShopListAdapter(Context context, List<DShop> mDatas,
+                           int itemLayoutId, BitmapUtils bitmapUtils) {
+        super(context, mDatas, itemLayoutId, bitmapUtils);
+        // TODO Auto-generated constructor stub
+    }
+
+    @Override
+    public void convert(HolderEntity helper, final DShop item) {
+        CircleImageView iv = helper.getView(R.id.head_iv);
+        ViewTransformUtil.layoutParams(iv, iv.getLayoutParams(), 100, 100);
+        bitmapUtils.display(iv, item.getLogo_path());
+        helper.setText(R.id.shopname_tv, item.getNick());
+        helper.setText(R.id.collection_bt, item.getAddress());
+        helper.setText(R.id.des_tv, item.getDesc() == null ? "暂无店铺活动活动" : item.getDesc());
+        helper.setText(R.id.bulletin_tv, item.getBulletin() == null ? "" : item.getBulletin());
+        if (item.getDistance() != 0) {
+            helper.getView(R.id.distance_tv).setVisibility(View.VISIBLE);
+            helper.setText(R.id.distance_tv, CommonUtil.conversionDistance(item.getDistance()));
+        } else {
+            helper.getView(R.id.distance_tv).setVisibility(View.GONE);
+        }
+        RelativeLayout top_rl = helper.getView(R.id.top_rl);
+        RelativeLayout address_rl = helper.getView(R.id.address_rl);
+
+        ViewTransformUtil.layoutParams(address_rl, address_rl.getLayoutParams(), LayoutParams.MATCH_PARENT, 80);
+//		ViewTransformUtil.layoutParams(top_rl, top_rl.getLayoutParams(), LayoutParams.MATCH_PARENT, 130);
+
+        top_rl.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                // TODO Auto-generated method stub
+                Intent intent = new Intent(mContext, ShopIndexActivity.class);
+                intent.putExtra("0", item.getSid());
+                mContext.startActivity(intent);
+            }
+        });
+
+
+        GridView gridview = helper.getView(R.id.gridview);
+
+
+        //View divider = helper.getView(R.id.divider);
+
+        gridview.setFocusable(false);
+        list = new ArrayList<DProduct>();
+        if (item.getProducts() != null && item.getProducts().size() > 0) {
+            gridview.setVisibility(View.VISIBLE);
+            //divider.setVisibility(View.VISIBLE);
+            for (int i = 0; i < (item.getProducts().size() > 3 ? 3 : item.getProducts().size()); i++) {
+                list.add(item.getProducts().get(i));
+            }
+            final SubListViewAdapter adapter = new SubListViewAdapter(mContext, list, R.layout.item_shoplistgrid, null);
+            gridview.setAdapter(adapter);
+            ViewTransformUtil.layoutParams(gridview, gridview.getLayoutParams(), LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            gridview.setOnItemClickListener(new OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    Intent intent = new Intent(mContext, NewProductInfoActivity.class);
+                    intent.putExtra("0", adapter.getItem(position).getPid());
+                    intent.putExtra("1", adapter.getItem(position).getShop_id());
+                    intent.putExtra("2", adapter.getItem(position).getName());
+                    mContext.startActivity(intent);
+                }
+            });
+
+        } else {
+            gridview.setVisibility(View.GONE);
+        }
+
+        View icons_rl = helper.getView(R.id.icons_rl);
+        if (!item.getHasFacepay() && item.getProms() <= 0 && item.getLotteries() <= 0){
+            icons_rl.setVisibility(View.GONE);
+        }else {
+            icons_rl.setVisibility(View.VISIBLE);
+            if(item.getHasFacepay()){
+                helper.setViewVisbility(R.id.icon_yhmd,View.VISIBLE);
+            }else {
+                helper.setViewVisbility(R.id.icon_yhmd,View.GONE);
+            }
+            if(item.getProms() > 0){
+                helper.setViewVisbility(R.id.icon_promotion,View.VISIBLE);
+            }else {
+                helper.setViewVisbility(R.id.icon_promotion,View.GONE);
+            }
+            if(item.getLotteries() > 0){
+                helper.setViewVisbility(R.id.icon_lottery,View.VISIBLE);
+            }else {
+                helper.setViewVisbility(R.id.icon_lottery,View.GONE);
+            }
+        }
+
+    }
+
+}

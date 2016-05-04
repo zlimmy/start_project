@@ -1,0 +1,73 @@
+/**
+ * 
+ */
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.DShop;
+import com.huimodel.api.base.PlatformPromLottery;
+import com.huimodel.api.base.ResponseBase;
+
+/**
+ * @author FZ
+ */
+public class ShopInfoResponse extends ResponseBase {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private DShop shopInfo;
+	/** 店铺商品数 **/
+	private int productCount;
+	/** 店铺活动数 **/
+	private int promotionCount;
+	
+	private List<PlatformPromLottery> promlottery;
+	
+	public DShop getShopInfo() {
+		return shopInfo;
+	}
+	public void setShopInfo(DShop shopInfo) {
+		this.shopInfo = shopInfo;
+	}
+	/**
+	 * @return the productCount
+	 */
+	public int getProductCount() {
+		return productCount;
+	}
+	/**
+	 * @param productCount the productCount to set
+	 */
+	public void setProductCount(int productCount) {
+		this.productCount = productCount;
+	}
+	/**
+	 * @return the promotionCount
+	 */
+	public int getPromotionCount() {
+		return promotionCount;
+	}
+	/**
+	 * @param promotionCount the promotionCount to set
+	 */
+	public void setPromotionCount(int promotionCount) {
+		this.promotionCount = promotionCount;
+	}
+	/**
+	 * @return the promlottery
+	 */
+	public List<PlatformPromLottery> getPromlottery() {
+		return promlottery;
+	}
+	/**
+	 * @param promlottery the promlottery to set
+	 */
+	public void setPromlottery(List<PlatformPromLottery> promlottery) {
+		this.promlottery = promlottery;
+	}
+	
+	
+	
+}

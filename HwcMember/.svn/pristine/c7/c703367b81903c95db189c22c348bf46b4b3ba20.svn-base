@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">惠万村会员</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_regist">RegistActivity</string>
+    <string name="Upload">注册</string>
+    <string name="Error">失败</string>
+    <string name="nickname">请输入您的姓名/昵称</string>
+    <string name="getcode">获得验证码</string>
+    <string name="shurumobile">请输入手机号</string>
+    <string name="shurucode">请输入验证码</string>
+    <string name="Complete">成功</string>
+    <string name="ZhaoHuiMiMa">找回密码</string>
+    <string name="title_activity_promo_code">PromoCodeActivity</string>
+    <string name="title_activity_more_shop_info">MoreShopInfoActivity</string>
+    <string name="zaichouyici">再抽一次</string>
+    <string name="top_hint">将条形码或二维码置于取景框内系统会自动扫描</string>
+    <string name="msg_camera_framework_bug">抱歉，Android相机出现问题。您可能需要重启设备。</string>
+    <string name="button_ok">确定</string>
+    <string name="title_kanrenao">看热闹</string>
+    <string name="YouHuiQuan">优惠券</string>
+    <string name="XiaYiBu">下一步</string>
+    <string name="meiyouyouhuiquan">你还没有优惠券~</string>
+    <string name="ruhezhuanqu">如何获得优惠券?</string>
+    <string name="shiyongshi">使用时向店家展示</string>
+    <string name="zhuanzeng">转赠</string>
+    <string name="header_hint_refresh_normal">下拉刷新</string>
+    <string name="header_hint_refresh_ready">释放立即刷新</string>
+    <string name="header_hint_refresh_loading">刷新中&#8230;</string>
+    <string name="header_hint_refresh_time">上次刷新时间：</string>
+    <string name="footer_hint_load_normal">加载更多</string>
+    <string name="footer_hint_load_ready">放开加载更多</string>
+    <string name="title_activity_regist_step1">RegistStep1Activity</string>
+    <string name="title_activity_regist_step2">RegistStep2Activity</string>
+    <string name="title_activity_new_shop_info">NewShopInfoActivity</string>
+    <string name="title_activity_my_order">MyOrderActivity</string>
+    <string name="title_activity_order_info">OrderInfoActivity</string>
+    <string name="title_activity_confirm_order">ConfirmOrderActivity</string>
+    <string name="title_activity_order">OrderActivity</string>
+    <string name="title_activity_new_order_info">NewOrderInfoActivity</string>
+    <string name="title_activity_follow_diascoveries">FollowDiascoveriesActivity</string>
+    <string name="pull_to_refresh">下拉刷新</string>
+    <string name="release_to_refresh">释放立即刷新</string>
+    <string name="refreshing">正在刷新...</string>
+    <string name="refresh_succeed">刷新成功</string>
+    <string name="refresh_fail">刷新失败</string>
+    <string name="pullup_to_load">上拉加载更多</string>
+    <string name="release_to_load">释放立即加载</string>
+    <string name="loading">正在加载...</string>
+    <string name="load_succeed">加载成功</string>
+    <string name="load_fail">加载失败</string>
+    <string name="appName">demoapp</string>
+    <string name="ok">完成</string>
+    <string name="wechat">微信</string>
+    <string name="alipay">支付宝</string>
+    <string name="upmp">银联</string>
+    <string name="bfb">百度钱包</string>
+    <string name="jdpay">京东支付</string>
+    <string name="confirm">确认</string>
+    <string name="yuan">元</string>
+    <string name="donateFailMessage">\u3000\u3000感谢你的爱心，\n但是系统出现了一些错误</string>
+    <string name="validationErrors">错误</string>
+    <string name="notInstalled">未安装支付软件</string>
+    <string name="amount">支付金额</string>
+    <string name="missingImage">图片加载失败</string>
+    <string name="title_activity_point_shop">PointShopActivity</string>
+    <string name="title_activity_point_history">PointHistoryActivity</string>
+    <string name="title_activity_update_address">UpdateAddressActivity</string>
+    <string name="title_activity_plat_form_list">PlatFormListActivity</string>
+    <string name="title_activity_sales_volume">SalesVolumeActivity</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="title_activity_new_product_info">NewProductInfoActivity</string>
+    <string name="title_activity_search_shop_goods">SearchShopGoodsActivity</string>
+    <string name="title_activity_shop_car">ShopCarActivity</string>
+    <string name="title_activity_wallet">WalletActivity</string>
+    <string name="title_activity_make_money">MakeMoneyActivity</string>
+    <string name="title_activity_rebate">RebateActivity</string>
+    <string name="title_activity_team">TeamActivity</string>
+    <string name="title_activity_team_rebate">TeamRebateActivity</string>
+
+    <string name="txts">提现说明:</string>
+    <string name="txsm">满100元即可提现</string>
+
+    <!-- 我的 -->
+    <string name="fm_my_wallet_tv">我的钱包</string>
+    <string name="fm_my_order_tv">我的订单</string>
+    <string name="fm_my_data_tv">个人资料</string>
+    <string name="fm_my_shop_tv">关注店铺</string>
+    <string name="fm_my_goods_tv">关注商品</string>
+    <string name="fm_my_discover_tv">我的发现</string>
+    <string name="fm_my_team_tv">我的团队</string>
+    <string name="fm_my_integral_tv">积分</string>
+    <string name="fm_my_message_tv">消息</string>
+    <string name="fm_my_share_tv">分享</string>
+    <string name="fm_my_about_tv">关于</string>
+
+    <string name="order_loadaccount">正在加载账户数据...</string>
+
+
+    <!-- 附近店铺 -->
+    <string name="no_shop">附近没有该类店铺</string>
+
+    <!-- 我的订单 -->
+    <string name="search_by_number">请输入订单号查询</string>
+    <string name="search">搜索</string>
+    <string name="price_and_number">共%1$d件商品，合计：￥%2$s</string>
+    <string name="order_creat_time">创建时间：%1$s</string>
+
+</resources>

@@ -1,0 +1,154 @@
+package com.hwc.member.presenter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.HotSearch;
+import com.huimodel.api.base.HotWords;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.base.SearchHistory;
+import com.huimodel.api.request.ProductSearchRequest;
+import com.huimodel.api.response.ProductSearchResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.HotSearchAdapter;
+import com.hwc.member.adapter.SearchAdapter;
+import com.hwc.member.adapter.SearchGoodsAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Mlocation;
+import com.hwc.member.view.activity.view.ISearchView;
+import com.hwc.member.widget.PullToRefreshLayout;
+import com.hwc.member.widget.SimpleHUD;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+
+public class SearchPresenter {
+	
+	private ISearchView searchView;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public SearchAdapter adapter2;
+	public SearchGoodsAdapter listAdapter;
+	public HotSearchAdapter hotSearchAdapter;
+	
+	private List<HotWords> hsItems = new ArrayList<HotWords>();
+	private List<DProduct> morelist = new ArrayList<DProduct>();
+	private Map<String, String> map = new HashMap<String, String>();
+	public SearchPresenter(ISearchView searchView){
+		this.searchView = searchView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	//搜索历史
+	public void setGridData2(){
+		DbUtils dbUtils = DbUtils.create(searchView.getContext(),Constant.dbName);
+		try {
+			List<SearchHistory> hostory = dbUtils.findAll(Selector.from(SearchHistory.class));
+//			List<SearchHistory> hostory = dbUtils.findAll(Selector.from(SearchHistory.class).where(WhereBuilder.b("name", "LIKE", "V")));
+			if(hostory != null && hostory.size() > 0){
+				Collections.reverse(hostory);
+				adapter2 = new SearchAdapter(searchView.getContext(), hostory, R.layout.item_search_history, null);
+				searchView.setGridAdapter2(adapter2);
+			}
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	//热门搜索
+	public void hotSearch() {
+		RequestBase rq = new RequestBase();
+		map.put("cat", "PRODUCT");
+		rq.setParams(map);
+		iHwcBizMainImpl.getHotSearch(rq, searchView.getContext(), new IResult<HotSearch>() {
+
+			@Override
+			public void result(HotSearch obj, Code code) {
+				switch (code) {
+				case OK:
+					hsItems = obj.getList();
+					if (obj.getSuccess().equals("true")) {
+						if (hsItems != null && hsItems.size() > 0) {
+							hotSearchAdapter = new HotSearchAdapter(searchView.getContext(), hsItems, R.layout.item_hot_search, null);
+							searchView.setHotSearchAdapter(hotSearchAdapter);
+						}
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+	}
+	
+	public void searchProducts(String query, final int page, final PullToRefreshLayout pullToRefreshLayout){
+		ProductSearchRequest psr = new ProductSearchRequest();
+		psr.setQuery(query);
+		psr.setLatitude(Constant.latitude);
+		psr.setLongitude(Constant.longitude);
+		psr.setImei(Constant.IMEI);
+		psr.setPage(page);
+		psr.setPage_size(20);
+		psr.setStatus("onsale");
+		psr.setGcity(Mlocation.getInstance().getCity());
+		psr.setGdistrict(Mlocation.getInstance().getDistrict());
+//		searchView.showProgressDialog(null);
+		searchView.setIsCanMore(false);
+		iHwcBizMainImpl.searchProductList(psr, searchView.getContext(), new IResult<ProductSearchResponse>() {
+			
+			@Override
+			public void result(ProductSearchResponse obj, Code code) {
+//				searchView.dismissProgressDialog();
+				searchView.setIsCanMore(true);
+				if(pullToRefreshLayout != null){
+					pullToRefreshLayout.loadmoreFinish(PullToRefreshLayout.SUCCEED);
+				}
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						if(obj.getProducts() != null && obj.getProducts().size() > 0){
+							if(page == 1){
+								morelist.clear();
+							}
+							if(morelist.size() > 0){
+								morelist.addAll(obj.getProducts());
+								listAdapter.notifyDataSetChanged();
+							}else{
+								morelist.addAll(obj.getProducts());
+								listAdapter = new SearchGoodsAdapter(searchView.getContext(), morelist, R.layout.item_search_goods, null);
+								searchView.getListSuccess(listAdapter);
+							}
+						}else{
+							if(page == 1){
+								searchView.showErrorPage();
+							}else{
+//								SimpleHUD.showInfoMessage(searchView.getContext(), "没有更多了");
+								searchView.setIsCanMore(false);
+							}
+							
+						}
+					}else{
+						SimpleHUD.showErrorMessage(searchView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(searchView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+
+}

@@ -1,0 +1,22 @@
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.base.DPrizeCoupon;
+import com.hwc.member.adapter.CodeFragAdapter;
+
+import java.util.List;
+
+public interface ICodeVIew extends LoadDataView {
+
+	void setListAdapter(CodeFragAdapter adapter);
+	
+	void setNodataPage();
+	
+	/**
+	 * 结束加载
+	 */
+	void setLoadEnable();
+
+	void refresh(List<DPrizeCoupon> list);
+
+	void more(List<DPrizeCoupon> prizecoupon, boolean isEnd);
+}

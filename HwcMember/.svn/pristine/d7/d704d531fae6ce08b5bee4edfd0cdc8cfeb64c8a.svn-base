@@ -1,0 +1,13 @@
+package com.hwc.member.view.activity.view;
+
+import com.hwc.member.adapter.PlayIntegralAdapter;
+
+public interface IPlayIntegralView extends LoadDataView {
+	
+	void setGridAdapter(PlayIntegralAdapter adapter);
+	
+	void setPointBt();
+	
+	void setPointText(Double point);
+
+}

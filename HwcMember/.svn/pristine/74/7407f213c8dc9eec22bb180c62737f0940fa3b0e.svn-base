@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/shop_background"
+    >
+
+    <com.hwc.member.widget.header.LXHeadView
+        xmlns:my="http://schemas.android.com/apk/res/com.hwc.member"
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        my:centertitle="我的订单" />
+
+    <include
+        android:id="@+id/nodata_page"
+        layout="@layout/load_nodata_page"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:visibility="gone" />
+
+    <!--
+    <RelativeLayout
+        android:id="@+id/search_rl"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/shop_background" >
+
+        <EditText
+            android:id="@+id/search_et"
+            android:layout_width="260dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/bg_search"
+            android:drawableLeft="@drawable/search"
+            android:drawablePadding="5dp"
+            android:gravity="center_vertical|left"
+            android:hint="@string/search_by_number"
+            android:imeOptions="actionSearch"
+            android:padding="6dp"
+            android:singleLine="true"
+            android:textColor="@color/text_important"
+            android:textColorHint="@color/text_less_important"
+            android:textSize="@dimen/text_14" />
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/search_et"
+            android:background="@drawable/shape_search_bt"
+            android:textColor="@color/text_less_important"
+            android:gravity="center"
+            android:textSize="@dimen/text_14"
+            android:layout_marginRight="15dp"
+            android:text="@string/search" />
+
+    </RelativeLayout>
+    -->
+<FrameLayout
+    android:id="@+id/fragment_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_below="@id/header"
+    />
+
+
+</RelativeLayout>

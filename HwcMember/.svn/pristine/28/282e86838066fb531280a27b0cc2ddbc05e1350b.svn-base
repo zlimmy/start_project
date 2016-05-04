@@ -1,0 +1,12 @@
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.DShop;
+
+public class ShopsGetResponse extends ResponseBaseList<DShop>{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+}

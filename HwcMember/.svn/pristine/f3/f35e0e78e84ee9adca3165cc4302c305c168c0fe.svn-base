@@ -1,0 +1,50 @@
+package com.hwc.member.view.activity.my;
+
+import android.support.v4.view.ViewPager;
+
+import com.hwc.member.R;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.view.fragment.ExpiredCodeFragment;
+import com.hwc.member.view.fragment.UnUserCodeFragment;
+import com.hwc.member.view.fragment.UserCodeFragment;
+import com.hwc.member.widget.smarttablaout.SmartTabLayout;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
+
+/**
+ * @author FZ
+ * 优惠码清单
+ */
+@ContentView(R.layout.activity_discount)
+public class DiscountActivity extends BaseActivity{
+
+	@ViewInject(R.id.viewpager)
+	private ViewPager viewPager;
+	@ViewInject(R.id.viewpagertab)
+	private SmartTabLayout viewPagerTab;
+	
+	@Override
+	protected void initView() {
+		setBack();
+		FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
+		        getSupportFragmentManager(), FragmentPagerItems.with(this)
+		        .add("未使用", UnUserCodeFragment.class)
+		        .add("已使用", UserCodeFragment.class)
+		        .add("已过期", ExpiredCodeFragment.class)
+		        .create());
+		 
+		viewPager.setAdapter(adapter);
+		 
+		viewPagerTab.setViewPager(viewPager);
+	}
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+}

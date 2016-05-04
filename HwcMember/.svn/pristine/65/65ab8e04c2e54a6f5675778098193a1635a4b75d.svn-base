@@ -1,0 +1,159 @@
+package com.hwc.member.view.activity.product;
+
+import java.util.List;
+
+import android.view.Gravity;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.huimodel.api.base.PlatformPrize;
+import com.hwc.member.R;
+import com.hwc.member.common.Constant;
+import com.hwc.member.presenter.ProductIntegralPresenter;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.view.activity.view.IProductIntegralView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.MyAdGallery;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.mir.mytitlebar.barutil.ObservableScrollView;
+import com.mir.mytitlebar.barutil.ObservableScrollViewCallbacks;
+import com.mir.mytitlebar.barutil.ScrollState;
+import com.mir.mytitlebar.barutil.ScrollUtils;
+import com.nineoldandroids.view.ViewHelper;
+/**
+ * 积分商品详情
+ * @author Administrator
+ *
+ */
+@ContentView(R.layout.activity_product_integral)
+public class ProductIntegralActivity extends BaseActivity implements IProductIntegralView, ObservableScrollViewCallbacks{
+
+	@ViewInject(R.id.image_wall_gallery)
+	private MyAdGallery<String> myAdGallery;
+	@ViewInject(R.id.ovalLayout)
+	private LinearLayout ovalLayout;
+	@ViewInject(R.id.scroll)
+	private ObservableScrollView mScrollView;
+	@ViewInject(R.id.header)
+	private View header;
+	@ViewInject(R.id.image_rl)
+	private RelativeLayout image_rl;
+	
+	@ViewInject(R.id.name_tv)
+	private TextView name_tv;
+	@ViewInject(R.id.description_tv)
+	private TextView description_tv;
+	@ViewInject(R.id.newprice_tv)
+	private TextView newprice_tv;
+	@ViewInject(R.id.point_tv)
+	private TextView point_tv;
+	
+	private ProductIntegralPresenter presenter = new ProductIntegralPresenter(this);
+	
+	private int mParallaxImageHeight;
+	
+	private String code;
+	private PlatformPrize pfp;
+	
+	@Override
+	protected void initView() {
+		setBack();
+		code = getIntent().getStringExtra("0");
+		
+		presenter.setGoodsInfo(code);
+		
+		header.setBackgroundColor(ScrollUtils.getColorWithAlpha(0, getResources().getColor(R.color.main_color)));
+
+        mScrollView.setScrollViewCallbacks(this);
+
+        mParallaxImageHeight = getResources().getDimensionPixelSize(R.dimen.parallax_image_height);
+
+		ViewTransformUtil.layoutParams(image_rl,image_rl.getLayoutParams(),720,720);
+	}
+
+	@Override
+	protected void initListener() {
+		
+	}
+	
+	@Override
+	protected void onDestroy() {
+		myAdGallery.clearAnimation();
+		myAdGallery.stopTimer();
+		super.onDestroy();
+	}
+
+	@Override
+	public void setAdGalleryImg(List<String> list) {
+		if(list.size() > 0){
+			myAdGallery.start(ProductIntegralActivity.this, list, null, 0, ovalLayout,R.drawable.dot_unsel, R.drawable.dot_sel);
+		}
+	}
+
+	@Override
+	public void onDownMotionEvent() {
+		
+	}
+
+	@Override
+	public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+		int baseColor = getResources().getColor(R.color.main_color);
+        float alpha = Math.min(1, (float) scrollY / mParallaxImageHeight);
+        header.setBackgroundColor(ScrollUtils.getColorWithAlpha(alpha, baseColor));
+        ViewHelper.setTranslationY(image_rl, scrollY / 2);
+	}
+
+	@Override
+	public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+		
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void setGoodsData(PlatformPrize pp) {
+		name_tv.setText(pp.getDescript());
+		description_tv.setText(pp.getRemark());
+		newprice_tv.setText("￥" + pp.getPrice());
+		point_tv.setText("现在兑换只需" + pp.getPoint() + "积分");
+		pfp = pp;
+	}
+	
+	@OnClick(R.id.buy_bt)
+	public void buyClick(View v){
+//		presenter.checkPoint(pfp);
+		DialogUtil.showDialog(Constant.Dialog, "是否确定兑换这件商品", Gravity.CENTER, context, null, new OnClickListener() {
+			
+			@Override
+			public void onClick(DialogPlus dialog, View view) {
+				switch (view.getId()) {
+				case R.id.cancel:
+					break;
+
+				case R.id.confirm:
+					presenter.buyGoods(pfp);
+					break;
+				}
+				dialog.dismiss();
+			}
+		}, null);	
+	}
+
+}

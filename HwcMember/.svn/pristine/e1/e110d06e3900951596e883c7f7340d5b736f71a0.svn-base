@@ -1,0 +1,145 @@
+/**
+ *
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.AttentionShopCancelReuqest;
+import com.huimodel.api.request.CollectionsRequest;
+import com.huimodel.api.request.ShopInfoRequest;
+import com.huimodel.api.response.ShopInfoResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.ProductGridAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IShopIndexView;
+import com.hwc.member.widget.SimpleHUD;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public class ShopIndexPresenter {
+
+    private IShopIndexView shopIndexView;
+    private IHwcBizMain iHwcBizMainImpl;
+
+    public ProductGridAdapter adapter;
+
+
+    public ShopIndexPresenter(IShopIndexView shopIndexView) {
+        this.shopIndexView = shopIndexView;
+        this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+    }
+
+
+
+
+    public void setData(Long sid) {
+        if (sid == -1) {
+            SimpleHUD.showErrorMessage(shopIndexView.getContext(), "获取门店信息失败");
+            return;
+        }
+        ShopInfoRequest sir = new ShopInfoRequest();
+        sir.setShop_id(sid);
+        sir.setNum(6);
+        sir.setImei(Constant.IMEI);
+        shopIndexView.showProgressDialog(null);
+        iHwcBizMainImpl.searchShopInfo(sir, shopIndexView.getContext(), new IResult<ShopInfoResponse>() {
+
+            @Override
+            public void result(ShopInfoResponse obj, Code code) {
+                shopIndexView.dismissProgressDialog();
+                switch (code) {
+                    case OK:
+                        if (obj.isSuccess()) {
+                            shopIndexView.setShopMsg(obj.getShopInfo().getNick(), obj.getShopInfo().getFans(), obj.getProductCount() + "", obj.getPromotionCount() + "", obj.getShopInfo().getAddress(), obj.getShopInfo().getBulletin(), obj.getShopInfo().getHasFacepay(),obj.getShopInfo().getFacepay());
+                            shopIndexView.setShopIcon(obj.getShopInfo().getOwner_avatar(), obj.getShopInfo().getPic_path());
+                            if (obj.getShopInfo().getProducts() != null && obj.getShopInfo().getProducts().size() > 0) {
+                                adapter = new ProductGridAdapter(shopIndexView.getContext(), obj.getShopInfo().getProducts(), R.layout.item_shop_product, null);
+                                shopIndexView.setGridAdapter(adapter);
+                            }
+                        } else {
+                            SimpleHUD.showErrorMessage(shopIndexView.getContext(), obj.getMsg());
+                        }
+                        break;
+
+                    default:
+                        SimpleHUD.showErrorMessage(shopIndexView.getContext(), code + "");
+                        break;
+                }
+
+
+            }
+        });
+
+    }
+
+    public void attention(Long sid) {
+        CollectionsRequest cr = new CollectionsRequest();
+        cr.setShop_id(sid);
+        cr.setUser_id_by(Member.getInstance().getUser_id());
+        cr.setCat("SHOP");
+        cr.setImei(Constant.IMEI);
+        shopIndexView.showProgressDialog(null);
+        iHwcBizMainImpl.attentionShop(cr, shopIndexView.getContext(), new IResult<ResponseBase>() {
+
+            @Override
+            public void result(ResponseBase obj, Code code) {
+                shopIndexView.dismissProgressDialog();
+                switch (code) {
+                    case OK:
+                        if (obj.isSuccess()) {
+                            SimpleHUD.showSuccessMessage(shopIndexView.getContext(), "关注成功！");
+                        } else {
+                            SimpleHUD.showErrorMessage(shopIndexView.getContext(), obj.getMsg());
+                        }
+                        break;
+
+                    default:
+                        SimpleHUD.showErrorMessage(shopIndexView.getContext(), code + "");
+                        break;
+                }
+            }
+        });
+    }
+
+    public void cancelAttention(Long sid) {
+        AttentionShopCancelReuqest asc = new AttentionShopCancelReuqest();
+        List<Long> list = new ArrayList<Long>();
+        list.add(sid);
+        asc.setShop_ids(list);
+        asc.setUser_id_by(Member.getInstance().getUser_id());
+        asc.setImei(Constant.IMEI);
+        shopIndexView.showProgressDialog(null);
+        iHwcBizMainImpl.cancelAttentionShop(asc, shopIndexView.getContext(), new IResult<ResponseBase>() {
+
+            @Override
+            public void result(ResponseBase obj, Code code) {
+                shopIndexView.dismissProgressDialog();
+                switch (code) {
+                    case OK:
+                        if (obj.isSuccess()) {
+                            SimpleHUD.showSuccessMessage(shopIndexView.getContext(), "取消成功");
+                        } else {
+                            SimpleHUD.showErrorMessage(shopIndexView.getContext(), obj.getMsg());
+                        }
+
+                        break;
+
+                    default:
+                        SimpleHUD.showErrorMessage(shopIndexView.getContext(), code + "");
+                        break;
+                }
+            }
+        });
+    }
+
+}

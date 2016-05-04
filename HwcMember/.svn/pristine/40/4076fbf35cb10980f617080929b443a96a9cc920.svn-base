@@ -1,0 +1,40 @@
+/**
+ * 
+ */
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.Cart;
+import com.huimodel.api.base.ResponseBase;
+
+/**
+ * @author FZ
+ */
+public class CartResponse extends ResponseBase {
+
+	private static final long serialVersionUID = 7420818282972083848L;
+
+	private List<Cart> carts;
+	
+	private Integer num;
+
+	public List<Cart> getCarts() {
+		return carts;
+	}
+
+	public void setCarts(List<Cart> carts) {
+		this.carts = carts;
+	}
+
+	public Integer getNum() {
+		return num;
+	}
+
+	public void setNum(Integer num) {
+		this.num = num;
+	}
+	
+	
+	
+}

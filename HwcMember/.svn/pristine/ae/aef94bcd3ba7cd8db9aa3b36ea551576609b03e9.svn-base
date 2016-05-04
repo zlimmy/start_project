@@ -1,0 +1,137 @@
+package com.hwc.member.view.fragment;
+
+import android.view.View;
+import android.widget.ListView;
+
+import com.huimodel.api.base.DShop;
+import com.hwc.member.R;
+import com.hwc.member.adapter.Shop_Adapter;
+import com.hwc.member.presenter.MyTeamPresenter;
+import com.hwc.member.view.activity.view.IMyShopView;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.hwc.member.widget.PullToRefreshFooter;
+import com.hwc.member.widget.PullToRefreshHeadView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import in.srain.cube.views.loadmore.LoadMoreContainer;
+import in.srain.cube.views.loadmore.LoadMoreHandler;
+import in.srain.cube.views.loadmore.LoadMoreListViewContainer;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
+
+public class My_ShopFragment extends FormBaseFragment implements IMyShopView{
+
+	@ViewInject(R.id.load_more_list_view_ptr_frame)
+	private PtrFrameLayout mPtrFrameLayout;
+
+	@ViewInject(R.id.load_more_container)
+	LoadMoreListViewContainer load_more_container;
+
+	@ViewInject(R.id.listview)
+	private ListView mListView;
+
+
+    private Shop_Adapter teamAdapter;
+    private List<DShop> shopList; 
+    private int mCurIndex = 1;//小标 从第一页开始
+    private  MyTeamPresenter myteamPresenter = new MyTeamPresenter(this);
+    
+	@Override
+	protected void init() {
+		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub    
+		shopList = new ArrayList<DShop>();
+	    teamAdapter = new Shop_Adapter(getContext(), shopList, R.layout.item_team, bitmapUtils);
+        mListView.setAdapter(teamAdapter);
+
+
+		PullToRefreshHeadView headView = new PullToRefreshHeadView(getContext());
+		headView.setLastUpdateTimeKey(this.getClass().getSimpleName());
+		mPtrFrameLayout.setHeaderView(headView);
+		mPtrFrameLayout.addPtrUIHandler(headView);
+		mPtrFrameLayout.setPtrHandler(new PtrHandler() {
+			@Override
+			public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+
+				return PtrDefaultHandler.checkContentCanBePulledDown(frame, mListView, header);
+			}
+
+			@Override
+			public void onRefreshBegin(PtrFrameLayout frame) {
+				myteamPresenter.getMyShopList();
+			}
+		});
+
+		load_more_container.setAutoLoadMore(true);
+		final PullToRefreshFooter footer = new PullToRefreshFooter(getContext());
+		load_more_container.setLoadMoreView(footer);
+		load_more_container.setLoadMoreUIHandler(footer);
+
+		// binding view and data
+		load_more_container.setLoadMoreHandler(new LoadMoreHandler() {
+			@Override
+			public void onLoadMore(LoadMoreContainer loadMoreContainer) {
+				mCurIndex = mCurIndex + 1;
+				myteamPresenter.getMyshopList_more(mCurIndex);
+			}
+		});
+
+
+		showProgressDialog(null);
+		myteamPresenter.getMyShopList();
+	}
+
+
+	
+	@Override
+	public int getLayoutId() {
+		// TODO Auto-generated method stub
+		return R.layout.fm_myshop;
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+	@Override
+	public void refresh(List<DShop> list) {
+		// TODO Auto-generated method stub
+		shopList.clear();
+		shopList.addAll(list);
+		teamAdapter.notifyDataSetChanged();
+		mPtrFrameLayout.refreshComplete();
+		// load more
+		if (shopList.size() <= 0) {
+		} else if (shopList.size() < 6) {
+			load_more_container.loadMoreFinish(true, false);
+		} else {
+			load_more_container.loadMoreFinish(false, true);
+		}
+		mCurIndex = 1;
+	}
+
+	@Override
+	public void more(List<DShop> list, boolean isEnd) {
+		// TODO Auto-generated method stub
+
+		shopList.addAll(list);
+		mPtrFrameLayout.refreshComplete();
+		// load more
+		load_more_container.loadMoreFinish(false, isEnd);
+		teamAdapter.notifyDataSetChanged();
+	}
+
+}

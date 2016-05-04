@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="105dp"
+    android:background="@color/white" 
+    android:paddingRight="18dp"
+    >
+
+    <ImageView
+        android:id="@+id/iv"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="18dp"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/goodsname_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_toRightOf="@id/iv"
+        android:layout_alignTop="@id/iv"
+        android:ellipsize="end"
+        android:lines="2"
+        android:text="商品名"
+        android:textSize="@dimen/text_14" />
+
+    <TextView
+        android:id="@+id/price_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/goodsname_tv"
+        android:layout_alignParentBottom="true"
+        android:lines="1"
+        android:text="￥35.00"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/main_color"
+        android:textSize="@dimen/text_14"  />
+
+    <TextView
+        android:id="@+id/num_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:textColor="@color/text_less_important"
+        android:textSize="@dimen/text_14"  />
+
+    <TextView
+        android:id="@+id/package_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/goodsname_tv"
+        android:layout_below="@id/goodsname_tv"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/num_tv"
+        android:layout_marginRight="5dp"
+        android:ellipsize="end"
+        android:lines="2"
+        android:text=""
+        android:layout_marginTop="5dp"
+        android:textColor="@color/text_less_important"
+        android:textSize="@dimen/text_12" />
+
+</RelativeLayout>

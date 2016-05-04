@@ -1,0 +1,72 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+public class ProductRecommendRequest extends RequestBase {
+	private Long cid;
+
+	private String name;
+	private String query;
+	private String status="normal";
+	private Boolean includeCollection=false;
+	private Boolean includeDefault=false;
+
+	private int num = 6;
+
+	public Long getCid() {
+		return cid;
+	}
+
+	public void setCid(Long cid) {
+		this.cid = cid;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getNum() {
+		return num;
+	}
+
+	public void setNum(int num) {
+		this.num = num;
+	}
+
+	public String getQuery() {
+		return query;
+	}
+
+	public void setQuery(String query) {
+		this.query = query;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public Boolean getIncludeCollection() {
+		return includeCollection;
+	}
+
+	public void setIncludeCollection(Boolean includeCollection) {
+		this.includeCollection = includeCollection;
+	}
+
+	public Boolean getIncludeDefault() {
+		return includeDefault;
+	}
+
+	public void setIncludeDefault(Boolean includeDefault) {
+		this.includeDefault = includeDefault;
+	}
+
+}

@@ -1,0 +1,16 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+public class ProductSuiteGetRequest extends RequestBase {
+	private Long pid;
+
+	public Long getPid() {
+		return pid;
+	}
+	
+	public void setPid(Long pid) {
+		this.pid = pid;
+	}
+
+}

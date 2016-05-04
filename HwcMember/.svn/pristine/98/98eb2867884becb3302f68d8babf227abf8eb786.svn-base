@@ -1,0 +1,69 @@
+package com.huimodel.api.base;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+public class ResponseBase implements Serializable {
+	 
+	  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private String errorCode;
+	  
+	  private String msg;
+	  
+	  private String subCode;
+	   
+	  private String subMsg;
+	  
+	  private Map<String, String> params;
+	  
+	  public boolean isSuccess()
+	  {
+	    return (this.errorCode == null) && (this.subCode == null);
+	  }
+
+	public String getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public String getMsg() {
+		return msg;
+	}
+
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
+
+	public String getSubCode() {
+		return subCode;
+	}
+
+	public void setSubCode(String subCode) {
+		this.subCode = subCode;
+	}
+
+	public String getSubMsg() {
+		return subMsg;
+	}
+
+	public void setSubMsg(String subMsg) {
+		this.subMsg = subMsg;
+	}
+
+	public Map<String, String> getParams() {
+		params=params==null?new HashMap<String, String>():params;
+		return params;
+	}
+
+	public void setParams(Map<String, String> params) {
+		this.params = params;
+	}
+	  
+}

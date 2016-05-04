@@ -1,0 +1,88 @@
+package com.hwc.member.widget;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.widget.ScrollView;
+
+public class PullableScrollView extends ScrollView implements Pullable{
+	
+	private OnBorderListener onBorderListener;
+
+	public PullableScrollView(Context context){
+		super(context);
+	}
+
+	public PullableScrollView(Context context, AttributeSet attrs){
+		super(context, attrs);
+	}
+
+	public PullableScrollView(Context context, AttributeSet attrs, int defStyle){
+		super(context, attrs, defStyle);
+	}
+
+	@Override
+	public boolean canPullDown(){
+		return getScrollY() == 0;
+	}
+
+	@Override
+	public boolean canPullUp(){
+		return getScrollY() >= (getChildAt(0).getHeight() - getMeasuredHeight());
+	}
+	
+	@Override
+	protected void onScrollChanged(int x, int y, int oldx, int oldy) {
+		super.onScrollChanged(x, y, oldx, oldy);
+		doOnBorderListener(x, y, oldx, oldy);
+	}
+	
+	private void doOnBorderListener(int x, int y, int oldx, int oldy) {
+//		System.out.println("MeasuredHeight" + getChildAt(0).getMeasuredHeight());
+//		System.out.println("y" + y);
+	    if (getChildAt(0) != null && getChildAt(0).getMeasuredHeight() <= getScrollY() + getHeight()) {//滚动到底部判断
+	        if (onBorderListener != null) {
+	            onBorderListener.onBottom();
+	        }
+	    } else if (getScrollY() == 0) {//滚动到顶部判断
+	        if (onBorderListener != null) {
+	            onBorderListener.onTop();
+	        }
+	    } else if (oldy > y) {
+	    	if (onBorderListener != null) {//往上滑动
+	            onBorderListener.onUp();
+	        }
+	    } else if (y > oldy) {
+	    	if (onBorderListener != null) {//往下滑动
+	            onBorderListener.onDown();
+	        }
+	    } 
+	    if(getChildAt(0).getMeasuredHeight() - 3000 < y){
+	    	onBorderListener.onQuickDown();
+	    }
+	}
+	
+	public interface OnBorderListener {
+
+	    /** 滚动到底部 **/
+		void onBottom();
+
+	    /** 滚动到顶部 **/
+		void onTop();
+	    
+	    /** 往上滑动 **/
+		void onUp();
+	    
+	    /** 往下滑动 **/
+		void onDown();
+	    
+	    /** 快滑到底部 **/
+		void onQuickDown();
+	    
+	}
+	
+	/** 注册监听接口 **/
+	public void setMyOnScrollListener(OnBorderListener onBorderListener) {
+		this.onBorderListener = onBorderListener;
+	}
+
+}

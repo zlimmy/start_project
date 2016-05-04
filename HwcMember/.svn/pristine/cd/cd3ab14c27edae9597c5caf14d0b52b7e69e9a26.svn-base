@@ -1,0 +1,23 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import java.util.List;
+
+import com.huimodel.api.base.Advert;
+import com.hwc.member.adapter.HorizontalListViewAdapter;
+import com.hwc.member.adapter.ProductCategoryAdapter;
+
+/**
+ * @author FZ
+ */
+public interface IProductCategoryView extends LoadDataView {
+
+	void setListAdapter(HorizontalListViewAdapter adapter);
+	
+	void setGridAdapter(ProductCategoryAdapter adapter);
+	
+	void setPromAd(List<Advert> list, int[] pic);
+
+}

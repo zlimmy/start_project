@@ -1,0 +1,36 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+
+
+/**
+ * 首页 界面配置 接口
+ * 
+ * @author lxk
+ *
+ */
+public class FunctionConfigRequest extends RequestBase {
+	private String role;
+	private String latitude;
+	private String longitude;
+	public String getRole() {
+		return role;
+	}
+	public void setRole(String role) {
+		this.role = role;
+	}
+	public String getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+	public String getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+	
+}

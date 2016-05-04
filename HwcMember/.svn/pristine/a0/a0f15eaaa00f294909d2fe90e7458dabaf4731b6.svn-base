@@ -1,0 +1,82 @@
+package com.hwc.member.view.activity;
+
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
+import cn.smssdk.SMSSDK;
+
+import com.hwc.member.R;
+import com.hwc.member.common.Constant;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.SMSUtil;
+import com.hwc.member.util.SMSUtil.Callback;
+import com.hwc.member.util.UtilPhone;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.EditDelText;
+import com.hwc.member.widget.SimpleHUD;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+@ContentView(R.layout.activity_regist_step1)
+public class RegistStep1Activity extends BaseActivity {
+
+	@ViewInject(R.id.phone_et)
+	private EditDelText phone_et;
+	@ViewInject(R.id.bt)
+	private Button bt;
+	
+	private SMSUtil util;
+	
+	@Override
+	protected void initView() {
+		setBack();
+		util = new SMSUtil(this);
+		util.initSMS();
+	}
+
+	@Override
+	protected void initListener() {
+		util.registerCallback(new Callback() {
+
+			@Override
+			public void goToRegist() { 
+				
+			}
+
+			@Override
+			public void getCheckCode() {
+
+			}
+		});
+	}
+	
+	@OnClick(R.id.bt)
+	public void sendMsg(View v){
+		if(isEmpty(getViewValue(phone_et))){
+			phone_et.startAnimation(shake);
+		}else if(!UtilPhone.isMobileNO(getViewValue(phone_et))){
+			SimpleHUD.showErrorMessage(context, "错误的手机号码格式");
+		}else{  
+			DialogUtil.showDialog(Constant.Dialog, "我们将发送验证码短信到这个号码："+getViewValue(phone_et), Gravity.CENTER, context, null, new OnClickListener() {
+				
+				@Override
+				public void onClick(DialogPlus dialog, View view) {
+					switch (view.getId()) {
+					case R.id.cancel:
+						break;
+
+					case R.id.confirm:
+						SMSSDK.getVerificationCode("86",getViewValue(phone_et));
+						goTo(RegistStep2Activity.class, getViewValue(phone_et));
+						break;
+					}
+					dialog.dismiss();
+				}
+			}, null);			
+		}
+	}
+	
+}

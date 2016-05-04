@@ -1,0 +1,710 @@
+package com.huimodel.biz;
+
+import android.content.Context;
+
+import com.huimodel.api.ConstantApis;
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.HotSearch;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.AccountItemSearchRequest;
+import com.huimodel.api.request.AttentionShopCancelReuqest;
+import com.huimodel.api.request.CartRequest;
+import com.huimodel.api.request.ClearShoppingCartRequest;
+import com.huimodel.api.request.CollectionsRequest;
+import com.huimodel.api.request.CouponDetailGetRequest;
+import com.huimodel.api.request.CouponDonationRequest;
+import com.huimodel.api.request.DefaultGetRequest;
+import com.huimodel.api.request.DiscoveryDetailRequest;
+import com.huimodel.api.request.FunctionConfigRequest;
+import com.huimodel.api.request.InvitationCodeRequest;
+import com.huimodel.api.request.LocationRequest;
+import com.huimodel.api.request.OrderCreateRequest;
+import com.huimodel.api.request.OrderGetRequest;
+import com.huimodel.api.request.OrderSearchRequest;
+import com.huimodel.api.request.OrderUpdateRequest;
+import com.huimodel.api.request.PlatformPrizeRequest;
+import com.huimodel.api.request.PointExchangeRequest;
+import com.huimodel.api.request.PrizeListGetRequest;
+import com.huimodel.api.request.ProductGetDetailRequest;
+import com.huimodel.api.request.ProductRecommendRequest;
+import com.huimodel.api.request.ProductSearchRequest;
+import com.huimodel.api.request.ProductSuiteGetRequest;
+import com.huimodel.api.request.PromLotteryDrawGetRequest;
+import com.huimodel.api.request.PromLotteryPrizeAddRequest;
+import com.huimodel.api.request.PromotionADGetRequest;
+import com.huimodel.api.request.ResetPasswordRequest;
+import com.huimodel.api.request.ShopCarRequest;
+import com.huimodel.api.request.ShopCatGetRequest;
+import com.huimodel.api.request.ShopInfoRequest;
+import com.huimodel.api.request.ShopsIndicatorsGetRequest;
+import com.huimodel.api.request.SignPointRequest;
+import com.huimodel.api.request.SmsMessageRequest;
+import com.huimodel.api.request.UserAddressCreateRequest;
+import com.huimodel.api.request.UserAddressDeltRequest;
+import com.huimodel.api.request.UserAddressGetRequest;
+import com.huimodel.api.request.UserAddressUpdateRequest;
+import com.huimodel.api.request.UserInfoGetByMobileRequest;
+import com.huimodel.api.request.UserInfoRequest;
+import com.huimodel.api.request.UserLoginRequest;
+import com.huimodel.api.request.UserRegisterRequest;
+import com.huimodel.api.request.WithdrawApplyRequest;
+import com.huimodel.api.response.AccountItemsGroupSearchResponse;
+import com.huimodel.api.response.CollectionShopResponse;
+import com.huimodel.api.response.CouponDetailGetResponse;
+import com.huimodel.api.response.DiscoveryDetailResponse;
+import com.huimodel.api.response.DiscoveryGetResponse;
+import com.huimodel.api.response.FunctionConfigResponse;
+import com.huimodel.api.response.HomeResponse;
+import com.huimodel.api.response.IndicatorsDailyResponse;
+import com.huimodel.api.response.InvCodeListResponse;
+import com.huimodel.api.response.LocationsGetResponse;
+import com.huimodel.api.response.MagazineResponse;
+import com.huimodel.api.response.MemberExtsResponse;
+import com.huimodel.api.response.MemberUpdateResponse;
+import com.huimodel.api.response.MyConponResponse;
+import com.huimodel.api.response.OrderDetailResponse;
+import com.huimodel.api.response.OrderGetPayInfoResponse;
+import com.huimodel.api.response.PayTypeResponse;
+import com.huimodel.api.response.PlatformPrizeDetailResponse;
+import com.huimodel.api.response.PlatformPrizeResponse;
+import com.huimodel.api.response.PlatformPromLotteryDrawGetResponse;
+import com.huimodel.api.response.PointExchangeResponse;
+import com.huimodel.api.response.ProductRecommendResponse;
+import com.huimodel.api.response.ProductSearchResponse;
+import com.huimodel.api.response.ProductSuiteGetResponse;
+import com.huimodel.api.response.ProfitInfoGetResponse;
+import com.huimodel.api.response.PromLotteryDrawRequest;
+import com.huimodel.api.response.PromLotteryDrawResponse;
+import com.huimodel.api.response.PromotionADGetResponse;
+import com.huimodel.api.response.ShopAndShopProductInfoResponse;
+import com.huimodel.api.response.ShopCarResponse;
+import com.huimodel.api.response.ShopCatGetResponse;
+import com.huimodel.api.response.ShopFacepayGetResponse;
+import com.huimodel.api.response.ShopInfoResponse;
+import com.huimodel.api.response.ShopPostFeeStrategyResponse;
+import com.huimodel.api.response.ShopProductItemGetResponse;
+import com.huimodel.api.response.ShopPromLotteryDrawGetResponse;
+import com.huimodel.api.response.ShopUserSearchResponse;
+import com.huimodel.api.response.ShoppingCartAddGroupShopResponse;
+import com.huimodel.api.response.ShopsGetResponse;
+import com.huimodel.api.response.SignPointResponse;
+import com.huimodel.api.response.SmsMessageResponse;
+import com.huimodel.api.response.SubjectProductReponse;
+import com.huimodel.api.response.TradeSearchResponse;
+import com.huimodel.api.response.UserAddressGetOneResponse;
+import com.huimodel.api.response.UserAddressGetResponse;
+import com.huimodel.api.response.UserInfoGetByMobileResponse;
+import com.huimodel.api.response.UserLoginResponse;
+import com.huimodel.api.response.UserRegisterResponse;
+import com.huimodel.api.response.WithdrawApplyListResponse;
+import com.huimodel.net.HttpUtil;
+import com.huimodel.net.IResult;
+
+public class IHwcBizMainImpl implements IHwcBizMain{
+	
+	private static IHwcBizMainImpl iHwcBizMainImpl;
+
+	private IHwcBizMainImpl(Context context) {
+	}
+
+	public static IHwcBizMainImpl getInstance(Context context) {
+		if (iHwcBizMainImpl == null) {
+			iHwcBizMainImpl = new IHwcBizMainImpl(context);
+		}
+		return iHwcBizMainImpl;
+	}
+
+	@Override
+	public void getHomeData(RequestBase t, Context context,IResult<HomeResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.getHomeData, t, result, HomeResponse.class);
+	}
+
+	
+	
+	@Override
+	public void getMainAd(PromotionADGetRequest t, Context context,IResult<PromotionADGetResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getpromotionad, t, result, PromotionADGetResponse.class);
+	}
+	
+
+	@Override
+	public void getMenuList(FunctionConfigRequest t,Context context,IResult<FunctionConfigResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.getfunctionconfig, t, result, FunctionConfigResponse.class);
+	}
+	
+
+	@Override
+	public void getMainPromotionList(ProductRecommendRequest t, Context context,
+			IResult<ProductRecommendResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getHomeProductList, t, result, ProductRecommendResponse.class);
+	}
+
+	
+	
+	@Override
+	public void checkVersion() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+	
+	@Override
+	public void getHornList() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void getdefaultshopcat(ShopCatGetRequest t, Context context,
+			IResult<ShopCatGetResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getAllShopCat, t, result, ShopCatGetResponse.class);
+	}
+
+	@Override
+	public void gethotsaleShopProduct(ProductRecommendRequest t,
+			Context context, IResult<ProductRecommendResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.gethotsaleShopProduct, t, result, ProductRecommendResponse.class);
+	}
+
+	@Override
+	public void getshopproductbycid(ProductRecommendRequest t, Context context,
+			IResult<ShopAndShopProductInfoResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getshopproductbycid, t, result, ShopAndShopProductInfoResponse.class);
+	}
+
+	@Override
+	public void attentionShop(CollectionsRequest t, Context context,
+			IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.attentionShop, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void cancelAttentionShop(AttentionShopCancelReuqest t,
+			Context context, IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.cancelAttentionShop, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void getproductbyid(ProductGetDetailRequest t, Context context,
+			IResult<DProduct> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getproductbyid, t, result, DProduct.class);
+	}
+
+	@Override
+	public void getOneShopProduct(ProductSearchRequest t, Context context,
+			IResult<ProductSearchResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getOneShopProduct, t, result, ProductSearchResponse.class);
+	}
+
+	@Override
+	public void getProductItemCat(RequestBase t, Context context,
+			IResult<ShopProductItemGetResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getproductitemcat, t, result, ShopProductItemGetResponse.class);
+	}
+
+	@Override
+	public void updateCollection(CollectionsRequest t, Context context,
+			IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.updateCollection, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void searchCollectionShops(RequestBase t, Context context,
+			IResult<CollectionShopResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.searchCollectionShops, t, result, CollectionShopResponse.class);
+	}
+
+	@Override
+	public void searchCollectionProducts(RequestBase t, Context context,
+			IResult<ProductSearchResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.searchCollectionProducts, t, result, ProductSearchResponse.class);
+	}
+
+	@Override
+	public void deleteCollection(CollectionsRequest t, Context context,
+			IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.deleteCollection, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void searchShopInfo(ShopInfoRequest t, Context context,
+			IResult<ShopInfoResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.searchShopInfo, t, result, ShopInfoResponse.class);
+	}
+
+	@Override
+	public void updateUserInfo(UserInfoRequest t, Context context,
+			IResult<MemberUpdateResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.updateMemberInfo, t, result, MemberUpdateResponse.class);
+	}
+
+	@Override
+	public void login(UserLoginRequest t, Context context,
+			IResult<UserLoginResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.login, t, result, UserLoginResponse.class);
+	}
+
+	@Override
+	public void getMyCoupon(PrizeListGetRequest t, Context context,IResult<MyConponResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.getMyPrizeList, t, result, MyConponResponse.class);
+	}
+
+	@Override
+	public void getCouponByNo(CouponDetailGetRequest t, Context context,IResult<CouponDetailGetResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.getcouponbyno, t, result, CouponDetailGetResponse.class);
+	}
+	
+	@Override
+	public void restpasswrod(ResetPasswordRequest t, Context context,
+			IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.restpasswrod, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void signpoint(SignPointRequest t, Context context,
+			IResult<SignPointResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.signpoint, t, result, SignPointResponse.class);
+	}
+
+	@Override
+	public void getOneProductImages(ProductGetDetailRequest t, Context context,
+			IResult<MagazineResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getOneProductImages, t, result, MagazineResponse.class);
+	}
+
+	@Override
+	public void regist(UserRegisterRequest t, Context context,
+			IResult<UserRegisterResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.register, t, result, UserRegisterResponse.class);
+	}
+
+	@Override
+	public void checkRegister(UserRegisterRequest t, Context context, IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.checkRegister, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void getOrders(OrderSearchRequest t, Context context,
+			IResult<TradeSearchResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getshopsalerorders, t, result, TradeSearchResponse.class);
+	}
+
+	@Override
+	public void getuserinfobymobile(UserInfoGetByMobileRequest t, Context context,
+			IResult<UserInfoGetByMobileResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.getuserinfobymobile, t, result, UserInfoGetByMobileResponse.class);
+	}
+
+	@Override
+	public void coupondonation(CouponDonationRequest t, Context context,
+			IResult<ResponseBase> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.coupondonation, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void promLotteryList(PromLotteryDrawGetRequest t, Context context,
+			IResult<PlatformPromLotteryDrawGetResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.promLotteryList, t, result, PlatformPromLotteryDrawGetResponse.class);
+	}
+
+	@Override
+	public void getpromlotterydraw(PromLotteryDrawRequest t, Context context,
+			IResult<PromLotteryDrawResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.getpromlotterydraw, t, result, PromLotteryDrawResponse.class);
+	}
+
+	@Override
+	public void promLotteryDetail(PromLotteryDrawRequest t, Context context,
+			IResult<PlatformPromLotteryDrawGetResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.promLotteryDetail, t, result, PlatformPromLotteryDrawGetResponse.class);
+	}
+
+	@Override
+	public void getSubjectProduct(RequestBase t, Context context,
+			IResult<SubjectProductReponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.getSubjectProduct, t, result, SubjectProductReponse.class);
+	}
+
+	@Override
+	public void searchProductList(ProductSearchRequest t, Context context,
+			IResult<ProductSearchResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.searchProductList, t, result, ProductSearchResponse.class);
+	}
+
+	@Override
+	public void createInvitationCode(InvitationCodeRequest t, Context context,
+			IResult<ResponseBase> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.createInvitationCode, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void updateInvitationCode(InvitationCodeRequest t, Context context,
+			IResult<ResponseBase> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.updateInvitationCode, t, result, ResponseBase.class);
+	}
+
+
+	@Override
+	public void winlotterydraw(PromLotteryPrizeAddRequest t, Context context,
+			IResult<ResponseBase> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.winlotterydraw, t, result, ResponseBase.class);
+	}
+
+
+	@Override
+	public void searchInvitationCode(InvitationCodeRequest t, Context context,
+			IResult<InvCodeListResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.searchInvitationCode, t, result, InvCodeListResponse.class);
+	}
+
+	@Override
+	public void getShopProductSuites(ProductSuiteGetRequest t, Context context,
+			IResult<ProductSuiteGetResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.getShopProductSuites, t, result, ProductSuiteGetResponse.class);
+	}
+
+	@Override
+	public void createOrderWithBuyer(OrderCreateRequest t, Context context,
+			IResult<ResponseBase> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.createOrderWithBuyer, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void getMemberOrders(OrderSearchRequest t, Context context,
+			IResult<TradeSearchResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.getMemberOrders, t, result, TradeSearchResponse.class);
+	}
+
+	@Override
+	public void searchSimpleShopInfo(ShopInfoRequest t, Context context,
+			IResult<ShopInfoResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.searchSimpleShopInfo, t, result, ShopInfoResponse.class);
+	}
+
+	@Override
+	public void searchCollectionDiascoveries(RequestBase t, Context context,
+			IResult<DiscoveryGetResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.searchCollectionDiascoveries, t, result, DiscoveryGetResponse.class);
+	}
+
+	@Override
+	public void queryShopProducts(ProductSearchRequest t, Context context,
+			IResult<ProductSearchResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.queryHomeProducts, t, result, ProductSearchResponse.class);
+	}
+
+	@Override
+	public void getPlatformPrizes(PlatformPrizeRequest t, Context context,
+			IResult<PlatformPrizeResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getPlatformPrizes, t, result, PlatformPrizeResponse.class);
+	}
+
+	@Override
+	public void getPlatformPrizeDetail(PlatformPrizeRequest t, Context context,
+			IResult<PlatformPrizeDetailResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getPlatformPrizeDetail, t, result, PlatformPrizeDetailResponse.class);
+	}
+
+	@Override
+	public void validateExchange(PointExchangeRequest t, Context context,
+			IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.validateExchange, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void exchangeWithPoint(PointExchangeRequest t, Context context,
+			IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.exchangeWithPoint, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void searchPointExchanges(PointExchangeRequest t, Context context,
+			IResult<PointExchangeResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.searchPointExchanges, t, result, PointExchangeResponse.class);
+	}
+
+	@Override
+	public void addAddress(UserAddressCreateRequest t, Context context,
+			IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.addAddress, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void delAddress(UserAddressDeltRequest t, Context context,
+			IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.delAddress, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void findAddressById(UserAddressGetRequest t, Context context,
+			IResult<UserAddressGetOneResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.findAddressById, t, result, UserAddressGetOneResponse.class);
+	}
+
+	@Override
+	public void getDefaultAddress(UserAddressGetRequest t, Context context,
+			IResult<UserAddressGetOneResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getDefaultAddress, t, result, UserAddressGetOneResponse.class);
+	}
+
+	@Override
+	public void getUserAddress(UserAddressGetRequest t, Context context,
+			IResult<UserAddressGetResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getUserAddress, t, result, UserAddressGetResponse.class);
+	}
+
+	@Override
+	public void updatelAddress(UserAddressUpdateRequest t, Context context,
+			IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.updatelAddress, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void searchMemberInfo(RequestBase t, Context context,
+			IResult<MemberUpdateResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.searchMemberInfo, t, result, MemberUpdateResponse.class);
+	}
+
+	@Override
+	public void shopPromLotteryDetail(PromLotteryDrawRequest t,
+			Context context, IResult<ShopPromLotteryDrawGetResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.shopPromLotteryDetail, t, result, ShopPromLotteryDrawGetResponse.class);
+	}
+
+	@Override
+	public void shopGetpromlotterydraw(PromLotteryDrawRequest t,
+			Context context, IResult<PromLotteryDrawResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.shopGetpromlotterydraw, t, result, PromLotteryDrawResponse.class);
+	}
+
+	@Override
+	public void shopWinlotterydraw(PromLotteryPrizeAddRequest t,
+			Context context, IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.shopWinlotterydraw, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void getShopsSumSalesVolume(ShopsIndicatorsGetRequest t,
+			Context context, IResult<IndicatorsDailyResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getShopsSumSalesVolume, t, result, IndicatorsDailyResponse.class);
+	}
+
+	@Override
+	public void getShopSalesVolumes(ShopsIndicatorsGetRequest t,
+			Context context, IResult<IndicatorsDailyResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getShopSalesVolumes, t, result, IndicatorsDailyResponse.class);
+	}
+
+	@Override
+	public void getBasecodeWithCat(RequestBase t, Context context,
+			IResult<PayTypeResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getBasecodeWithCat, t, result, PayTypeResponse.class);
+	}
+
+	@Override
+	public void searchShopsWithProducts(RequestBase t, Context context,
+			IResult<ShopAndShopProductInfoResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.searchShopsWithProducts, t, result, ShopAndShopProductInfoResponse.class);
+	}
+
+	@Override
+	public void cancelOrder(OrderUpdateRequest t, Context context,
+			IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.cancelOrder, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void ShopProductInfofromShoppingCat(ShopCarRequest t,
+			Context context, IResult<ShopCarResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.ShopProductInfofromShoppingCat, t, result, ShopCarResponse.class);
+	}
+
+	@Override
+	public void addorupdateShoppingcart(CartRequest t, Context context,
+			IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.addorupdateShoppingcart, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void getShoppingcardlist(RequestBase t, Context context,
+			IResult<ShoppingCartAddGroupShopResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getShoppingcardlist, t, result, ShoppingCartAddGroupShopResponse.class);
+	}
+
+	@Override
+	public void clearShoppingcart(ClearShoppingCartRequest t, Context context,
+			IResult<ResponseBase> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.clearShoppingcart, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void getPayInfoWithOrder(OrderCreateRequest t, Context context,
+			IResult<OrderGetPayInfoResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.getPayInfoWithOrder, t, result, OrderGetPayInfoResponse.class);
+	}
+
+
+	@Override
+	public void getOrderDetail(OrderGetRequest t, Context context,
+			IResult<OrderDetailResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.getOrderDetail, t, result, OrderDetailResponse.class);
+	}
+
+
+	@Override
+	public void searchGroupMonthAccountItems(AccountItemSearchRequest t,
+			Context context, IResult<AccountItemsGroupSearchResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.searchGroupMonthAccountItems, t, result, AccountItemsGroupSearchResponse.class);
+	}
+
+	@Override
+	public void getMemberExts(RequestBase t, Context context,
+			IResult<MemberExtsResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getMemberExts, t, result, MemberExtsResponse.class);
+	}
+
+	@Override
+	public void getMyTeamList(RequestBase t, Context context,
+			IResult<ShopUserSearchResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.searchProfitMemberGroup, t, result, ShopUserSearchResponse.class);
+	}
+
+	@Override
+	public void getMyShopList(RequestBase t, Context context,
+			IResult<ShopsGetResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.searchProfitShopGroup, t, result, ShopsGetResponse.class);
+	}
+
+	@Override
+	public void submitWithdrawApply(WithdrawApplyRequest t, Context context,
+			IResult<ResponseBase> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.submitWithdrawApply, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void getWithdrawApplies(WithdrawApplyRequest t, Context context,
+			IResult<WithdrawApplyListResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.getWithdrawApplies, t, result, WithdrawApplyListResponse.class);
+	}
+
+	
+	@Override
+	public void getProfitInfo(RequestBase t, Context context,
+			IResult<ProfitInfoGetResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.getProfitInfo, t, result, ProfitInfoGetResponse.class);
+	}
+
+	
+	@Override
+	public void advertEarn(RequestBase t, Context context,IResult<ResponseBase> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.advertEarn, t, result, ResponseBase.class);
+	}
+
+	@Override 
+	public void getDiscoveryDetail(DiscoveryDetailRequest t,
+			Context context, IResult<DiscoveryDetailResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.searchDiscoveryDetail, t, result, DiscoveryDetailResponse.class);
+	}
+
+	
+	@Override
+	public void getFacepayWithShop(RequestBase t, Context context,
+			IResult<ShopFacepayGetResponse> result) {
+		
+		HttpUtil.getInstance().postSend(ConstantApis.getFacepayWithShop, t, result, ShopFacepayGetResponse.class);
+	}
+
+	
+	@Override
+	public void calculateFacepayment(OrderUpdateRequest t, Context context,
+			IResult<ResponseBase> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.calculateFacepayment, t, result, ResponseBase.class);
+	}
+
+	
+	@Override
+	public void confirmOrder(OrderUpdateRequest t, Context context,
+			IResult<ResponseBase> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.confirmOrder, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void submitOrder(OrderUpdateRequest t, Context context,
+			IResult<ResponseBase> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.submitOrder, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void getHotSearch(RequestBase t, Context context,
+			IResult<HotSearch> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.hotSearch, t, result, HotSearch.class);
+	}
+	
+	
+
+	@Override
+	public void appEntryPushStack(RequestBase t, Context context,
+			IResult<ResponseBase> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.appEntryPushStack, t, result, ResponseBase.class);
+	}
+
+	@Override
+	public void smsMessageNotify(SmsMessageRequest t, Context context, IResult<SmsMessageResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.smsMessageNotify, t, result, SmsMessageResponse.class);
+	}
+
+	@Override
+	public void validateLocation(RequestBase t, Context context, IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.validateLocation,t,result,ResponseBase.class);
+	}
+
+	@Override
+	public void searchLocations(LocationRequest t, Context context, IResult<LocationsGetResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.searchLocations,t,result,LocationsGetResponse.class
+		);
+	}
+
+	@Override
+	public void getShopPostStrategy(RequestBase t, Context context, IResult<ShopPostFeeStrategyResponse> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getShopPostStrategy,t,result,ShopPostFeeStrategyResponse.class);
+	}
+
+
+	@Override
+	public void getDefaultValue(DefaultGetRequest t, Context context, IResult<ResponseBase> result) {
+		HttpUtil.getInstance().postSend(ConstantApis.getDefaultValue,t,result,ResponseBase.class);
+	}
+}

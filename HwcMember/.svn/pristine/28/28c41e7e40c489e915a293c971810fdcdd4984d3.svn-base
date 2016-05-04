@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <!-- 失去焦点 -->    
+    <item 
+        android:state_focused="false" 
+        android:state_selected="false" 
+		android:state_pressed="false" 
+		android:color="@color/gray4" />  
+		  
+    <item 
+        android:state_focused="false" 
+        android:state_selected="true" 
+		android:state_pressed="false" 
+		android:color="@color/main_color" />   
+		
+    <!-- 获得焦点 -->    
+    <item 
+        android:state_focused="true" 
+        android:state_selected="false" 
+		android:state_pressed="false" 
+		android:color="@color/main_color" />  
+		  
+    <item 
+        android:state_focused="true" 
+        android:state_selected="true" 
+		android:state_pressed="false" 
+		android:color="@color/main_color" /> 
+		  
+    <!-- 按下 -->    
+    <item 
+        android:state_selected="true" 
+        android:state_pressed="true" 
+		android:color="@color/gray4" />    
+		
+    <item 
+        android:state_pressed="true" 
+        android:color="@color/gray4" /> 
+    
+
+</selector>

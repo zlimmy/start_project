@@ -1,0 +1,116 @@
+/*
+ * 
+ */
+
+package com.hwc.member.util;
+import android.content.Context;
+import android.content.res.Resources;
+import android.util.DisplayMetrics;
+
+// TODO: Auto-generated Javadoc
+
+public class ScreenUtil {
+
+    /** 屏幕的真实宽�? */
+    public static int screenWidth;
+
+    /** 屏幕的真实高�? */
+    public static int screenHeight;
+
+    /** UI提供高清图片宽度. */
+    public static Integer originalImageWidth;
+
+    /** UI提供高清图片高度. */
+    public static Integer originalImageHeight;
+
+    /** 图片屏幕换算比例_宽度. */
+    public static float screenWidthPercentage;//
+
+    /** 图片屏幕换算比例_高度. */
+    public static float screenHeightPercentage;
+
+    /** The density. */
+    public static float density;
+
+    /** The scale density. */
+    public static float scaleDensity;
+
+    /** The xdpi. */
+    public static float xdpi;
+
+    /** The ydpi. */
+    public static float ydpi;
+
+    /** The density dpi. */
+    public static int densityDpi;
+
+    /** The screen min. */
+    public static int screenMin; // 宽高中，�?��的�?
+
+    /**
+     * 初始化屏幕相关参数，放在application�?
+     * 
+     * @param context
+     * @param originalWidth
+     * @param originalHeight
+     */
+    public static void getInfo(Context context, Integer originalWidth, Integer originalHeight) {
+        originalImageWidth = originalWidth;
+        originalImageHeight = originalHeight;
+        getInfo(context);
+    }
+
+    /**
+     * Gets the info.
+     * 
+     * @param context the context
+     */
+    public static void getInfo(Context context) {
+        if (null == context)
+            return;
+        if (originalImageHeight == null || originalImageWidth == null) {
+            throw new IllegalArgumentException(
+                    "originalImageHeight or originalImageWidth is not null");
+        }
+        DisplayMetrics dm = new DisplayMetrics();
+        dm = context.getApplicationContext().getResources().getDisplayMetrics();
+        screenWidth = dm.widthPixels;
+        screenHeight = dm.heightPixels;
+        //        float screenScal = (float)screenWidth / (float)screenHeight;
+        //        if (screenScal > 0.65f) {
+        //            float percentage = (float)screenHeight / (float)screenWidth;
+        //            screenWidthPercentage = (screenWidth - 15) / (originalImageWidth*1f);
+        //            screenHeightPercentage = (screenHeight - 15 * percentage) / (originalImageHeight*1f);
+        //        } else {
+        screenWidthPercentage = screenWidth /  (originalImageWidth*1f);
+        screenHeightPercentage = screenHeight / (originalImageHeight*1f);
+        //        }
+        screenMin = (screenWidth > screenHeight) ? screenHeight : screenWidth;
+        density = dm.density;
+        scaleDensity = dm.scaledDensity;
+        xdpi = dm.xdpi;
+        ydpi = dm.ydpi;
+        densityDpi = dm.densityDpi;
+    }
+
+    /**
+     * dip转px.
+     * 
+     * @param dipValue the dip value
+     * @return the int
+     */
+    public static int dip2px(float dipValue) {
+        final float scale = ScreenUtil.density;
+        return (int)(dipValue * scale + 0.5f);
+    }
+
+    /**
+     * Gets the status bar height.
+     * 
+     * @return the status bar height
+     */
+    public static int getStatusBarHeight() {
+        return Resources.getSystem().getDimensionPixelSize(
+                Resources.getSystem().getIdentifier("status_bar_height", "dimen", "android"));
+    }
+}

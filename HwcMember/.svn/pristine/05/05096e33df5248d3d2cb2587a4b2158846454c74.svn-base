@@ -1,0 +1,44 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.widget.ImageView;
+
+import com.huimodel.api.base.DProduct;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class HorizontalListViewAdapter extends MirAdapter<DProduct> {
+
+	public HorizontalListViewAdapter(Context context,
+			List<DProduct> mDatas, int itemLayoutId,
+			BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, DProduct item) {
+		
+		ImageView iv = helper.getView(R.id.iv);
+		ViewTransformUtil.layoutParams(iv, iv.getLayoutParams(), 260, 260);
+		bitmapUtils.display(iv, item.getImageurl());
+		if(item.getName()!=null){
+			helper.setText(R.id.name_tv, item.getName().replace("\n", "") +"");
+		}else{
+			helper.setText(R.id.name_tv, item.getSellPt().replace("\n", "") +"");
+		}
+		helper.setText(R.id.price_tv, "￥" + CommonUtil.conversionDouble(item.getPrice()));
+	}
+
+}

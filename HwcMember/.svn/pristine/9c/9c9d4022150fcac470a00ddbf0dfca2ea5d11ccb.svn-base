@@ -1,0 +1,160 @@
+package com.hwc.member.presenter;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.PromLotteryDrawGetRequest;
+import com.huimodel.api.request.PromLotteryPrizeAddRequest;
+import com.huimodel.api.response.PlatformPromLotteryDrawGetResponse;
+import com.huimodel.api.response.PromLotteryDrawRequest;
+import com.huimodel.api.response.PromLotteryDrawResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IPlatformPromotionView;
+import com.hwc.member.widget.SimpleHUD;
+
+public class PlatformPromotionPresenter {
+	private IPlatformPromotionView iPlatformPromotionView;
+	private IHwcBizMain iHwcBizMainImpl;
+	public Gson gson;
+	
+	public PlatformPromotionPresenter(IPlatformPromotionView iPlatformPromotionView) {
+		// TODO Auto-generated constructor stub
+		this.iPlatformPromotionView = iPlatformPromotionView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		this.gson = new  Gson();
+	}
+	
+	
+	/***
+	 * 获取平台活动
+	 */
+	public void getPlatformPromotion(){
+		
+		PromLotteryDrawGetRequest t = new PromLotteryDrawGetRequest();
+		t.setUser_id_by(Member.getInstance().getUser_id());
+		t.setImei(Constant.IMEI);
+		iHwcBizMainImpl.promLotteryList(t, iPlatformPromotionView.getContext(), new IResult<PlatformPromLotteryDrawGetResponse>() {
+			@Override
+			public void result(PlatformPromLotteryDrawGetResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					System.out.println(gson.toJson(obj));
+					break;
+				default:
+					SimpleHUD.showErrorMessage(iPlatformPromotionView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	
+	
+	/**
+	 * 获取平台抽奖详情
+	 */
+	public void promLotteryDetail(String promcode){
+		com.huimodel.api.response.PromLotteryDrawRequest t = new com.huimodel.api.response.PromLotteryDrawRequest();
+		t.setProm_code(promcode);
+		t.setUser_id_by(Member.getInstance().getUser_id());
+		t.setImei(Constant.IMEI);
+		iPlatformPromotionView.showProgressDialog("获取奖品数据中。。。");
+		iHwcBizMainImpl.promLotteryDetail(t, iPlatformPromotionView.getContext(), new IResult<PlatformPromLotteryDrawGetResponse>() {
+
+			@Override
+			public void result(PlatformPromLotteryDrawGetResponse obj, Code code) {
+				iPlatformPromotionView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					iPlatformPromotionView.initGame(obj.getPromlottery().get(0));
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(iPlatformPromotionView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	   
+	/**
+	 * 开始抽奖
+	 */
+	public void playGame(Long sid,String prom_code){
+		if (Member.isNull()) {
+			iPlatformPromotionView.goLogin();
+			return;
+		}
+		PromLotteryDrawRequest t = new PromLotteryDrawRequest();
+		t.setShop_id(Member.getInstance().getShop_id());
+		t.setUser_id_by(Member.getInstance().getUser_id());
+		t.setProm_code(prom_code);
+		t.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getpromlotterydraw(t, iPlatformPromotionView.getContext(), new IResult<PromLotteryDrawResponse>() {
+			@Override
+			public void result(PromLotteryDrawResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				switch (code) {
+				case OK:
+					System.out.println("-------------"+gson.toJson(obj));
+					if(obj!=null){
+						iPlatformPromotionView.setWinning(obj);
+						if(obj.isIs_win()){
+							iPlatformPromotionView.rest(obj.getPrize().getDescript());
+						}else{
+							iPlatformPromotionView.rest("");
+						}
+					}else{
+						System.out.println("空的");
+					}
+					break;
+				default:
+					SimpleHUD.showErrorMessage(iPlatformPromotionView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	   
+	
+	public void winlotterydraw(PromLotteryDrawResponse pdg){
+	  PromLotteryPrizeAddRequest plp = new PromLotteryPrizeAddRequest();
+		plp.setPrice(pdg.getPrize().getPrice());
+		//plp.setProm_shop_id(Member.getInstance().getShop_id());
+		plp.setProm_code(pdg.getProm_code());
+		plp.setProm_prize_code(pdg.getPrize().getCode());
+		plp.setProm_prize_descript(pdg.getPrize().getDescript());
+		//plp.setShop_id(Member.getInstance().getShop_id());
+		plp.setProm_prize_code(pdg.getPrize().getCode());
+		plp.setUser_id_by(Member.getInstance().getUser_id());
+		plp.setAwards(pdg.getAwards());
+		plp.setImei(Constant.IMEI);
+		iHwcBizMainImpl.winlotterydraw(plp, iPlatformPromotionView.getContext(), new IResult<ResponseBase>() {
+
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				switch (code) {
+				case OK:
+					System.out.println(gson.toJson(obj));
+					if(obj.isSuccess()){
+						SimpleHUD.showSuccessMessage(iPlatformPromotionView.getContext(),"领取成功!");
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(iPlatformPromotionView.getContext(), code+"");
+					break;
+				}
+				
+			}
+	
+	});	
+		
+		
+	}
+}

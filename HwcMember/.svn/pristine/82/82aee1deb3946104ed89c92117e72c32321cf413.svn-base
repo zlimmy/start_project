@@ -1,0 +1,461 @@
+package com.hwc.member.view.activity.order;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.DialogInterface;
+import android.graphics.drawable.BitmapDrawable;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
+
+import com.huimodel.api.base.Order;
+import com.huimodel.api.response.OrderDetailResponse;
+import com.hwc.member.R;
+import com.hwc.member.adapter.NewOrderInfoAdapter;
+import com.hwc.member.common.Constant;
+import com.hwc.member.presenter.OrderInfoPresenter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.IntentUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.view.activity.MainActivity;
+import com.hwc.member.view.activity.my.MessageActivity;
+import com.hwc.member.view.activity.shop.ShopIndexActivity;
+import com.hwc.member.view.activity.view.IOrderInfoView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.MyListView;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.hwc.member.widget.header.HeadView.Dir;
+import com.hwc.member.widget.header.HeadView.OnHeadClickListener;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+@ContentView(R.layout.activity_order_details)
+public class OrderDetailsActivity extends BaseActivity implements
+		IOrderInfoView {
+
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.listview)
+	private MyListView listview;
+	@ViewInject(R.id.totalfee_tv)
+	private TextView totalfee_tv;
+	@ViewInject(R.id.receiver_phone)
+	private TextView receiver_phone;
+	@ViewInject(R.id.receiver_address)
+	private TextView receiver_address;
+	@ViewInject(R.id.receiver_name)
+	private TextView receiver_name;
+	@ViewInject(R.id.shipping_type)
+	private TextView shipping_type;
+	@ViewInject(R.id.shopname_tv)
+	private TextView shopname_tv;
+
+	@ViewInject(R.id.paycode_desc)
+	private TextView paycode_desc;
+	@ViewInject(R.id.created)
+	private TextView created;
+	@ViewInject(R.id.rid_tv)
+	private TextView rid_tv;
+	@ViewInject(R.id.buyer_memo)
+	private TextView buyer_memo;
+
+	@ViewInject(R.id.hwcpay_tv)
+	private TextView hwcpay_tv;
+	@ViewInject(R.id.coupon_tv)
+	private TextView coupon_tv;
+	@ViewInject(R.id.dsfzf_tv)
+	private TextView dsfzf_tv;
+	@ViewInject(R.id.dsf_tv)
+	private TextView dsf_tv;
+
+	@ViewInject(R.id.state_tv)
+	private TextView state_tv;
+
+	@ViewInject(R.id.dddre_rl)
+	private RelativeLayout dddre_rl;
+	@ViewInject(R.id.phone_rl)
+	private RelativeLayout phone_rl;
+	@ViewInject(R.id.name_rl)
+	private RelativeLayout name_rl;
+
+	@ViewInject(R.id.pay_but)
+	private TextView pay_but;
+	@ViewInject(R.id.cance_but)
+	private TextView cance_but;
+	@ViewInject(R.id.contact_but)
+	private TextView contact_but;
+	@ViewInject(R.id.confirm_rec_but)
+	private TextView confirm_rec_but;
+	private Long sid;
+	private Long rid;
+	private Order mOrder;
+	private OrderInfoPresenter presenter = new OrderInfoPresenter(this);
+	private PopupWindow openCatpopupWindow;
+	public static int statusCode;
+	public static OrderDetailsActivity activity = null;
+
+	@Override
+	protected void initView() {
+		// TODO Auto-generated method stub
+		activity = this;
+		statusCode = RESULT_CANCELED;
+
+		rid = getIntent().getLongExtra("0", -1);
+		presenter.setData(rid);
+
+		header.setOnHeadClickListener(new OnHeadClickListener() {
+
+			@Override
+			public void onHeadClick(Dir dir, View view) {
+				// TODO Auto-generated method stub
+				switch (dir) {
+				case Right:
+					if (openCatpopupWindow != null
+							&& openCatpopupWindow.isShowing()) {
+						openCatpopupWindow.dismiss();
+						return;
+					} else {
+						openCat(view);
+					}
+					break;
+				default:
+					break;
+				}
+			}
+		});
+
+	}
+
+	public void openCat(View v) {
+
+		View contentView = LayoutInflater.from(context).inflate(
+				R.layout.category_pop_window, null);
+		contentView.setBackgroundResource(R.drawable.tc);
+		ListView lv = (ListView) contentView.findViewById(R.id.cat_lv);
+		final List<String> datas = new ArrayList<String>();
+		datas.add("首页");
+		datas.add("消息");
+		lv.setAdapter(new BaseAdapter() {
+
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				convertView = View.inflate(context,
+						R.layout.product_popupwindow_item, null);
+				TextView tv = (TextView) convertView
+						.findViewById(R.id.product_item_tv);
+				ImageView product_item_iv = (ImageView) convertView
+						.findViewById(R.id.product_item_iv);
+				if (datas.get(position).equals("首页")) {
+					product_item_iv.setImageResource(R.drawable.icon_homepage);
+				} else if (datas.get(position).equals("消息")) {
+					product_item_iv.setImageResource(R.drawable.icon_message);
+				}
+				tv.setText(datas.get(position));
+				return convertView;
+			}
+
+			@Override
+			public long getItemId(int position) {
+				return 0;
+			}
+
+			@Override
+			public Object getItem(int position) {
+				return null;
+			}
+
+			@Override
+			public int getCount() {
+				return datas == null ? 0 : datas.size();
+			}
+		});
+
+		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				if (position == 0) {
+					goTo(MainActivity.class);
+				} else {
+					goTo(MessageActivity.class);
+				}
+				openCatpopupWindow.dismiss();
+			}
+		});
+		openCatpopupWindow = new PopupWindow(contentView,
+				ViewTransformUtil.layoutWidth(context, 250),
+				LayoutParams.WRAP_CONTENT, true);
+		openCatpopupWindow.setFocusable(true);
+		openCatpopupWindow.setOutsideTouchable(true);
+		openCatpopupWindow.setBackgroundDrawable(new BitmapDrawable());
+		openCatpopupWindow.showAsDropDown(v, -10, 7);
+	}
+
+	/**
+	 * 取消订单
+	 */
+	public void cancelOrder() {
+		DialogUtil.showDialog(Constant.Dialog, "订单还未完成,确定取消吗?", Gravity.CENTER,
+				context, null, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogPlus dialog, View view) {
+						switch (view.getId()) {
+						case R.id.cancel:
+							break;
+
+						case R.id.confirm:
+							presenter.cancelOrder(rid);
+							break;
+						}
+						dialog.dismiss();
+					}
+				}, null);
+	}
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+
+		setBack(R.drawable.back, null, new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				setResult(statusCode);
+				finish();
+			}
+
+		});
+
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setList(NewOrderInfoAdapter adapter) {
+		// TODO Auto-generated method stub
+		listview.setAdapter(adapter);
+	}
+
+	/**
+	 * @param order
+	 */
+	@Override
+	public void setOrderData(Order order) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setMobile(String mobile) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void closeOrder(String str) {
+		// TODO Auto-generated method stub
+		T(str);
+		setResult(RESULT_OK);
+		finish();
+	}
+
+	@Override
+	public void setOrderDetail(OrderDetailResponse order) {
+		// TODO Auto-generated method stub
+		mOrder = order.getEntity();
+		sid = mOrder.getSeller_shop();
+		paycode_desc.setText(mOrder.getPaycode_desc());
+		shopname_tv.setText(mOrder.getSeller_nick());
+		created.setText(mOrder.getCreated());
+		rid_tv.setText(mOrder.getRid() + "");
+		buyer_memo.setText(mOrder.getBuyer_memo());
+
+		if (mOrder.getShipping_type() != null) {
+			shipping_type.setText(mOrder.getShipping_type().equals(
+					Constant.POSTDELIVERY) ? "送货上门" : "到店自提");
+		} else {
+			shipping_type.setText("暂无记录");
+		}
+
+		totalfee_tv.setText("￥"
+				+ CommonUtil.conversionDouble(Double.parseDouble(mOrder
+						.getTotal_fee() + "")) + "");
+
+		if (mOrder.getReceiver_phone() == null) {
+			GONE(dddre_rl);
+			GONE(phone_rl);
+			GONE(name_rl);
+		} else {
+			receiver_phone.setText(mOrder.getReceiver_phone() + "");
+			receiver_address.setText(mOrder.getReceiver_address() + "");
+			receiver_name.setText(mOrder.getReceiver_name() + "");
+
+		}
+
+		if (mOrder.getStatus().equals("N")) {
+			state_tv.setText("待付款");
+		} else if (mOrder.getStatus().equals("C")) {
+			state_tv.setText("已确认");
+		} else if (mOrder.getStatus().equals("U")) {
+			state_tv.setText("待付款");
+		} else if (mOrder.getStatus().equals("P")) {
+			state_tv.setText("已付款");
+		} else if (mOrder.getStatus().equals("D")) {
+			state_tv.setText("已发货");
+		} else if (mOrder.getStatus().equals("X")) {
+			state_tv.setText("已取消");
+		} else if (mOrder.getStatus().equals("R")) {
+			state_tv.setText("已退款");
+		} else if (mOrder.getStatus().equals("T")) {
+			state_tv.setText("已退货");
+		} else if (mOrder.getStatus().equals("O")) {
+			state_tv.setText("已完成");
+		}
+
+		if ("N".equals(mOrder.getStatus()) || "U".equals(mOrder.getStatus())) {
+			if (mOrder.getPaycode().equals(Constant.PAYONLINE)) {
+				VISIBLE(cance_but);
+				VISIBLE(pay_but);
+			} else {
+				VISIBLE(cance_but);
+			}
+		} else if ("C".equals(mOrder.getStatus())
+				|| "P".equals(mOrder.getStatus())) {
+			VISIBLE(cance_but);
+		} else if ("D".equals(mOrder.getStatus())) {
+			VISIBLE(confirm_rec_but);
+			VISIBLE(contact_but);
+		} else if ("R".equals(mOrder.getStatus())
+				|| "O".equals(mOrder.getStatus())) { // "X".equals(mOrder.getStatus())
+														// ||
+			VISIBLE(contact_but);
+		}
+
+		if (mOrder.getPayDetails() != null) {
+			for (int i = 0; i < mOrder.getPayDetails().size(); i++) {
+				if (mOrder.getPayDetails().get(i).getPaycode().equals("COUPON")) {// 礼券抵消
+					coupon_tv.setText("￥"
+							+ CommonUtil.conversionDouble(mOrder
+									.getPayDetails().get(i).getCredit()));
+				}
+				if (mOrder.getPayDetails().get(i).getPaycode().equals("HWCPAY")) {
+					hwcpay_tv.setText("￥"
+							+ CommonUtil.conversionDouble(mOrder
+									.getPayDetails().get(i).getCredit()));
+				}
+				if (mOrder.getPayDetails().get(i).getPaycode().equals("ALIPAY")) {
+					dsfzf_tv.setText("支付宝支付");
+					dsf_tv.setText("￥"
+							+ CommonUtil.conversionDouble(mOrder
+									.getPayDetails().get(i).getCredit()));
+				}
+				if (mOrder.getPayDetails().get(i).getPaycode().equals("WX")) {
+					dsfzf_tv.setText("微信支付");
+					dsf_tv.setText("￥"
+							+ CommonUtil.conversionDouble(mOrder
+									.getPayDetails().get(i).getCredit()));
+				}
+
+			}
+		}
+
+		// if (!mOrder.getStatus().equals("P") ||
+		// mOrder.getPaycode().equals(Constant.PAYONLINE) ||
+		// !mOrder.getStatus().equals("O")) {// 需要支付
+		// VISIBLE(dupay_but);
+		// dupay_but.setText("还需支付￥" +
+		// CommonUtil.conversionDouble(Math.abs(mOrder.getBalance())) + "元");
+		//
+		// } else {
+		// GONE(dupay_but);
+		// }
+		//
+		// String orderstatus = mOrder.getStatus();
+		// if (orderstatus.equals("N") || orderstatus.equals("P")) {
+		// header.setRightText("取消订单");
+		// } else {
+		// header.setRightText("");
+		// }
+		//
+		// if (orderstatus.equals("X")) {// 被取消的订单
+		// GONE(dupay_but);
+		// VISIBLE(cance_but);
+		// cance_but.setBackgroundColor(getResources().getColor(R.color.gray3));
+		// }
+	}
+
+	@OnClick(R.id.pay_but)
+	public void dupay_but(View v) {
+		goTo(CounterInfoActivity.class, mOrder.getRid(),
+				mOrder.getSeller_shop());
+	}
+
+	@OnClick(R.id.confirm_rec_but)
+	public void confirm_but(View v) {
+		DialogUtil.showRabbitCustomDialog(context, "宝贝已收到，确认收货？", "取消", "确定",
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						switch (which) {
+						case 1:
+							DialogUtil.dismissRabbitFragment(context);
+							break;
+						case 2:
+							presenter.confirmOrder(rid);
+							DialogUtil.dismissRabbitFragment(context);
+							break;
+						default:
+							break;
+						}
+
+					}
+				});
+
+	}
+
+	@OnClick(R.id.cance_but)
+	public void cancel_but(View v) {
+		cancelOrder();
+	}
+
+	@OnClick(R.id.contact_but)
+	public void contact_but(View v) {
+		IntentUtil.toPhoneApp(context, mOrder.getShop_mobile());
+	}
+	
+	@OnClick(R.id.order_detail_rl)
+	public void enter_shop(View view) {
+		 goTo(ShopIndexActivity.class, sid);
+		
+	}
+
+}

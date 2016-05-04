@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/head_rl"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/head_height"
+        android:background="@color/main_color"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/city_tv"
+            android:layout_width="68dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="2dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:paddingRight="2dp"
+            android:text="城市"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:id="@+id/search_ll"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_centerInParent="true"
+            android:layout_weight="1"
+            android:background="@drawable/bg_search"
+            android:orientation="horizontal"
+            android:paddingBottom="6dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="6dp"
+            android:paddingTop="6dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/search" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="4dp"
+                android:gravity="left"
+                android:singleLine="true"
+                android:text="搜索商品"
+                android:textColor="@color/text_less_important"
+                android:textSize="@dimen/text_14" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/qr_iv"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="2dp"
+            android:contentDescription="@null"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/index_title_left" />
+
+        <ImageView
+            android:id="@+id/msg_iv"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginRight="7dp"
+            android:contentDescription="@null"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/white_message" />
+    </LinearLayout>
+
+    <in.srain.cube.views.ptr.PtrFrameLayout
+        android:id="@+id/load_more_grid_view_ptr_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_ll"
+        android:layout_below="@+id/head_rl">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.hwc.member.widget.LoadMoreContainerGridViewWithHeader
+                android:id="@+id/load_more_grid_view_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/shop_background">
+
+                <com.hwc.member.widget.ScrollGridViewWithFooter
+                    android:id="@+id/load_more_grid_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fadingEdge="none"
+                    android:focusable="false"
+                    android:listSelector="@android:color/transparent"
+                    android:numColumns="2"
+                    android:scrollbarStyle="outsideOverlay"
+                    android:stretchMode="columnWidth"
+                    android:verticalSpacing="8dp" />
+
+            </com.hwc.member.widget.LoadMoreContainerGridViewWithHeader>
+        </RelativeLayout>
+
+
+    </in.srain.cube.views.ptr.PtrFrameLayout>
+
+    <ImageView
+        android:id="@+id/shopcar_iv"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_above="@id/up_iv"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="90dp"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/icon_gouwuche" />
+
+    <ImageView
+        android:id="@+id/up_iv"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="20dp"
+        android:src="@drawable/icon_top"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/load_page"
+        layout="@layout/load_page" />
+
+    <include
+        android:id="@+id/load_error_page"
+        layout="@layout/load_error_page"
+        android:visibility="gone" />
+
+</RelativeLayout>

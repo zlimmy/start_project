@@ -1,0 +1,30 @@
+package com.hwc.member.adapter;
+
+import android.content.Context;
+
+import com.huimodel.api.base.Location;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.lidroid.xutils.BitmapUtils;
+
+import java.util.List;
+
+/**
+ * Created by xtsxx on 2016/4/28.
+ */
+public class LocationListAdapter extends MirAdapter<Location> {
+    public LocationListAdapter(Context context, List<Location> mDatas, int itemLayoutId, BitmapUtils bitmapUtils) {
+        super(context, mDatas, itemLayoutId, bitmapUtils);
+    }
+
+    @Override
+    public void convert(HolderEntity helper, Location item) {
+        if (item.getDistrict() != null) {
+            helper.setText(R.id.city_tv,item.getDistrict());
+        }else if (item.getCity() != null) {
+            helper.setText(R.id.city_tv,item.getCity());
+        }
+
+    }
+}

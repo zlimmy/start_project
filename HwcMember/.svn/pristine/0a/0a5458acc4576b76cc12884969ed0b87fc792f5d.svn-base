@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/main_color" >
+        
+        <com.hwc.member.widget.LuckyPanView
+            android:id="@+id/luckypan"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:padding="54dp" />
+
+        <ImageView
+            android:id="@+id/start_btn"
+            android:layout_width="98dp"
+            android:layout_height="98dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/start" />
+        
+    </RelativeLayout>
+    
+    <com.hwc.member.widget.header.LXHeadView
+        xmlns:my="http://schemas.android.com/apk/res/com.hwc.member"
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        my:centertitle="大转盘" />
+    
+    <Button
+        android:id="@+id/times_bt"
+        style="@style/btn_tv_style"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_margin="28dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:background="#F88536"
+        android:visibility="invisible"
+        android:layout_alignParentBottom="true"
+        android:clickable="false" />
+
+</RelativeLayout>

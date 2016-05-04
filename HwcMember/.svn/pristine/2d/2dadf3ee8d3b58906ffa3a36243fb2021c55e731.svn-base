@@ -1,0 +1,71 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.base.Address;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.UserAddressCreateRequest;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.util.ToastUtil;
+import com.hwc.member.view.activity.view.IAddressInfoView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class AddressInfoPresenter {
+
+	private IAddressInfoView view;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public AddressInfoPresenter(IAddressInfoView view){
+		this.view = view;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void addAddress(String name, String phone, String address, boolean flag){
+		UserAddressCreateRequest request = new UserAddressCreateRequest();
+		Address ar = new Address();
+		ar.setReceiver_name(name);
+		if(flag){
+			ar.setIsdefault("T");
+		}else{
+			ar.setIsdefault("F");
+		}
+		ar.setReceiver_address(address);
+		ar.setReceiver_mobile(phone);
+		ar.setReceiver_phone(phone);
+		request.setAddress(ar);
+		request.setUser_id_by(Member.getInstance().getUser_id());
+		request.setImei(Constant.IMEI);
+		iHwcBizMainImpl.addAddress(request, view.getContext(), new IResult<ResponseBase>() {
+			
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						ToastUtil.show("添加成功！");
+						view.Success();
+					}else{
+						SimpleHUD.showErrorMessage(view.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	
+}

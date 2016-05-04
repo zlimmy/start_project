@@ -1,0 +1,107 @@
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Paint;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DProduct;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.common.Constant;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.lidroid.xutils.BitmapUtils;
+
+public class FollowProductAdapter extends MirAdapter<DProduct>{
+	
+	private Callback callback;
+
+	public FollowProductAdapter(Context context,
+			List<DProduct> mDatas, int itemLayoutId,
+			BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, final DProduct item) {
+		final int positon = helper.getPosition();
+		ImageView iv = helper.getView(R.id.pic_iv);
+//		bitmapUtils.display(iv, item.getImageurl());
+		ViewTransformUtil.layoutParams(iv, iv.getLayoutParams(),220,220);
+		bitmapUtils.display(iv, item.getImageurl()+Constant.IMAGE_SIZE_240);
+		helper.setText(R.id.name_tv, item.getName());
+//		helper.setText(R.id.describe_tv, item.getSellPt());
+		helper.setText(R.id.former_tv, "￥"+item.getPrice());
+		TextView tv= helper.getView(R.id.former_tv);
+		
+		if(item.getProminfo()!=null){
+			helper.setText(R.id.newprice_tv, "￥"+CommonUtil.conversionDouble(item.getProminfo().getProm_price()));
+			tv.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG|Paint.ANTI_ALIAS_FLAG); 
+		}else{
+			helper.setText(R.id.newprice_tv, "");
+			tv.getPaint().setFlags(0|Paint.ANTI_ALIAS_FLAG);
+		}
+
+		
+		
+		ImageView img=helper.getView(R.id.delete_iv);
+		img.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {				
+//				DialogUtil.showDialog(Constant.Dialog, "确定要取消关注该商品吗？", Gravity.CENTER, mContext, null, new OnClickListener() {
+//
+//					@Override
+//					public void onClick(DialogPlus dialog, View view) {
+//						switch (view.getId()) {
+//						case R.id.cancel:
+//							break;
+//
+//						case R.id.confirm:
+//							callback.delGoods(item,positon);
+//							break;
+//						}
+//						dialog.dismiss();
+//					}
+//				}, null);
+				DialogUtil.showRabbitCustomDialog(mContext, "确定要取消关注该商品吗？", "取消", "确定", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						switch (which) {
+							case 1:
+								break;
+							case 2:
+								callback.delGoods(item,positon);
+								break;
+						}
+						dialog.dismiss();
+					}
+				});
+			}
+		});
+		
+	}
+	
+	/** 回调接口 **/
+	public interface Callback {
+
+		/** 删除回调该函数 **/
+		void delGoods(DProduct item,int position);
+		
+	}
+	
+	/** 注册监听接口 **/
+	public void registerCallback(Callback callback) {
+		this.callback = callback;
+	}
+
+}

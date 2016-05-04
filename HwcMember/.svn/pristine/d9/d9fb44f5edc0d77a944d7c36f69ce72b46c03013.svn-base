@@ -1,0 +1,33 @@
+/**
+ * 
+ */
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.ResponseBase;
+
+/**
+ * @author FZ
+ */
+public class ShopCarResponse extends ResponseBase {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7777220737221495360L;
+	
+	private List<DProduct> products;
+
+	public List<DProduct> getProducts() {
+		return products;
+	}
+
+	public void setProducts(List<DProduct> products) {
+		this.products = products;
+	}
+	
+	
+	
+}

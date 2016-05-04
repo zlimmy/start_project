@@ -1,0 +1,358 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import android.content.DialogInterface;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.Advert;
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.ProductSearchRequest;
+import com.huimodel.api.request.UserLoginRequest;
+import com.huimodel.api.response.HomeResponse;
+import com.huimodel.api.response.ProductSearchResponse;
+import com.huimodel.api.response.ShoppingCartAddGroupShopResponse;
+import com.huimodel.api.response.UserLoginResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.HotGoodsAdapter;
+import com.hwc.member.adapter.MainProductsAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.bean.MLocation;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.common.Mlocation;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.PreferenceUtils;
+import com.hwc.member.util.TimeUtil;
+import com.hwc.member.util.UtilPhone;
+import com.hwc.member.view.activity.view.IMainFragView;
+import com.hwc.member.widget.PullToRefreshLayout;
+import com.hwc.member.widget.SimpleHUD;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public class NewMainPresenter {
+
+	private IMainFragView mainFragView;
+	public MainProductsAdapter hladapter;
+	private List<Advert> list;//菜单
+	public HotGoodsAdapter adapter;
+	private List<DProduct> proList = new ArrayList<DProduct>();//促销商品
+	private List<Advert> adList; //广告
+	private IHwcBizMain iHwcBizMainImpl;
+	private Gson gson;
+
+	public NewMainPresenter(IMainFragView mainFragView) {
+		this.mainFragView = mainFragView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		this.gson = new Gson();
+
+
+	}
+
+	public void getProducts(final int page, final PullToRefreshLayout pullToRefreshLayout) {
+		ProductSearchRequest psr = new ProductSearchRequest();
+		psr.setLatitude(Constant.latitude);
+		psr.setLongitude(Constant.longitude);
+		psr.setPage_size(20);
+		psr.setPage(page);
+		psr.setImei(Constant.IMEI);
+		psr.setGcity(Mlocation.getInstance().getCity());
+		psr.setGdistrict(Mlocation.getInstance().getDistrict());
+		psr.setStatus("onsale");
+		psr.setProduct_order_by_method("asc");
+		psr.setProduct_order_by("distance");
+		if (!Member.isNull()) {
+			psr.setUser_id_by(Member.getInstance().getUser_id());
+		}
+
+		mainFragView.setIsCanMore(false);
+		iHwcBizMainImpl.queryShopProducts(psr, mainFragView.getContext(), new IResult<ProductSearchResponse>() {
+
+			@Override
+			public void result(ProductSearchResponse obj, Code code) {
+				if (pullToRefreshLayout != null) {
+					if (page == 1) {
+						pullToRefreshLayout.refreshFinish(PullToRefreshLayout.SUCCEED);
+					} else {
+						pullToRefreshLayout.loadmoreFinish(PullToRefreshLayout.SUCCEED);
+					}
+				}
+				mainFragView.setIsCanMore(true);
+				switch (code) {
+					case OK:
+						if (obj.getProducts() != null && obj.getProducts().size() > 0) {
+							if (page == 1) {
+								proList.clear();
+								proList.addAll(obj.getProducts());
+								hladapter = new MainProductsAdapter(mainFragView.getContext(), proList, R.layout.item_main_product, null);
+								mainFragView.setGridAdapter(hladapter);
+							} else {
+								proList.addAll(obj.getProducts());
+								hladapter.notifyDataSetChanged();
+							}
+
+						}
+						mainFragView.clearLoadPage();
+						break;
+
+					default:
+						SimpleHUD.showInfoMessage(mainFragView.getContext(), code + "");
+						break;
+				}
+			}
+		});
+	}
+
+
+	//加载首页数据
+	public void setHomeData() {
+		RequestBase requestBase = new RequestBase();
+		requestBase.setLatitude(Constant.latitude);
+		requestBase.setLongitude(Constant.longitude);
+		requestBase.setGcity(Mlocation.getInstance().getCity());
+		requestBase.setGdistrict(Mlocation.getInstance().getDistrict());
+		requestBase.setUser_id_by(Member.getInstance().getUser_id());
+		iHwcBizMainImpl.getHomeData(requestBase, mainFragView.getContext(), new IResult<HomeResponse>() {
+			@Override
+			public void result(HomeResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				switch (code) {
+					case OK:
+
+						//广告
+						if (obj.getPadr().getAdverts() != null && obj.getPadr().getAdverts().size() > 0) {
+							adList = obj.getPadr().getAdverts();
+							mainFragView.setPromAd(adList, null);
+						} else {
+							int[] pic = new int[]{R.drawable.icon_defultbg};
+							mainFragView.setPromAd(null, pic);
+						}
+						//菜单
+						if (obj.getSpr() != null) {
+							list = obj.getSpr().getSubject();
+							if (list != null && list.size() >= 0) {
+								adapter = new HotGoodsAdapter(mainFragView.getContext(), list, R.layout.item_hotgoods, null);
+								mainFragView.setMenu(adapter);
+							}
+						}
+
+						break;
+
+					default:
+						SimpleHUD.showInfoMessage(mainFragView.getContext(), code + "");
+						break;
+				}
+			}
+		});
+	}
+
+	public void check_Loaction(MLocation location) {
+
+		DbUtils dbUtils = DbUtils.create(mainFragView.getContext(), Constant.dbName);
+		try {
+			List<MLocation> list = dbUtils.findAll(MLocation.class);
+
+			if (list != null && list.size() > 0) {
+				MLocation l = dbUtils.findFirst(Selector.from(MLocation.class).where("district", "=", location.getDistrict()));
+				//l!=null
+				if (l != null) {
+					//如果用户当前所在区在表里面有记录，取最近一条记录
+//					mainFragView.getHeader().setTitle(l.getDistrict()+l.getStreet()+l.getStreetNumber());
+					dbUtils.deleteAll(MLocation.class);
+					dbUtils.save(location);
+//					getHistoryLoaction(location);
+				} else {
+					getHistoryLoaction(location);
+				}
+
+
+			} else {
+				//第一次登陆执行
+				dbUtils.save(location);
+			}
+
+		} catch (DbException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void appEntryPushStack(String imei, String longitude, String latitude) {
+		RequestBase rb = new RequestBase();
+		rb.setImei(imei);
+		rb.setLongitude(longitude);
+		rb.setLatitude(latitude);
+		System.out.println("上传数据----" + gson.toJson(rb));
+		iHwcBizMainImpl.appEntryPushStack(rb, mainFragView.getContext(), new IResult<ResponseBase>() {
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				// TODO Auto-generated method stub
+				switch (code) {
+					case OK:
+						PreferenceUtils.setPrefString(mainFragView.getContext(), "appEntryPushStack", TimeUtil.getDateString(new Date()));
+						break;
+					case REQUEST_FAILURE:
+						break;
+
+					default:
+						break;
+				}
+			}
+		});
+	}
+
+
+	//读取历史地理位置
+	public void getHistoryLoaction(final MLocation location) {
+		final DbUtils dbUtils = DbUtils.create(mainFragView.getContext(), Constant.dbName);
+		final List<MLocation> list;
+		String address = "";
+		try {
+
+			list = dbUtils.findAll(Selector.from(MLocation.class).orderBy("id", true));
+
+			if (location.getCity() == null) {
+				address = "定位失败,请打开GRS重新定位";
+			} else {
+				address = location.getCity() + location.getDistrict();
+			}
+			DialogUtil.addressDialog(mainFragView.getContext(), location.getCity() + location.getDistrict(),
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							try {
+								dbUtils.deleteAll(MLocation.class);
+								dbUtils.save(location);
+							} catch (DbException e) {
+								e.printStackTrace();
+							}
+							dialog.dismiss();
+						}
+					}, new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							if (list != null && list.size() > 0) {
+								Constant.latitude = list.get(0).getLatitude();
+								Constant.longitude = list.get(0).getLongitude();
+							}
+							dialog.dismiss();
+						}
+					});
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * 自动登录
+	 **/
+	public void autologin() {
+		String uname = PreferenceUtils.getPrefString(App.mContext, "name", "");
+		String upass = PreferenceUtils.getPrefString(App.mContext, "pwd", "");
+		if (!uname.equals("") && !upass.equals("")) {
+			UserLoginRequest u = new UserLoginRequest();
+			u.setAccnt(uname);
+			u.setPwd(upass);
+			u.setChannel(Constant.LOGIN_CHANNEL_MEMBER);
+			u.setImei(Constant.IMEI);
+			u.setVersion(UtilPhone.getAppVersionName(mainFragView.getContext()));
+			iHwcBizMainImpl.login(u, mainFragView.getContext(), new IResult<UserLoginResponse>() {
+
+				@Override
+				public void result(UserLoginResponse obj, Code code) {
+					switch (code) {
+						case OK:
+							if (obj.isSuccess()) {
+								Member.setMember(obj);
+								Constant.USERIMG = "user/" + "FACE_" + Member.getInstance().getUser_id() + ".jpg";
+								getCartList();
+							}
+							break;
+
+						default:
+							break;
+					}
+				}
+
+			});
+		}
+
+	}
+
+	/***
+	 * 验证当前位置是否在有效范围内
+	 *
+	 * @param latitude
+	 * @param longitude
+	 */
+
+	public void validateLocation() {
+		RequestBase rb = new RequestBase();
+		rb.setLongitude(Mlocation.getInstance().getLongitude());
+		rb.setLatitude(Mlocation.getInstance().getLatitude());
+		rb.setGcity(Mlocation.getInstance().getCity());
+		rb.setGdistrict(Mlocation.getInstance().getDistrict());
+		iHwcBizMainImpl.validateLocation(rb, mainFragView.getContext(), new IResult<ResponseBase>() {
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				switch (code) {
+					case OK:
+						mainFragView.validateLocation(obj);
+						break;
+					default:
+						mainFragView.showErrorPage();
+						break;
+				}
+			}
+		});
+
+
+
+
+}
+
+
+	public void getCartList(){
+		RequestBase request = new RequestBase();
+		request.setImei(Constant.IMEI);
+		request.setUser_id_by(Member.getInstance().getUser_id());
+		iHwcBizMainImpl.getShoppingcardlist(request, mainFragView.getContext(),new IResult<ShoppingCartAddGroupShopResponse>() {
+			@Override
+			public void result(ShoppingCartAddGroupShopResponse obj, Code code) {
+					switch (code) {
+					case OK:
+						if(obj.isSuccess()){
+							Constant.shopcareNum = obj.getNum();
+							mainFragView.notifyCarNum();
+						}
+						break;
+
+					default:
+						break;
+					}
+				}
+
+		});
+	}
+
+}

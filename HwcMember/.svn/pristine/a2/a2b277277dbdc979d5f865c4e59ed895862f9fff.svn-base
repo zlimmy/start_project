@@ -1,0 +1,50 @@
+package com.huimodel.api.request;
+
+
+import com.huimodel.api.base.RequestBase;
+
+public class SmsMessageRequest extends RequestBase {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 974627511529611298L;
+
+	/**
+	 * 需要接收的手机号码
+	 */
+	private String mobile;
+	/**
+	 * 短信的类型
+	 */
+	private String notify_type;
+	/**
+	 * 其他
+	 */
+	private String context;
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getNotify_type() {
+		return notify_type;
+	}
+
+	public void setNotify_type(String notify_type) {
+		this.notify_type = notify_type;
+	}
+
+	public String getContext() {
+		return context;
+	}
+
+	public void setContext(String context) {
+		this.context = context;
+	}
+
+}

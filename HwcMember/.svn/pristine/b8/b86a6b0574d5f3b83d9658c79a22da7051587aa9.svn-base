@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <View style="@style/divider_horizontal" android:id="@+id/line2" android:layout_margin="10dp" android:layout_height="1px"/>
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" >
+
+        <LinearLayout
+            android:id="@+id/actionsub_ll"
+            android:layout_width="140dp"
+            android:layout_height="38dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:orientation="vertical" >
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/stock_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="剩余6件"
+            android:textColor="@color/gray5" />
+        
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@color/white" >
+        
+        <View style="@style/divider_horizontal" android:layout_height="1px"/>
+
+        <Button
+            android:id="@+id/submit_but"
+            android:layout_width="120dp"
+            android:layout_height="35dp"
+            android:layout_centerInParent="true"
+            android:layout_margin="5dp"
+            style="@style/btn_tv_style"
+            android:textSize="@dimen/text_14"
+            android:text="立即购买" />
+
+    </RelativeLayout>
+    
+</LinearLayout>

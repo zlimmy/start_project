@@ -1,0 +1,246 @@
+package com.hwc.member.view.fragment;
+
+import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+
+import com.huimodel.api.base.Discovery;
+import com.hwc.member.R;
+import com.hwc.member.adapter.MakeMoneyAdapter;
+import com.hwc.member.presenter.MakeMoenyPresenter;
+import com.hwc.member.view.activity.bustling.MakeMoneyActivity;
+import com.hwc.member.view.activity.view.IMakeMoenyView;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.hwc.member.widget.PullToRefreshFooter;
+import com.hwc.member.widget.PullToRefreshHeadView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import in.srain.cube.views.loadmore.LoadMoreContainer;
+import in.srain.cube.views.loadmore.LoadMoreHandler;
+import in.srain.cube.views.loadmore.LoadMoreListViewContainer;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
+
+public class MakeMoney_Fragment extends FormBaseFragment implements IMakeMoenyView {
+
+    @ViewInject(R.id.load_more_list_view_ptr_frame)
+    private PtrFrameLayout mPtrFrameLayout;
+
+    @ViewInject(R.id.load_more_container)
+    LoadMoreListViewContainer load_more_container;
+
+    @ViewInject(R.id.listview)
+    private ListView mListView;
+
+
+    private MakeMoneyAdapter makeMoneyAdapter;
+    private List<Discovery> discoveryList;
+    private int mCurIndex = 1;//小标 从第一页开始
+    private MakeMoenyPresenter presenter = new MakeMoenyPresenter(this);
+
+    @ViewInject(R.id.nodata_rl)
+    private RelativeLayout nodata_rl;
+
+    @Override
+    protected void init() {
+        // TODO Auto-generated method stub
+
+        discoveryList = new ArrayList<Discovery>();
+        makeMoneyAdapter = new MakeMoneyAdapter(getActivity(), discoveryList, R.layout.item_makemoney, bitmapUtils);
+        mListView.setAdapter(makeMoneyAdapter);
+        mListView.setDivider(new ColorDrawable(getResources().getColor(R.color.gray0)));
+        mListView.setDividerHeight(1);
+
+        PullToRefreshHeadView headView = new PullToRefreshHeadView(getContext());
+        headView.setLastUpdateTimeKey(this.getClass().getSimpleName());
+        mPtrFrameLayout.setHeaderView(headView);
+        mPtrFrameLayout.addPtrUIHandler(headView);
+        mPtrFrameLayout.setPtrHandler(new PtrHandler() {
+            @Override
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+
+                return PtrDefaultHandler.checkContentCanBePulledDown(frame, mListView, header);
+            }
+
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                presenter.refresh();
+            }
+        });
+
+        load_more_container.setAutoLoadMore(true);
+        final PullToRefreshFooter footer = new PullToRefreshFooter(getContext());
+        load_more_container.setLoadMoreView(footer);
+        load_more_container.setLoadMoreUIHandler(footer);
+
+        // binding view and data
+        load_more_container.setLoadMoreHandler(new LoadMoreHandler() {
+            @Override
+            public void onLoadMore(LoadMoreContainer loadMoreContainer) {
+                mCurIndex = mCurIndex + 1;
+                presenter.more(mCurIndex);
+            }
+        });
+
+
+        showProgressDialog(null);
+        presenter.refresh();
+
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+                // TODO Auto-generated method stub
+                if (discoveryList.get(position).getContent_url() != null) {
+                    try {
+                        Intent intent = new Intent();
+                        intent.putExtra("Earned", discoveryList.get(position).getEarned());
+                        intent.putExtra("id", discoveryList.get(position).getId());
+                        intent.putExtra("url", discoveryList.get(position).getContent_url());
+                        intent.putExtra("title", discoveryList.get(position).getTitle());
+                        intent.putExtra("nums", discoveryList.get(position).getViews() + "");
+                        intent.putExtra("img", discoveryList.get(position).getPics().get(0).getUrl() + "");
+                        intent.putExtra("endtime", discoveryList.get(position).getRule().getEnd_date() + "");
+                        intent.putExtra("share_title", discoveryList.get(position).getShare_title());
+                        intent.setClass(mContext, MakeMoneyActivity.class);
+                        startActivityForResult(intent, 100);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    T("已领完");
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public int getLayoutId() {
+        // TODO Auto-generated method stub
+        return R.layout.fm_make_money;
+    }
+
+
+    @Override
+    public void refresh(List<Discovery> list) {
+        // TODO Auto-generated method stub
+//		GONE(nodata_rl);
+//		discoveryList.clear();
+//		discoveryList.addAll(list);
+//		makeMoneyAdapter.notifyDataSetChanged();
+//		makemoney_refres.onPullDownRefreshComplete();
+//		makemoney_refres.onPullUpRefreshComplete();
+//		if(list.size()<presenter.pageSize){
+//			makemoney_refres.setScrollLoadEnabled(false);
+//		}else {
+//			makemoney_refres.setHasMoreData(true);
+//		}
+//        setLastUpdateTime();
+//        mCurIndex = 1;
+
+
+        GONE(nodata_rl);
+        VISIBLE(load_more_container);
+        discoveryList.clear();
+        discoveryList.addAll(list);
+        makeMoneyAdapter.notifyDataSetChanged();
+        mPtrFrameLayout.refreshComplete();
+        // load more
+        if (discoveryList.size() <= 0) {
+            showErrorPage();
+        } else if (discoveryList.size() < 5) {
+            load_more_container.loadMoreFinish(true, false);
+        } else {
+            load_more_container.loadMoreFinish(false, true);
+        }
+        mCurIndex = 1;
+
+
+    }
+
+    @Override
+    public void more(List<Discovery> list, boolean isEnd) {
+        // TODO Auto-generated method stub
+//		if(isEnd){
+//			discoveryList.addAll(list);
+//			makeMoneyAdapter.notifyDataSetChanged();
+//		}
+//		makemoney_refres.onPullDownRefreshComplete();
+//		makemoney_refres.onPullUpRefreshComplete();
+//		makemoney_refres.setHasMoreData(isEnd);
+
+
+        discoveryList.addAll(list);
+        mPtrFrameLayout.refreshComplete();
+        // load more
+        load_more_container.loadMoreFinish(false, isEnd);
+        makeMoneyAdapter.notifyDataSetChanged();
+    }
+
+
+    @Override
+    public void clearLoadPage() {
+        // TODO Auto-generated method stub
+
+    }
+
+
+    @Override
+    public void showErrorPage() {
+        // TODO Auto-generated method stub
+
+//		VISIBLE(nodata_rl);
+//		makemoney_refres.onPullDownRefreshComplete();
+//		makemoney_refres.setScrollLoadEnabled(false);
+//        setLastUpdateTime();
+
+
+        discoveryList.clear();
+        GONE(load_more_container);
+        makeMoneyAdapter.notifyDataSetChanged();
+        VISIBLE(nodata_rl);
+    }
+
+
+    @Override
+    public void setButIsShow(boolean earned) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onStart() {
+        // TODO Auto-generated method stub
+        super.onStart();
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void advertEarnSucces(View v, String gold) {
+        // TODO Auto-generated method stub
+
+    }
+
+
+    @Override
+    public void advertEarnFail(View v) {
+        // TODO Auto-generated method stub
+
+    }
+
+
+}

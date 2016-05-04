@@ -1,0 +1,94 @@
+package com.hwc.member.presenter;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.request.ProductSearchRequest;
+import com.huimodel.api.response.ProductSearchResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.ProductGridAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Mlocation;
+import com.hwc.member.view.activity.view.ISearchView;
+import com.hwc.member.widget.PullToRefreshLayout;
+import com.hwc.member.widget.SimpleHUD;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class SearchShopGoodsPresenter {
+	
+	private ISearchView searchView;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public ProductGridAdapter adapter;
+	
+	private List<DProduct> morelist = new ArrayList<DProduct>();
+	
+	public SearchShopGoodsPresenter(ISearchView searchView){
+		this.searchView = searchView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void searchProducts(String query, final int page, long sid, final PullToRefreshLayout pullToRefreshLayout){
+		ProductSearchRequest psr = new ProductSearchRequest();
+		psr.setQuery(query);
+		psr.setLatitude(Constant.latitude);
+		psr.setLongitude(Constant.longitude);
+		psr.setImei(Constant.IMEI);
+		psr.setPage(page);
+		psr.setPage_size(20);
+		psr.setStatus("onsale");
+		psr.setGcity(Mlocation.getInstance().getCity());
+		psr.setGdistrict(Mlocation.getInstance().getDistrict());
+
+		psr.setShop_id(sid);
+		searchView.showProgressDialog(null);
+		iHwcBizMainImpl.searchProductList(psr, searchView.getContext(), new IResult<ProductSearchResponse>() {
+			
+			@Override
+			public void result(ProductSearchResponse obj, Code code) {
+				searchView.dismissProgressDialog();
+				if(pullToRefreshLayout != null){
+					pullToRefreshLayout.loadmoreFinish(PullToRefreshLayout.SUCCEED);
+				}
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						if(obj.getProducts() != null && obj.getProducts().size() > 0){
+							if(page == 1){
+								morelist.clear();
+							}
+							if(morelist.size() > 0){
+								morelist.addAll(obj.getProducts());
+								adapter.notifyDataSetChanged();
+							}else{
+								morelist.addAll(obj.getProducts());
+								adapter = new ProductGridAdapter(searchView.getContext(), morelist, R.layout.item_shop_product, null);
+								searchView.setShopGrid(adapter);
+							}
+						}else{
+							if(page == 1){
+								searchView.showErrorPage();
+							}else{
+								SimpleHUD.showInfoMessage(searchView.getContext(), "没有更多了");
+							}
+							
+						}
+					}else{
+						SimpleHUD.showErrorMessage(searchView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(searchView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+
+}

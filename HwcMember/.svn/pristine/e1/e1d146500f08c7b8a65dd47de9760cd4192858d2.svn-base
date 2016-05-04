@@ -1,0 +1,51 @@
+package com.hwc.member.util;
+
+
+public class PromProzeUtil {
+
+	
+	public static int getAwards(String awards){
+		int code = 0;
+		if(awards.equals("一等奖")){
+			code = 1;
+		}
+		if(awards.equals("二等奖")){
+			code =  2;
+		}
+		if(awards.equals("三等奖")){
+			code =  3;		
+		}
+		if(awards.equals("四等奖")){
+			code =  4;
+		}
+		if(awards.equals("五等奖")){
+			code =  5;
+		}
+		return code;
+	}
+	
+	
+	public static String awardsString(String awards){
+		String code = "";
+		if(awards.equals("1")){
+			code = "一等奖";
+		}
+		if(awards.equals("2")){
+			code =  "二等奖";
+		}
+		if(awards.equals("3")){
+			code =  "三等奖";		
+		}
+		if(awards.equals("4")){
+			code =  "四等奖";
+		}
+		if(awards.equals("5")){
+			code =  "五等奖";
+		}
+		return code;
+	}
+
+	
+	
+	
+}

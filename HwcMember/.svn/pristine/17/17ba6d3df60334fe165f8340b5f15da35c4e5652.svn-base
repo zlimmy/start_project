@@ -1,0 +1,61 @@
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.ProductSuite;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author alessandro.balocco
+ */
+public class SimpleAdapter extends MirAdapter<ProductSuite> {
+	private int clickTemp = -1;
+	
+	private DProduct dProduct;
+	public SimpleAdapter(Context context, List<ProductSuite> mDatas,DProduct dp,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		this.dProduct = dp;
+	}
+
+	
+	public void setSeclection(int position) {
+		clickTemp = position;
+	}
+	
+	@Override
+	public void convert(HolderEntity helper, ProductSuite item) {
+		TextView des_tv = helper.getView(R.id.text_view);
+		des_tv.setText(item.getDescript());
+		
+		helper.setImageResource(R.id.image_view, R.drawable.ic_launcher);
+		LinearLayout bg_ll = helper.getView(R.id.bg_ll);
+		if(dProduct.getPsuite()!=null&&dProduct.getPsuite().getSuite_id().equals(item.getSuite_id())){ //判断之前是否选择过套餐
+			bg_ll.setBackgroundResource(R.drawable.shape_buy);
+			des_tv.setTextColor(0xffe73828);
+		}else{
+			if (clickTemp == helper.getPosition()) {
+				bg_ll.setBackgroundResource(R.drawable.shape_buy);
+				des_tv.setTextColor(0xffe73828);
+			} else {
+				bg_ll.setBackgroundColor(Color.TRANSPARENT);
+				bg_ll.setBackgroundResource(R.drawable.shape_ss);
+				des_tv.setTextColor(0xff999999);
+			}
+		}
+	}
+	
+	public List<ProductSuite> getDataSouce(){
+		return mDatas;
+	}
+
+}

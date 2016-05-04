@@ -1,0 +1,302 @@
+/**
+ * 
+ */
+package com.huimodel.api.base;
+
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public class PointExchange {
+
+	private Long id;
+	private Long user_id;
+	private String title;
+	private Integer num;
+	private Double use_point;
+	private Long exchang_sid;
+	private String exchanged_type;
+	private String status;
+	private String country;
+	private String state;
+	private String city;
+	private String district;
+	private String town;
+	private String address;
+	private String mobile;
+	private String contacts;
+	private String remark;
+	private String created;
+	
+	private List<PointExchangeDetail> details;
+
+	/**
+	 * @return the id
+	 */
+	public Long getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the user_id
+	 */
+	public Long getUser_id() {
+		return user_id;
+	}
+
+	/**
+	 * @param user_id the user_id to set
+	 */
+	public void setUser_id(Long user_id) {
+		this.user_id = user_id;
+	}
+
+	/**
+	 * @return the title
+	 */
+	public String getTitle() {
+		return title;
+	}
+
+	/**
+	 * @param title the title to set
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	/**
+	 * @return the num
+	 */
+	public Integer getNum() {
+		return num;
+	}
+
+	/**
+	 * @param num the num to set
+	 */
+	public void setNum(Integer num) {
+		this.num = num;
+	}
+
+	/**
+	 * @return the use_point
+	 */
+	public Double getUse_point() {
+		return use_point;
+	}
+
+	/**
+	 * @param use_point the use_point to set
+	 */
+	public void setUse_point(Double use_point) {
+		this.use_point = use_point;
+	}
+
+	/**
+	 * @return the exchang_sid
+	 */
+	public Long getExchang_sid() {
+		return exchang_sid;
+	}
+
+	/**
+	 * @param exchang_sid the exchang_sid to set
+	 */
+	public void setExchang_sid(Long exchang_sid) {
+		this.exchang_sid = exchang_sid;
+	}
+
+	/**
+	 * @return the exchanged_type
+	 */
+	public String getExchanged_type() {
+		return exchanged_type;
+	}
+
+	/**
+	 * @param exchanged_type the exchanged_type to set
+	 */
+	public void setExchanged_type(String exchanged_type) {
+		this.exchanged_type = exchanged_type;
+	}
+
+	/**
+	 * @return the status
+	 */
+	public String getStatus() {
+		return status;
+	}
+
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	/**
+	 * @return the country
+	 */
+	public String getCountry() {
+		return country;
+	}
+
+	/**
+	 * @param country the country to set
+	 */
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	/**
+	 * @return the state
+	 */
+	public String getState() {
+		return state;
+	}
+
+	/**
+	 * @param state the state to set
+	 */
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	/**
+	 * @return the city
+	 */
+	public String getCity() {
+		return city;
+	}
+
+	/**
+	 * @param city the city to set
+	 */
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	/**
+	 * @return the district
+	 */
+	public String getDistrict() {
+		return district;
+	}
+
+	/**
+	 * @param district the district to set
+	 */
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	/**
+	 * @return the town
+	 */
+	public String getTown() {
+		return town;
+	}
+
+	/**
+	 * @param town the town to set
+	 */
+	public void setTown(String town) {
+		this.town = town;
+	}
+
+	/**
+	 * @return the address
+	 */
+	public String getAddress() {
+		return address;
+	}
+
+	/**
+	 * @param address the address to set
+	 */
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	/**
+	 * @return the mobile
+	 */
+	public String getMobile() {
+		return mobile;
+	}
+
+	/**
+	 * @param mobile the mobile to set
+	 */
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	/**
+	 * @return the contacts
+	 */
+	public String getContacts() {
+		return contacts;
+	}
+
+	/**
+	 * @param contacts the contacts to set
+	 */
+	public void setContacts(String contacts) {
+		this.contacts = contacts;
+	}
+
+	/**
+	 * @return the remark
+	 */
+	public String getRemark() {
+		return remark;
+	}
+
+	/**
+	 * @param remark the remark to set
+	 */
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	/**
+	 * @return the details
+	 */
+	public List<PointExchangeDetail> getDetails() {
+		return details;
+	}
+
+	/**
+	 * @param details the details to set
+	 */
+	public void setDetails(List<PointExchangeDetail> details) {
+		this.details = details;
+	}
+
+	/**
+	 * @return the created
+	 */
+	public String getCreated() {
+		return created;
+	}
+
+	/**
+	 * @param created the created to set
+	 */
+	public void setCreated(String created) {
+		this.created = created;
+	}
+	
+	
+	
+}

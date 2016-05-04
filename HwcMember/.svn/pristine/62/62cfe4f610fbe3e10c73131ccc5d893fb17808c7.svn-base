@@ -1,0 +1,60 @@
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.DPrize;
+import com.huimodel.api.base.ResponseBase;
+
+
+public class PromLotteryDrawResponse extends ResponseBase {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String prom_code;
+	//是否能中奖
+	private boolean is_win;
+	//抽中的奖品
+	private DPrize prize;
+	//今天剩下抽奖次数
+	private int remain_times;
+	
+	private String awards;
+	
+	public String getProm_code() {
+		return prom_code;
+	}
+	public void setProm_code(String prom_code) {
+		this.prom_code = prom_code;
+	}
+	public boolean isIs_win() {
+		return is_win;
+	}
+	public void setIs_win(boolean is_win) {
+		this.is_win = is_win;
+	}
+	public DPrize getPrize() {
+		return prize;
+	}
+	public void setPrize(DPrize prize) {
+		this.prize = prize;
+	}
+	public int getRemain_times() {
+		return remain_times;
+	}
+	public void setRemain_times(int remain_times) {
+		this.remain_times = remain_times;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public String getAwards() {
+		return awards;
+	}
+
+	public void setAwards(String awards) {
+		this.awards = awards;
+	}
+	
+	
+	
+}

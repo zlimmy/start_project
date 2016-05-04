@@ -1,0 +1,38 @@
+package com.hwc.member.widget;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.View;
+import android.widget.AbsListView;
+
+/**
+ * Created by Azeng on 2016/4/29.
+ */
+public class LoadMoreContainerGridViewWithHeader extends LoadMoreContainerGridViewWithHeaderBase {
+    private in.srain.cube.views.GridViewWithHeaderAndFooter mGridView;
+
+    public LoadMoreContainerGridViewWithHeader(Context context) {
+        super(context);
+    }
+
+    public LoadMoreContainerGridViewWithHeader(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    @Override
+    protected void addFooterView(View view) {
+        mGridView.addFooterView(view);
+    }
+
+    @Override
+    protected void removeFooterView(View view) {
+        mGridView.removeFooterView(view);
+    }
+
+    @Override
+    protected AbsListView retrieveAbsListView() {
+        View view = getChildAt(0);
+        mGridView = (ScrollGridViewWithFooter) view;
+        return mGridView;
+    }
+}

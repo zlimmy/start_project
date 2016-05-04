@@ -1,0 +1,223 @@
+package com.huimodel.api.base;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+
+public  class RequestBase   {
+	public static final String SHOP_ID_FIELD = "shop_id";
+	public static final String USER_ID_BY_FIELD = "user_id_by";
+	public static final String LIMITSTRING_FIELD = "LimitString";
+	public static final String PAGESIZ_FIELD = "pagesiz";
+	public static final String PAGE_FIELD = "page";
+	public static final String PAGE_SIZE_FIELD = "page_size";
+	private String query;
+	private String appkey;
+	private String version;
+	private String imei;
+	// 手机设备号
+	private String device_number;
+
+	public String getOs_version() {
+		return os_version;
+	}
+
+	public void setOs_version(String os_version) {
+		this.os_version = os_version;
+	}
+
+	/**
+	 * 系统版本
+	 */
+	private String os_version;
+
+	// 手机操作系统 IOS ANDROID
+	private String os = "ANDROID";
+	
+	/**
+	 * app端的应用 比如 会员版 MEMBER 门店版 SHOP 供应商版本
+	 */
+	private String app = "MEMBER";
+
+	public String getApp() {
+		return app;
+	}
+
+	public void setApp(String app) {
+		this.app = app;
+	}
+
+	/*
+	 * 纬度
+	 */
+	private String latitude;
+	/*
+	 * 维度
+	 */
+	private String longitude;
+	// 每页数量
+	private Integer page_size;
+
+	private Integer page = 1;
+
+	private Long shop_id;
+	/**
+	 * 操作人id
+	 */
+	private Long user_id_by;
+
+	/**
+	 * 城市
+	 */
+	private String gcity;
+	/**
+	 * 区域
+	 */
+	private String gdistrict;
+
+	private Map<String, String> params;
+
+	public String getLimitString() {
+		if (getStartPage() == null || getPage_size() == null)
+			return null;
+		return "  limit " + getStartPage() + "," + getPage_size();
+	}
+
+	public Integer getPage_size() {
+		return page_size;
+	}
+	
+
+	public String getQuery() {
+		return query;
+	}
+
+	public void setQuery(String query) {
+		this.query = query;
+	}
+
+	public void setPage_size(Integer page_size) {
+		this.page_size = page_size;
+	}
+
+	public Integer getPage() {
+		return page;
+	}
+
+	public void setPage(Integer page) {
+		this.page = page;
+	}
+
+	public Integer getStartPage() {
+		if (page == null || page_size == null) {
+			return null;
+		}
+		return (new BigDecimal(page)).multiply(new BigDecimal(getPage_size()))
+				.intValue();
+	}
+
+	public String getKey() {
+		return null;
+	}
+
+
+
+	public Long getShop_id() {
+		return shop_id;
+	}
+
+	public void setShop_id(Long shop_id) {
+		this.shop_id = shop_id;
+	}
+
+	public Long getUser_id_by() {
+		return user_id_by;
+	}
+
+	public void setUser_id_by(Long user_id_by) {
+		this.user_id_by = user_id_by;
+	}
+
+	public String getAppkey() {
+		return appkey;
+	}
+
+	public void setAppkey(String appkey) {
+		this.appkey = appkey;
+	}
+
+	public Map<String, String> getParams() {
+		if (params == null) {
+			params = new HashMap<String, String>();
+		}
+		return params;
+	}
+
+	public void setParams(Map<String, String> params) {
+		this.params = params;
+	}
+
+	public String getImei() {
+		return imei;
+	}
+
+	public void setImei(String imei) {
+		this.imei = imei;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public String getDevice_number() {
+		return device_number;
+	}
+
+	public void setDevice_number(String device_number) {
+		this.device_number = device_number;
+	}
+
+	public String getOs() {
+		return os;
+	}
+
+	public void setOs(String os) {
+		this.os = os;
+	}
+
+	public String getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+
+	public String getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+
+	public String getGcity() {
+		return gcity;
+	}
+
+	public void setGcity(String gcity) {
+		this.gcity = gcity;
+	}
+
+	public String getGdistrict() {
+		return gdistrict;
+	}
+
+	public void setGdistrict(String gdistrict) {
+		this.gdistrict = gdistrict;
+	}
+}

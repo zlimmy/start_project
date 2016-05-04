@@ -1,0 +1,82 @@
+/**
+ * 
+ */
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.PayType;
+import com.huimodel.api.base.ResponseBase;
+
+/**
+ * @author FZ
+ */
+public class PayTypeResponse extends ResponseBase {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
+	 * 总行数
+	 * @since version 1210010
+	 */
+	protected Long totalRows;
+	/**
+	 * 每页行数
+	 * @since version 1210010
+	 */
+	protected Long pageSize;
+	/**
+	 * 当前页，当前页从1开始
+	 * @since version 1210010
+	 */
+	protected Long currentPage;
+	/**
+	 * 总页数
+	 * @since version 1210010
+	 */
+	protected Long totalPages;
+	/**
+	 * 当前页首行，第一页首行为0
+	 * @since version 1210010
+	 */
+	protected Long startRow;
+	private List<PayType> entities;
+	
+	public Long getPageSize() {
+		return pageSize;
+	}
+	public void setPageSize(Long pageSize) {
+		this.pageSize = pageSize;
+	}
+	public Long getCurrentPage() {
+		return currentPage;
+	}
+	public void setCurrentPage(Long currentPage) {
+		this.currentPage = currentPage;
+	}
+	public Long getTotalPages() {
+		return totalPages;
+	}
+	public void setTotalPages(Long totalPages) {
+		this.totalPages = totalPages;
+	}
+	public Long getTotalRows() {
+		return totalRows;
+	}
+	public void setTotalRows(Long totalRows) {
+		this.totalRows = totalRows;
+	}
+	public Long getStartRow() {
+		return startRow;
+	}
+	public void setStartRow(Long startRow) {
+		this.startRow = startRow;
+	}
+	public List<PayType> getEntities() {
+		return entities;
+	}
+	public void setEntities(List<PayType> entities) {
+		this.entities = entities;
+	}
+}

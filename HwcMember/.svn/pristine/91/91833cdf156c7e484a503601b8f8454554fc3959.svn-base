@@ -1,0 +1,124 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import android.annotation.SuppressLint;
+
+import com.huimodel.api.base.IndicatorsBean;
+import com.huimodel.api.request.ShopsIndicatorsGetRequest;
+import com.huimodel.api.response.IndicatorsDailyResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.SalesVolumeAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.ISalesVolumeView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class SalesVolumePresenter {
+	
+	private ISalesVolumeView view;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	private SalesVolumeAdapter adapter;
+	private List<IndicatorsBean> list;
+	
+	public SalesVolumePresenter(ISalesVolumeView view){
+		this.view = view;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void getTopData(final int flag){
+		ShopsIndicatorsGetRequest requset = new ShopsIndicatorsGetRequest();
+		requset.setIndicators("32001");
+		if(flag == 1){
+			requset.setBegin("");
+			requset.setEnd("");
+		}
+		requset.setUser_id_by(Member.getInstance().getUser_id());
+		List<Long> shop_ids = new ArrayList<Long>();
+		shop_ids.add(999l);
+		requset.setShop_ids(shop_ids);
+		view.showProgressDialog(null);
+		iHwcBizMainImpl.getShopsSumSalesVolume(requset, view.getContext(), new IResult<IndicatorsDailyResponse>() {
+			
+			@Override
+			public void result(IndicatorsDailyResponse obj, Code code) {
+				view.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.getIndicators() != null && obj.getIndicators().size() > 0){
+						if(flag == 1){
+							view.setAll(obj.getIndicators().get(0).getAmount()+"");
+						}else{
+							view.setToday(obj.getIndicators().get(0).getAmount()+"");
+						}
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code + "");
+					break;
+				}
+				
+			}
+		});
+	}
+	
+	@SuppressLint("SimpleDateFormat")
+	public void getListData(){
+		ShopsIndicatorsGetRequest requset = new ShopsIndicatorsGetRequest();
+		requset.setIndicators("32001");
+		requset.setUser_id_by(Member.getInstance().getUser_id());
+		requset.setBegin(new SimpleDateFormat("yyyy-MM-dd").format(getDateBefore(new Date(), 7)));
+		requset.setShop_id(999l);
+		view.showProgressDialog(null);
+		iHwcBizMainImpl.getShopSalesVolumes(requset, view.getContext(), new IResult<IndicatorsDailyResponse>() {
+			
+			@Override
+			public void result(IndicatorsDailyResponse obj, Code code) {
+				view.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.getIndicators() != null && obj.getIndicators().size() > 0){
+						list = obj.getIndicators();
+						Collections.reverse(list);
+						adapter = new SalesVolumeAdapter(view.getContext(), list, R.layout.item_salesvolum, null);
+						view.setList(adapter);
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code + "");
+					break;
+				}
+			}
+		});
+	}
+	
+	 /**
+	  * 得到几天前的时间
+	  */
+
+	public static Date getDateBefore(Date d, int day) {
+		Calendar now = Calendar.getInstance();
+		now.setTime(d);
+		now.set(Calendar.DATE, now.get(Calendar.DATE) - day);
+		return now.getTime();
+	}
+
+}

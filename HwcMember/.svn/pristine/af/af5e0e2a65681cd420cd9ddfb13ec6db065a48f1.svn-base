@@ -1,0 +1,252 @@
+package com.hwc.member.presenter;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.response.ProfitInfoGetResponse;
+import com.huimodel.api.response.ShopUserSearchResponse;
+import com.huimodel.api.response.ShopsGetResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.adapter.AddressListAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IMyDataView;
+import com.hwc.member.view.activity.view.IMyShopView;
+import com.hwc.member.view.activity.view.IMyTeamView;
+
+
+public class MyTeamPresenter {
+	private IMyTeamView teamView;
+	private IMyShopView shopView;
+	private IMyDataView dataView;
+	private IHwcBizMain iHwcBizMainImpl;
+	public AddressListAdapter adapter;
+	private int pagesize = 6;
+	private Map<String, String> map = new HashMap<String, String>();
+	private Gson gson;
+	public MyTeamPresenter(IMyTeamView view) {
+		this.teamView = view;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		gson = new Gson();
+	}
+	public MyTeamPresenter(IMyShopView view) {
+		this.shopView = view;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		gson = new Gson();
+	}
+	public MyTeamPresenter(IMyDataView view) {
+		this.dataView = view;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		gson = new Gson();
+	}
+	
+	
+	
+	/**
+	 * 初始化数据
+	 */
+	public void initData(){
+		RequestBase requestBase = new RequestBase();
+		requestBase.setUser_id_by(Member.getInstance().getUser_id());
+	
+		iHwcBizMainImpl.getProfitInfo(requestBase, dataView.getContext(), new IResult<ProfitInfoGetResponse>() {
+			
+			@Override
+			public void result(ProfitInfoGetResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				switch (code) {
+				case OK:
+					dataView.initData(obj);
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 搜索
+	 */
+	public void search(String name) {
+		map.put("isShowZero", "true");
+		RequestBase requestBase = new RequestBase();
+		requestBase.setUser_id_by(Member.getInstance().getUser_id());
+		requestBase.setQuery(name);
+		requestBase.setParams(map);
+		iHwcBizMainImpl.getMyTeamList(requestBase, dataView.getContext(), new IResult<ShopUserSearchResponse>() {
+			@Override
+			public void result(ShopUserSearchResponse obj, Code code) {
+			switch (code) {
+			case OK:
+				if(obj.isSuccess()){
+					dataView.refreshShop(obj.getUsers());
+				}
+				break;
+
+			default:
+				break;
+			}
+			}
+		});
+	}
+	
+	
+	
+	public void searchShop(String name) {
+		map.put("isShowZero", "true");
+		RequestBase requestBase = new RequestBase();
+		requestBase.setUser_id_by(Member.getInstance().getUser_id());
+		requestBase.setQuery(name);
+		requestBase.setParams(map);
+		iHwcBizMainImpl.getMyShopList(requestBase, dataView.getContext(), new IResult<ShopsGetResponse>() {
+			@Override
+			public void result(ShopsGetResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				if(obj.isSuccess()){
+
+					dataView.refreshTeam(obj.getEntities());
+				}else{
+					
+				}
+			}
+		});
+	}
+	
+	
+	/**
+	 * 获取我的团队
+	 */
+	public void getTeamList(){
+		map.put("isShowZero", "true");
+		RequestBase requestBase = new RequestBase();
+		requestBase.setUser_id_by(Member.getInstance().getUser_id());
+		requestBase.setPage(1);
+		requestBase.setParams(map);
+		requestBase.setPage_size(pagesize);
+		
+		iHwcBizMainImpl.getMyTeamList(requestBase, teamView.getContext(), new IResult<ShopUserSearchResponse>() {
+			@Override
+			public void result(ShopUserSearchResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				teamView.dismissProgressDialog();
+			switch (code) {
+			case OK:
+				if(obj.isSuccess()){
+					teamView.refresh(obj.getUsers());
+				}
+				break;
+
+			default:
+				break;
+			}
+			}
+		});
+	}
+	
+	
+	
+	
+	
+	/**
+	 * 获取我的团队 跟多
+	 * @param mCurIndex
+	 */
+	public void getTeamList_More(int mCurIndex){
+		RequestBase requestBase = new RequestBase();
+		requestBase.setUser_id_by(Member.getInstance().getUser_id());
+		requestBase.setPage(mCurIndex);
+		requestBase.setPage_size(pagesize);
+		map.put("isShowZero", "true");
+		requestBase.setParams(map);
+		iHwcBizMainImpl.getMyTeamList(requestBase, teamView.getContext(), new IResult<ShopUserSearchResponse>() {
+			@Override
+			public void result(ShopUserSearchResponse obj, Code code) {
+				boolean isEnd = true;
+				// TODO Auto-generated method stub
+			switch (code) {
+			case OK:
+				if(obj.isSuccess()){
+					if(obj.getUsers().size()<pagesize){
+						isEnd = false;
+					}
+					teamView.more(obj.getUsers(), isEnd);
+				}else{
+					
+				}
+				break;
+
+			default:
+				break;
+			}
+			}
+		});
+	}
+	
+
+	
+
+	/**
+	 * 获取店铺
+	 * @param mCurIndex
+	 */
+	public void getMyShopList(){
+		RequestBase requestBase = new RequestBase();
+		requestBase.setUser_id_by(Member.getInstance().getUser_id());
+		requestBase.setPage(1);
+		requestBase.setPage_size(pagesize);
+		map.put("isShowZero", "true");
+		requestBase.setParams(map);
+		iHwcBizMainImpl.getMyShopList(requestBase, shopView.getContext(), new IResult<ShopsGetResponse>() {
+			@Override
+			public void result(ShopsGetResponse obj, Code code) {
+				shopView.dismissProgressDialog();
+				// TODO Auto-generated method stub
+				if(obj.isSuccess()){
+
+					shopView.refresh(obj.getEntities());
+				}else{
+					
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 获取店铺列表
+	 * @param mCurIndex
+	 */
+	public void getMyshopList_more(int mCurIndex){
+		RequestBase requestBase = new RequestBase();
+		requestBase.setUser_id_by(Member.getInstance().getUser_id());
+		requestBase.setPage(mCurIndex);
+		requestBase.setPage_size(pagesize);
+		map.put("isShowZero", "true");
+		requestBase.setParams(map);
+		iHwcBizMainImpl.getMyShopList(requestBase, shopView.getContext(), new IResult<ShopsGetResponse>() {
+			@Override
+			public void result(ShopsGetResponse obj, Code code) {
+				boolean isEnd = true;
+				// TODO Auto-generated method stub
+				if(obj.isSuccess()){
+					if(obj.getEntities().size()<pagesize){
+						isEnd = false;
+					}
+					
+					System.out.println("isEnd:"+isEnd);
+					shopView.more(obj.getEntities(), isEnd);
+				}else{
+					
+				}
+			}
+		});
+	}
+	
+	
+}

@@ -1,0 +1,208 @@
+package com.huimodel.api.base;
+
+public class Shopproductimg extends EntityBase implements java.io.Serializable,
+Cloneable {
+private static final long serialVersionUID = 1L;
+
+public static final String TABLE_NAME = "shopproductimg";
+public static final String ID_FIELD = "id";
+public static final String CAT_FIELD = "cat";
+public static final String SID_FIELD = "sid";
+public static final String PID_FIELD = "pid";
+public static final String PRODUCT_ID_FIELD = "product_id";
+public static final String URL_FIELD = "url";
+public static final String POSITION_FIELD = "position";
+public static final String CREATED_FIELD = "created";
+public static final String CHANGED_FIELD = "changed";
+
+private Long id;
+private String cat;
+private Long sid;
+private Long pid;
+private Long product_id;
+private String url;
+private Integer position;
+private String created;
+private String changed;
+
+public Shopproductimg() {
+}
+
+
+
+/**
+ * @return the id
+ */
+public Long getId() {
+	return id;
+}
+
+
+
+/**
+ * @param id the id to set
+ */
+public void setId(Long id) {
+	this.id = id;
+}
+
+
+
+/**
+ * @return the cat
+ */
+public String getCat() {
+	return cat;
+}
+
+
+
+/**
+ * @param cat the cat to set
+ */
+public void setCat(String cat) {
+	this.cat = cat;
+}
+
+
+
+/**
+ * @return the sid
+ */
+public Long getSid() {
+	return sid;
+}
+
+
+
+/**
+ * @param sid the sid to set
+ */
+public void setSid(Long sid) {
+	this.sid = sid;
+}
+
+
+
+/**
+ * @return the pid
+ */
+public Long getPid() {
+	return pid;
+}
+
+
+
+/**
+ * @param pid the pid to set
+ */
+public void setPid(Long pid) {
+	this.pid = pid;
+}
+
+
+
+/**
+ * @return the product_id
+ */
+public Long getProduct_id() {
+	return product_id;
+}
+
+
+
+/**
+ * @param product_id the product_id to set
+ */
+public void setProduct_id(Long product_id) {
+	this.product_id = product_id;
+}
+
+
+
+/**
+ * @return the url
+ */
+public String getUrl() {
+	return url;
+}
+
+
+
+/**
+ * @param url the url to set
+ */
+public void setUrl(String url) {
+	this.url = url;
+}
+
+
+
+/**
+ * @return the position
+ */
+public Integer getPosition() {
+	return position;
+}
+
+
+
+/**
+ * @param position the position to set
+ */
+public void setPosition(Integer position) {
+	this.position = position;
+}
+
+
+
+/**
+ * @return the created
+ */
+public String getCreated() {
+	return created;
+}
+
+
+
+/**
+ * @param created the created to set
+ */
+public void setCreated(String created) {
+	this.created = created;
+}
+
+
+
+/**
+ * @return the changed
+ */
+public String getChanged() {
+	return changed;
+}
+
+
+
+/**
+ * @param changed the changed to set
+ */
+public void setChanged(String changed) {
+	this.changed = changed;
+}
+
+
+
+@Override
+public String getTablename() {
+// TODO Auto-generated method stub
+return "shopproductimg";
+}
+
+public Shopproductimg clone() {
+try {
+	return (Shopproductimg) super.clone();
+} catch (Exception e) {
+	return null;
+}
+}
+}

@@ -1,0 +1,18 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+public class OrderGetRequest extends RequestBase {
+
+	private Long rid;
+	
+
+
+	public Long getRid() {
+		return rid;
+	}
+
+	public void setRid(Long rid) {
+		this.rid = rid;
+	}
+}

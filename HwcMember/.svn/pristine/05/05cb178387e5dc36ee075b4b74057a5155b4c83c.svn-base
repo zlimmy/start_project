@@ -1,0 +1,65 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.base.DHwcpayDetail;
+import com.huimodel.api.request.AccountItemSearchRequest;
+import com.huimodel.api.response.AccountItemsGroupSearchResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.view.activity.view.IWalletView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class WalletPresenter {
+
+	private IWalletView view;
+	private IHwcBizMain iHwcBizMainImpl;
+	public WalletPresenter(IWalletView view){
+		this.view = view;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void getData(String flag, Long userid){
+		AccountItemSearchRequest request = new AccountItemSearchRequest();
+		DHwcpayDetail hwcpay = new DHwcpayDetail();
+		hwcpay.setFlag(flag);
+		request.setUser_id_by(userid);
+		request.setEntity(hwcpay);
+		view.showProgressDialog(null);
+		iHwcBizMainImpl.searchGroupMonthAccountItems(request, view.getContext(), new IResult<AccountItemsGroupSearchResponse>() {
+			@Override
+			public void result(AccountItemsGroupSearchResponse obj, Code code) {
+				view.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+
+						if(obj.getItems().size()==0){
+							view.clearLoadPage();
+						}else{
+							view.postSuccsee(obj);
+						}
+						
+					}else{
+						SimpleHUD.showErrorMessage(view.getContext(), obj.getMsg());
+					}
+					break;
+				case FINISH:
+					
+					break;
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+}

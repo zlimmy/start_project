@@ -1,0 +1,59 @@
+package com.hwc.member.view.activity.shop;
+
+import android.support.v4.view.ViewPager;
+
+import com.hwc.member.R;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.view.fragment.NewAllGoodsFragment;
+import com.hwc.member.view.fragment.ShopIndexFragment;
+import com.hwc.member.widget.header.LXHeadView;
+import com.hwc.member.widget.smarttablaout.SmartTabLayout;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
+
+/**
+ * 单店店铺详情
+ * @author Administrator
+ *
+ */
+@ContentView(R.layout.activity_shopinfo)
+public class ShopInfoActivity extends BaseActivity {
+
+	@ViewInject(R.id.viewpager)
+	private ViewPager viewPager;
+	@ViewInject(R.id.viewpagertab)
+	private SmartTabLayout viewPagerTab;
+	@ViewInject(R.id.header)
+	public LXHeadView header;
+
+	@Override
+	protected void initView() {
+		setBack();
+		FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
+		        getSupportFragmentManager(), FragmentPagerItems.with(this)
+		        .add("店铺首页", ShopIndexFragment.class)
+		        .add("所有商品", NewAllGoodsFragment.class)
+		        .create());
+		 
+		viewPager.setAdapter(adapter);
+		 
+		viewPagerTab.setViewPager(viewPager);
+	}
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		// TODO Auto-generated method stub
+		super.onWindowFocusChanged(hasFocus);
+		
+	}
+
+}
+

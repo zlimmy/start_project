@@ -1,0 +1,11 @@
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.Location;
+
+/**
+ * Created by fangzehua on 2016/4/28.
+ */
+public class LocationsGetResponse extends ResponseBaseList<Location> {
+
+}
+

@@ -1,0 +1,52 @@
+package com.huimodel.api.response;
+import com.huimodel.api.base.ResponseBase;
+
+
+public class HomeResponse extends ResponseBase{
+
+	/**
+	 * 
+	 */
+	private PromotionADGetResponse padr;
+	private FunctionConfigResponse fcr;
+	private ProductRecommendResponse prr;
+	private SubjectProductReponse spr;
+	private static final long serialVersionUID = 1L;
+
+	public PromotionADGetResponse getPadr() {
+		return padr;
+	}
+	public void setPadr(PromotionADGetResponse padr) {
+		this.padr = padr;
+	}
+	public FunctionConfigResponse getFcr() {
+		return fcr;
+	}
+	public void setFcr(FunctionConfigResponse fcr) {
+		this.fcr = fcr;
+	}
+	public ProductRecommendResponse getPrr() {
+		return prr;
+	}
+	public void setPrr(ProductRecommendResponse prr) {
+		this.prr = prr;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	/**
+	 * @return the spr
+	 */
+	public SubjectProductReponse getSpr() {
+		return spr;
+	}
+	/**
+	 * @param spr the spr to set
+	 */
+	public void setSpr(SubjectProductReponse spr) {
+		this.spr = spr;
+	}
+	
+	
+
+}

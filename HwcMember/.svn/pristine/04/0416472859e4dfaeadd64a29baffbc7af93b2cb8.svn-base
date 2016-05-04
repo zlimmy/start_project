@@ -1,0 +1,26 @@
+package com.hwc.member.view.activity.product;
+
+import com.hwc.member.view.base.BaseActivity;
+
+/**
+ * 产品列表
+ * @author Administrator
+ *
+ */
+
+public class ProductListActivity extends BaseActivity {
+
+	@Override
+	protected void initView() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+}

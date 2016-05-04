@@ -1,0 +1,218 @@
+package com.hwc.member.view.activity.bustling;
+
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.View;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebSettings.LayoutAlgorithm;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.hwc.member.R;
+import com.hwc.member.anno.ViewTransform;
+import com.hwc.member.common.Member;
+import com.hwc.member.presenter.RareProductPresenter;
+import com.hwc.member.util.WeiXinShareUtil;
+import com.hwc.member.view.activity.DialogLoginActivity;
+import com.hwc.member.view.activity.view.IRareProductView;
+import com.hwc.member.view.base.BaseActivity;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+/**
+ * 发现详情 （用webview）
+ *
+ * @author Administrator
+ */
+@SuppressLint("SetJavaScriptEnabled")
+@ContentView(R.layout.activity_rareproduct_info)
+public class RareProductInfoActivity extends BaseActivity implements IRareProductView {
+
+
+    @ViewInject(R.id.title_rl)
+    @ViewTransform(height = 90)
+    private RelativeLayout title_rl;
+    @ViewInject(R.id.title_iv)
+    private TextView title_iv;
+    @ViewInject(R.id.pb)
+    private ProgressBar progressbar;
+    @ViewInject(R.id.webView)
+    private WebView webView;
+    private String url, title, excerpt, img, share_title;
+    private Long codeid;
+    private Boolean attention;
+    @ViewInject(R.id.attention_tv)
+    private TextView attention_tv;
+    @ViewInject(R.id.attention_iv)
+    private ImageView attention_iv;
+    private RareProductPresenter rpp = new RareProductPresenter(this);
+
+    private int resultCode = -1;
+
+    @Override
+    protected void initView() {
+        Bundle bundle = getIntent().getExtras();
+        url = bundle.getString("url");
+        codeid = bundle.getLong("id");
+        attention = bundle.getBoolean("attention");
+        title = bundle.getString("title");
+        excerpt = bundle.getString("excerpt");
+        img = bundle.getString("excerpt");
+        share_title = bundle.getString("share_title");
+        rpp.getDiscoveryDetail(codeid);
+        if (title != null) {
+            title_iv.setText(title);
+        }
+        if (url != null) {
+            init();
+
+            if (attention) {
+                attention_iv.setImageResource(R.drawable.yiguanzhu);
+                attention_tv.setText("已关注");
+            }
+        }
+    }
+
+
+    public void init() {
+        progressbar.setMax(100);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setDomStorageEnabled(true);
+        //webView.setWebChromeClient(new WebChromeClient());
+//		webView.getSettings().setSupportZoom(true); 
+//		// 设置出现缩放工具 
+//		webView.getSettings().setBuiltInZoomControls(true);
+//		//扩大比例的缩放
+//		webView.getSettings().setUseWideViewPort(true);
+        //自适应屏幕
+        webView.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return true;
+            }
+
+            @Override
+            public void onReceivedSslError(WebView view,
+                                           SslErrorHandler handler, android.net.http.SslError error) {
+                handler.proceed();
+                Toast.makeText(RareProductInfoActivity.this, "加载错误2" + error.getPrimaryError(), Toast.LENGTH_SHORT).show();
+            }
+
+            public void onReceivedError(WebView view,
+                                        int errorCode, String description, String failingUrl) {
+                Toast.makeText(RareProductInfoActivity.this, "加载错误" + description, Toast.LENGTH_SHORT).show();
+            }
+        });
+        webView.loadUrl(url);
+    }
+
+    public class WebChromeClient extends android.webkit.WebChromeClient {
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            if (newProgress == 100) {
+                // progressbar.setVisibility(View.GONE);
+                //dismissProgressDialog();
+            } else {
+                // if (progressbar.getVisibility() == View.GONE)
+                //     progressbar.setVisibility(View.VISIBLE);
+                //progressbar.setProgress(newProgress);
+                //showProgressDialog("正在加载中...");
+            }
+            super.onProgressChanged(view, newProgress);
+        }
+
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+
+    @OnClick(R.id.back_iv)
+    public void back_iv(View v) {
+        RareProductInfoActivity.this.setResult(resultCode, getIntent());// 返回页面1
+        finish();
+    }
+
+    @OnClick(R.id.wxshare_iv)
+    public void wxshare_iv(View v) {
+//		String iconurl = "http://hwcimages.oss-cn-hangzhou.aliyuncs.com/base/108x108.png";
+        WeiXinShareUtil wx = new WeiXinShareUtil(mController, context, img, share_title, title, url);
+        wx.initShare();
+        mController.openShare(RareProductInfoActivity.this, false);
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            RareProductInfoActivity.this.finish();
+        }
+        return false;
+    }
+
+
+    /**
+     * 关注
+     *
+     * @param v
+     */
+    @OnClick(R.id.attention_rl)
+    public void attention_rl(View v) {
+        if (Member.isNull()) {
+            goTo(DialogLoginActivity.class);
+        } else {
+
+            if (attention) {
+                rpp.delCollection(codeid);
+            } else {
+                rpp.updateCollection(codeid);
+            }
+
+
+        }
+
+    }
+
+
+    @Override
+    public void clearLoadPage() {
+        // TODO Auto-generated method stub
+
+    }
+
+
+    @Override
+    public void showErrorPage() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void collectionSuccess() {
+        attention = true;
+        attention_iv.setImageResource(R.drawable.yiguanzhu);
+        attention_tv.setText("已关注");
+        resultCode = 200;
+    }
+
+    @Override
+    public void collectionFaile() {
+        attention = false;
+        attention_iv.setImageResource(R.drawable.goodsinfo_item3);
+        attention_tv.setText("关注");
+        resultCode = 200;
+    }
+}
+

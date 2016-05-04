@@ -1,0 +1,35 @@
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.base.ShoppingCart1;
+
+public class ShoppingCartAddGroupShopResponse extends ResponseBase {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private List<ShoppingCart1> carts;
+	/**
+	 * 购物车商品件数
+	 */
+	private Integer num;
+	
+	public List<ShoppingCart1> getCarts() {
+		return carts;
+	}
+
+	public void setCarts(List<ShoppingCart1> carts) {
+		this.carts = carts;
+	}
+
+	public Integer getNum() {
+		return num;
+	}
+
+	public void setNum(Integer num) {
+		this.num = num;
+	}
+	
+}

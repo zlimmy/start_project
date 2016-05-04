@@ -1,0 +1,155 @@
+/*
+ * 
+ */
+package com.hwc.member.util;
+import java.io.File;
+
+import android.app.Activity;
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+
+// TODO: Auto-generated Javadoc
+/**
+ * The Class IntentUtil.
+ *
+ * @ClassName: IntentUtil
+ * @Description:
+ * @author  作�? E-mail <a href="mailto:yubo@51box.cn">禹波</a>
+ * @version 创建时间�?013-12-25 14:11:33
+ * Intent util.
+ */
+public class IntentUtil {
+	// 从google搜索内容
+	/**
+	 * Search google.
+	 *
+	 * @param context the context
+	 * @param searchText the search text
+	 */
+	public static void searchGoogle(Context context,String searchText) {
+		Intent intent = new Intent();
+		intent.setAction(Intent.ACTION_WEB_SEARCH);
+		intent.putExtra(SearchManager.QUERY, searchText);
+		context.startActivity(intent);
+	}
+
+	// 2.浏览网页
+	/**
+	 * To browser app.
+	 *
+	 * @param context the context
+	 * @param url the url
+	 */
+	public static void toBrowserApp(Context context,String url) {
+		Uri uri = Uri.parse(url);
+		Intent it = new Intent(Intent.ACTION_VIEW, uri);
+		context.startActivity(it);
+	}
+
+	// 3.显示地图
+	/**
+	 * To map app.
+	 *
+	 * @param context the context
+	 * @param longitude the longitude
+	 * @param latitude the latitude
+	 */
+	public static void toMapApp(Context context,float longitude,float latitude) {
+		Uri uri = Uri.parse("geo:"+longitude+","+latitude);
+		Intent it = new Intent(Intent.ACTION_VIEW, uri);
+		context.startActivity(it);
+	}
+	
+	// 5.拨打电话
+	/**
+	 * To phone app.
+	 *
+	 * @param context the context
+	 * @param tel the tel
+	 */
+	public static void toPhoneApp(Context context,String tel) {
+		Uri uri = Uri.parse("tel:" + tel);
+		Intent it = new Intent(Intent.ACTION_DIAL, uri);
+		context.startActivity(it);
+	}
+
+	// 6.调用发短信的程序
+	/**
+	 * To sms app.
+	 *
+	 * @param context the context
+	 * @param text the text
+	 */
+	public static void toSMSApp(Context context,String text) {
+		Intent it = new Intent(Intent.ACTION_VIEW);
+		it.putExtra("sms_body", text);
+		it.setType("vnd.android-dir/mms-sms");
+		context.startActivity(it);
+	}
+
+	// 7.发�?短信
+	/**
+	 * To sms app.
+	 *
+	 * @param context the context
+	 * @param tel the tel
+	 * @param text the text
+	 */
+	public static void toSMSApp(Context context,String tel, String text) {
+		Uri uri = Uri.parse("smsto:" + tel);
+		Intent it = new Intent(Intent.ACTION_SENDTO, uri);
+		it.putExtra("sms_body", text);
+		context.startActivity(it);
+	}
+
+	// 11.uninstall apk
+	/**
+	 * Uninstall apk.
+	 *
+	 * @param context the context
+	 * @param strPackageName the str package name
+	 */
+	public static void uninstallApk(Context context,String strPackageName) {
+		Uri uri = Uri.fromParts("package", strPackageName, null);
+		Intent it = new Intent(Intent.ACTION_DELETE, uri);
+		it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);  
+		context.startActivity(it);
+	}
+  
+	// 12.install apk
+	/**
+	 * Install apk.
+	 *
+	 * @param context the context
+	 * @param strPackageName the str package name
+	 */
+	public static void installApk(Context context,File file) {
+		Intent intent = new Intent();
+		intent.setAction(Intent.ACTION_VIEW);
+		intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+		context.startActivity(intent);
+	}
+	
+	
+
+
+	// 16. 打开另一程序
+	/**
+	 * Open other apk.
+	 *
+	 * @param context the context
+	 * @param appPackageName the app package name
+	 * @param RESULT_OK the result ok
+	 */
+	public static void openOtherApk(Activity context,String appPackageName,int RESULT_OK) {
+		Intent i = new Intent();
+		ComponentName cn = new ComponentName(context.getApplicationContext().getPackageName(),
+				appPackageName);
+		i.setComponent(cn);
+		i.setAction("android.intent.action.MAIN");
+		context.startActivityForResult(i, RESULT_OK);
+	}
+}

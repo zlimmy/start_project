@@ -1,0 +1,105 @@
+package com.hwc.member.view.activity.my;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.view.Gravity;
+import android.view.View;
+import android.view.View.OnClickListener;
+
+import com.hwc.member.R;
+import com.hwc.member.util.AvatarObtain;
+import com.hwc.member.util.AvatarObtain.AvatarObtainCallback;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.CircleImageView;
+import com.hwc.member.widget.SimpleHUD;
+import com.hwc.member.widget.header.HeadView.Dir;
+import com.hwc.member.widget.header.HeadView.OnHeadClickListener;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+/**
+ * 点击头像设置
+ * @author Administrator
+ */
+@ContentView(R.layout.activity_setting_picture)
+public class SettingPictureActivity extends BaseActivity{
+	
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.head_iv)
+	private CircleImageView head_iv;
+	
+	private RetPhotoPW menuWindow;
+
+	private AvatarObtain obtain;
+	
+	@Override
+	protected void initView() {
+		setBack();
+	}
+
+	@Override
+	protected void initListener() {		
+		header.setOnHeadClickListener(new OnHeadClickListener() {
+			
+			@Override
+			public void onHeadClick(Dir dir, View view) {
+				if (dir==Dir.Right) {
+					finish();
+				}
+			}
+		});
+		obtain = new AvatarObtain(this, new AvatarObtainCallback() {
+			
+			@Override
+			public void obtainAvatarSuccess(String path) {
+				SimpleHUD.showSuccessMessage(SettingPictureActivity.this, path);
+			}
+			
+			@Override
+			public void obtainAvatarFailure() {
+				SimpleHUD.showSuccessMessage(SettingPictureActivity.this, "failure");
+			}
+		});
+	}
+	
+	@OnClick(R.id.setting_head)
+	public void resetPhoto(View v){
+		menuWindow = new RetPhotoPW(SettingPictureActivity.this, itemsOnClick);
+		menuWindow.showAtLocation(SettingPictureActivity.this.findViewById(R.id.user_info_layout), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
+	}
+	
+
+	
+	private OnClickListener  itemsOnClick = new OnClickListener(){
+
+		public void onClick(View v) {
+			menuWindow.dismiss();
+			switch (v.getId()) {
+			case R.id.camera_but: //拍照
+				obtain.getAvatarByCamera(false);	
+				break;
+			case R.id.album_but:	//从相册中选	
+				obtain.getAvatarFromAlbum(false);
+				break;
+			default:
+				break;
+			}		
+		} 	
+    };
+    
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		obtain.onActivityResult(requestCode, resultCode, data);
+    }
+
+	@OnClick(R.id.head_iv)
+	public void lookPhoto(View v){
+		Bitmap bitmap = ((BitmapDrawable)head_iv.getDrawable()).getBitmap();
+		DialogUtil.showImg(bitmap, this);
+	}
+
+}

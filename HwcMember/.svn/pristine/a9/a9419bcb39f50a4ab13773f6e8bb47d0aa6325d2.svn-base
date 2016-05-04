@@ -1,0 +1,49 @@
+package com.huimodel.api.base;
+
+import java.util.List;
+
+public class ShoppingCart1 extends HwcObject {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -938177178823546272L;
+	/**
+	 * 店铺下面商品内容
+	 */
+	private List<Cart> carts;
+
+	/**
+	 * 店铺id
+	 */
+	private java.lang.Long sid;
+
+	/**
+	 * 店铺名
+	 */
+	private java.lang.String shop_name;
+
+	public List<Cart> getCarts() {
+		return carts;
+	}
+
+	public void setCarts(List<Cart> carts) {
+		this.carts = carts;
+	}
+
+	public java.lang.Long getSid() {
+		return sid;
+	}
+
+	public void setSid(java.lang.Long sid) {
+		this.sid = sid;
+	}
+
+	public java.lang.String getShop_name() {
+		return shop_name;
+	}
+
+	public void setShop_name(java.lang.String shop_name) {
+		this.shop_name = shop_name;
+	}
+
+}

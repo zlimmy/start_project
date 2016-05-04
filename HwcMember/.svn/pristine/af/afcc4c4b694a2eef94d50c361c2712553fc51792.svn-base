@@ -1,0 +1,50 @@
+package com.huimodel.biz;
+
+import android.content.Context;
+
+import com.huimodel.api.ConstantApis;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.DiscoveryCollectRequest;
+import com.huimodel.api.request.DiscoveryDetailRequest;
+import com.huimodel.api.request.DiscoveryGetRequest;
+import com.huimodel.api.response.DiscoveryDetailResponse;
+import com.huimodel.api.response.DiscoveryGetResponse;
+import com.huimodel.net.HttpUtil;
+import com.huimodel.net.IResult;
+
+public class IHwcBizPostImpl implements IHwcBizPost {
+
+	private static IHwcBizPostImpl hwcBizPostImpl;
+
+	private IHwcBizPostImpl(Context context) {
+	}
+
+	public static IHwcBizPostImpl getInstance(Context context) {
+		if (hwcBizPostImpl == null) {
+			hwcBizPostImpl = new IHwcBizPostImpl(context);
+		}
+		return hwcBizPostImpl;
+	}
+	
+	@Override
+	public void getPostList(DiscoveryGetRequest r, Context context,IResult<DiscoveryGetResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.searchDiscoveryList, r, result, DiscoveryGetResponse.class);
+	}
+
+	@Override
+	public void searchDiscoveryDetail(DiscoveryDetailRequest r,
+			Context context, IResult<DiscoveryDetailResponse> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.searchDiscoveryDetail, r, result, DiscoveryDetailResponse.class);
+	}
+
+	
+	@Override
+	public void updateCollection(DiscoveryCollectRequest r, Context context,
+			IResult<ResponseBase> result) {
+		// TODO Auto-generated method stub
+		HttpUtil.getInstance().postSend(ConstantApis.updateCollection, r, result, ResponseBase.class);
+	}
+
+}

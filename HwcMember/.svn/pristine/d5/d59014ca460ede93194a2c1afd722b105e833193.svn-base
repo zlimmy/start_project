@@ -1,0 +1,126 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.base.Address;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.UserAddressDeltRequest;
+import com.huimodel.api.request.UserAddressGetRequest;
+import com.huimodel.api.request.UserAddressUpdateRequest;
+import com.huimodel.api.response.UserAddressGetOneResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.util.ToastUtil;
+import com.hwc.member.view.activity.view.IUpdateAddressView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class UpdateAddressPresenter {
+
+	private IUpdateAddressView view;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public UpdateAddressPresenter(IUpdateAddressView view){
+		this.view = view;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void findAddressById(long id){
+		UserAddressGetRequest request = new UserAddressGetRequest();
+		request.setUser_id_by(Member.getInstance().getUser_id());
+		request.setId(id);
+		request.setImei(Constant.IMEI);
+		iHwcBizMainImpl.findAddressById(request, view.getContext(), new IResult<UserAddressGetOneResponse>() {
+			
+			@Override
+			public void result(UserAddressGetOneResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						view.setAddressData(obj.getAddress());
+					}else{
+						SimpleHUD.showErrorMessage(view.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	public void updatelAddress(long id, String name, String address, String phone, boolean flag){
+		UserAddressUpdateRequest request = new UserAddressUpdateRequest();
+		Address ar = new Address();
+		request.setUser_id_by(Member.getInstance().getUser_id());
+		ar.setId(id);
+		ar.setReceiver_name(name);
+		ar.setReceiver_address(address);
+		ar.setReceiver_phone(phone);
+		ar.setReceiver_mobile(phone);
+		if(flag){
+			ar.setIsdefault("T");
+		}else{
+			ar.setIsdefault("F");
+		}
+		request.setAddress(ar);
+		request.setImei(Constant.IMEI);
+		iHwcBizMainImpl.updatelAddress(request, view.getContext(), new IResult<ResponseBase>() {
+
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						ToastUtil.show("修改成功");
+						view.finishActivity();
+					}else{
+						SimpleHUD.showErrorMessage(view.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	public void delAddress(long id){
+		UserAddressDeltRequest request = new UserAddressDeltRequest();
+		request.setId(id);
+		request.setImei(Constant.IMEI);
+		iHwcBizMainImpl.delAddress(request, view.getContext(), new IResult<ResponseBase>() {
+			
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						ToastUtil.show("删除成功");
+						view.finishActivity();
+					}else{
+						SimpleHUD.showErrorMessage(view.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+}

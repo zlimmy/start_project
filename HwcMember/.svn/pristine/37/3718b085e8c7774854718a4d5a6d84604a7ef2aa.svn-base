@@ -1,0 +1,69 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.request.ProductSearchRequest;
+import com.huimodel.api.response.ProductSearchResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.MainProductsAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Mlocation;
+import com.hwc.member.view.activity.view.IHotProductListView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class HotProductListPresenter {
+
+	private IHotProductListView hotProductListView;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public MainProductsAdapter adapter;
+	
+	public HotProductListPresenter(IHotProductListView hotProductListView){
+		this.hotProductListView = hotProductListView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void setData(String pa){	
+		ProductSearchRequest psr = new ProductSearchRequest();
+		psr.setQuery(pa);
+		psr.setLatitude(Constant.latitude);
+		psr.setLongitude(Constant.longitude);
+		psr.setImei(Constant.IMEI);
+		psr.setGcity(Mlocation.getInstance().getCity());
+		psr.setGdistrict(Mlocation.getInstance().getDistrict());
+		psr.setStatus("onsale");
+		hotProductListView.showProgressDialog(null);
+		iHwcBizMainImpl.searchProductList(psr, hotProductListView.getContext(), new IResult<ProductSearchResponse>() {
+			@Override
+			public void result(ProductSearchResponse obj, Code code) {
+				hotProductListView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						if(obj.getProducts() != null && obj.getProducts().size() >= 0){
+							adapter = new MainProductsAdapter(hotProductListView.getContext(), obj.getProducts(), R.layout.item_main_product, null);
+							hotProductListView.setGrid(adapter);
+						}
+					}else{
+						SimpleHUD.showErrorMessage(hotProductListView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showInfoMessage(hotProductListView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+}

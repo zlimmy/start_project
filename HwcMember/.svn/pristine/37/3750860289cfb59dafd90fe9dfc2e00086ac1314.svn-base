@@ -1,0 +1,52 @@
+/**
+ * 
+ */
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+/**
+ * @author FZ
+ */
+public class ProductGetDetailRequest extends RequestBase {
+
+	private long pid;
+	
+	//比如产品的 手机的IEMI码
+	private String out_id;
+	
+	private String cat;
+	
+	public long getPid() {
+		return pid;
+	}
+
+	public void setPid(long pid) {
+		this.pid = pid;
+	}
+
+	public String getOut_id() {
+		return out_id;
+	}
+
+	public void setOut_id(String out_id) {
+		this.out_id = out_id;
+	}
+
+	/**
+	 * @return the cat
+	 */
+	public String getCat() {
+		return cat;
+	}
+
+	/**
+	 * @param cat the cat to set
+	 */
+	public void setCat(String cat) {
+		this.cat = cat;
+	}
+
+	 
+
+}

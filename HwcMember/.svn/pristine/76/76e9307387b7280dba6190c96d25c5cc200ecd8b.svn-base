@@ -1,0 +1,50 @@
+package com.hwc.member.view.activity.my;
+
+import android.widget.TextView;
+
+import com.huimodel.api.base.Order;
+import com.hwc.member.R;
+import com.hwc.member.adapter.OrderInfoAdapter;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.MyListView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+@ContentView(R.layout.activity_order_info)
+public class OrderInfoActivity extends BaseActivity {
+
+	@ViewInject(R.id.listview)
+	private MyListView listView;
+	@ViewInject(R.id.name)
+	private TextView name;
+	@ViewInject(R.id.ordernum)
+	private TextView ordernum;
+	@ViewInject(R.id.time_tv)
+	private TextView time;
+	
+	private Order order;
+	private OrderInfoAdapter adapter;
+	
+	@Override
+	protected void initView() {
+		order =  (Order) getIntent().getSerializableExtra("0");
+		name.setText("门    店："+order.getSeller_shop_nike());
+		time.setText("时    间："+order.getConsign_time());
+		ordernum.setText("订单号："+order.getRid());
+		initData();
+	}
+
+	@Override
+	protected void initListener() {
+		setBack();
+	}
+	
+	public void initData(){
+		if(order.getDetails() != null){
+			adapter = new OrderInfoAdapter(context, order.getDetails(), R.layout.item_orderinfo_list, null);
+			listView.setAdapter(adapter);
+		}
+	}
+
+
+}

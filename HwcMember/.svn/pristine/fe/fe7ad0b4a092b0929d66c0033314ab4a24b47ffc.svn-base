@@ -1,0 +1,34 @@
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+
+import com.huimodel.api.base.DShop;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.TimeUtil;
+import com.hwc.member.widget.CircleImageView;
+import com.lidroid.xutils.BitmapUtils;
+
+public class Shop_Adapter extends MirAdapter<DShop> {
+
+	public Shop_Adapter(Context context, List<DShop> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, DShop item) {
+		helper.setText(R.id.nick_tv, "昵称：" + item.getNick());
+		helper.setText(R.id.mobile_tv, "手机：" + item.getMobile());
+		helper.setText(R.id.date_tv, "加入时间：" + TimeUtil.getDateTime(item.getCreated(),"yyyy-MM-dd"));
+		helper.setText(R.id.rebate_tv, item.getRebate()+"");
+		CircleImageView iv = helper.getView(R.id.iv);
+		bitmapUtils.display(iv, item.getLogo_path());
+		
+		
+	}
+
+}

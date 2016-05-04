@@ -1,0 +1,51 @@
+/**
+ * 
+ */
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.base.ShopItem;
+
+/**
+ * @author FZ
+ */
+public class ShopCatGetResponse extends ResponseBase {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public List<ShopItem> items;
+
+	public int total;
+
+	public List<ShopItem> getItems() {
+		return items;
+	}
+
+	public void setItems(List<ShopItem> items) {
+		this.items = items;
+	}
+
+	public int getTotal() {
+		return total;
+	}
+
+	public void setTotal(int total) {
+		this.total = total;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ShopCatGetResponse [items=" + items + ", total=" + total + "]";
+	}
+	
+	
+
+}

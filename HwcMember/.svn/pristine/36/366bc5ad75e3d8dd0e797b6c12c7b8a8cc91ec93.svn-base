@@ -1,0 +1,17 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.response.AccountItemsGroupSearchResponse;
+
+/**
+ * @author FZ
+ */
+public interface IWalletView extends LoadDataView {
+
+	void postSuccsee(AccountItemsGroupSearchResponse obj);
+	
+
+
+}

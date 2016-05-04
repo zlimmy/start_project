@@ -1,0 +1,170 @@
+/**
+ * 
+ */
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+/**
+ * @author FZ
+ */
+public class ProductSearchRequest extends RequestBase {
+
+	private long pid;
+
+	private long product_id;
+	/*
+	 * 类目id
+	 */
+	private Long cid;
+	/*
+	 * 条形码
+	 */
+	private String barcode_str;
+	private String tsc;
+	private String out_id;
+	private String name;
+	private String query;
+	private boolean onlyPromotion;
+	/*
+	 * 供应商id
+	 */
+	private Long supplier_id;
+	private Integer distance_limit=0;
+	/*
+	 * 状态，再售 已经下架
+	 */
+	private String status;
+	// 是否显示零库存
+	private boolean is_show_zero;
+
+	// 产品列表排序 方式 空 默认排序， sale_num 销量,inventory 库存
+	private String product_order_by;
+	
+	//默认倒序，	asc正序
+	private String product_order_by_method = "desc";
+	
+	public long getPid() {
+		return pid;
+	}
+
+	public void setPid(long pid) {
+		this.pid = pid;
+	}
+
+	public long getProduct_id() {
+		return product_id;
+	}
+
+	public void setProduct_id(long product_id) {
+		this.product_id = product_id;
+	}
+
+	public Long getCid() {
+		return cid;
+	}
+
+	public void setCid(Long cid) {
+		this.cid = cid;
+	}
+
+	public String getBarcode_str() {
+		return barcode_str;
+	}
+
+	public void setBarcode_str(String barcode_str) {
+		this.barcode_str = barcode_str;
+	}
+
+	public boolean isOnlyPromotion() {
+		return onlyPromotion;
+	}
+
+	public void setOnlyPromotion(boolean onlyPromotion) {
+		this.onlyPromotion = onlyPromotion;
+	}
+
+	public String getTsc() {
+		return tsc;
+	}
+
+	public void setTsc(String tsc) {
+		this.tsc = tsc;
+	}
+
+	public String getOut_id() {
+		return out_id;
+	}
+
+	public void setOut_id(String out_id) {
+		this.out_id = out_id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getQuery() {
+		return query;
+	}
+
+	public void setQuery(String query) {
+		this.query = query;
+	}
+
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public Long getSupplier_id() {
+		return supplier_id;
+	}
+
+	public void setSupplier_id(long supplier_id) {
+		this.supplier_id = supplier_id;
+	}
+
+	public boolean getisIs_show_zero() {
+		return is_show_zero;
+	}
+
+	public void setIs_show_zero(boolean is_show_zero) {
+		this.is_show_zero = is_show_zero;
+	}
+
+	public String getProduct_order_by() {
+		return product_order_by;
+	}
+
+	public void setProduct_order_by(String product_order_by) {
+		this.product_order_by = product_order_by;
+	}
+
+	public Integer getDistance_limit() {
+		return distance_limit;
+	}
+
+	public void setDistance_limit(Integer distance_limit) {
+		this.distance_limit = distance_limit;
+	}
+
+	public String getProduct_order_by_method() {
+		return product_order_by_method;
+	}
+
+	public void setProduct_order_by_method(String product_order_by_method) {
+		this.product_order_by_method = product_order_by_method;
+	}
+	
+	
+
+}

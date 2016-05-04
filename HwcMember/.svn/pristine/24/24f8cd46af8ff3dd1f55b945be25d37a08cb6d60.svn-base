@@ -1,0 +1,47 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.widget.ImageView;
+
+import com.huimodel.api.base.DProduct;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class SearchGoodsAdapter extends MirAdapter<DProduct> {
+
+	public SearchGoodsAdapter(Context context, List<DProduct> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, DProduct item) {
+		ImageView iv = helper.getView(R.id.pic_iv);
+		ViewTransformUtil.layoutParams(iv, iv.getLayoutParams(), 220,220);
+		bitmapUtils.display(iv, item.getImageurl());
+		helper.setText(R.id.name_tv, item.getName());
+		helper.setText(R.id.describe_tv, item.getSellPt());
+		helper.setText(R.id.distance_tv, CommonUtil.conversionDistance(item.getDistance()));
+		
+		if(item.getProminfo() != null){
+			helper.setText(R.id.newprice_tv, "￥"+CommonUtil.conversionDouble(item.getProminfo().getProm_price()));
+		}else{
+			helper.setText(R.id.newprice_tv, "￥"+CommonUtil.conversionDouble(item.getPrice()));
+		}
+		helper.setText(R.id.address_tv, item.getShop_address());
+		
+	}
+
+}

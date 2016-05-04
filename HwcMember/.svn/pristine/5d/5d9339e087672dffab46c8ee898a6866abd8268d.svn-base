@@ -1,0 +1,114 @@
+package com.hwc.member.bean;
+
+import java.util.List;
+
+import com.huimodel.api.base.DProduct;
+
+/**
+ * 购物车的数据结构，非通用，根据自己需要修改
+ * <p/>
+ * Created by 绯若虚无（@link https://github.com/joefei） on 2015/10/12.
+ */
+public class ShoppingCartBean {
+
+    /** 失效 */
+    public static final String GOOD_INVALID = "0";
+
+    public static final String GOOD_VALID = "1";
+
+    /** 购物车商品数量 */
+    public static final String KEY_NUM = "num";
+    /** 购物车规格ID */
+    public static final String KEY_PRODUCT_ID = "product_id";
+    
+    /** 店铺名 */
+    public static final String KEY_NAME = "name";
+    
+    /** 购物车规格ID */
+    public static final String KEY_SID = "sid";
+
+    /** 是否处于编辑状态 */
+    private boolean isEditing;
+    /** 组是否被选中 */
+    private boolean isGroupSelected;
+
+    /** 店铺名称 */
+    private String nick;
+
+    /** 店铺ID */
+    private long sid;
+
+    /** 是否失效列表 */
+    private boolean isInvalidList;
+
+    private boolean isAllGoodsInvalid;
+
+    private List<DProduct> goods;
+    
+    private long cartid;
+    
+    public long getCartid() {
+		return cartid;
+	}
+
+	public void setCartid(long cartid) {
+		this.cartid = cartid;
+	}
+
+	public boolean isAllGoodsInvalid() {
+        return isAllGoodsInvalid;
+    }
+
+    public void setIsAllGoodsInvalid(boolean isAllGoodsInvalid) {
+        this.isAllGoodsInvalid = isAllGoodsInvalid;
+    }
+
+    public boolean isInvalidList() {
+        return isInvalidList;
+    }
+
+    public void setIsInvalidList(boolean isInvalidList) {
+        this.isInvalidList = isInvalidList;
+    }
+
+    public String getNick() {
+        return nick;
+    }
+
+    public void setNick(String nick) {
+        this.nick = nick;
+    }
+
+    public boolean isEditing() {
+        return isEditing;
+    }
+
+    public boolean isGroupSelected() {
+        return isGroupSelected;
+    }
+
+    public void setIsGroupSelected(boolean isGroupSelected) {
+        this.isGroupSelected = isGroupSelected;
+    }
+
+    public List<DProduct> getGoods() {
+        return goods;
+    }
+
+    public void setGoods(List<DProduct> goods) {
+        this.goods = goods;
+    }
+
+    public long getSid() {
+        return sid;
+    }
+
+    public void setSid(long sid) {
+        this.sid = sid;
+    }
+
+    public void setIsEditing(boolean isEditing) {
+        this.isEditing = isEditing;
+    }
+
+}

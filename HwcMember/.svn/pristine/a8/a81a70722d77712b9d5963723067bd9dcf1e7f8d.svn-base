@@ -1,0 +1,86 @@
+package com.hwc.member.widget;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+
+
+public class CustomDialogFragment extends DialogFragment {
+
+    private Context mContext;
+
+
+    private TextView title_tv;
+    private TextView content_tv;
+    private Button close_but;
+    private Button close_btn;
+
+    private View view;
+
+
+    public static final CustomDialogFragment newInstance(Context context) {
+        final CustomDialogFragment fragment = new CustomDialogFragment();
+        fragment.mContext = context;
+        fragment.view = LayoutInflater.from(fragment.mContext).inflate(R.layout.dialog_custom, null, false);
+        fragment.title_tv = (TextView) fragment.view.findViewById(R.id.title_tv);
+        fragment.content_tv = (TextView) fragment.view.findViewById(R.id.content_tv);
+
+        fragment.close_btn = (Button) fragment.view.findViewById(R.id.close_btn);
+        fragment.close_btn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragment.dismiss();
+            }
+        });
+
+
+        fragment.close_but = (Button) fragment.view.findViewById(R.id.close_but);
+        return fragment;
+    }
+
+
+    public CustomDialogFragment() {
+
+    }
+
+
+    @Override
+    @Nullable
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // TODO Auto-generated method stub
+        super.onCreateView(inflater, container, savedInstanceState);
+
+
+        getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        return view;
+    }
+
+
+    public void setTitle(CharSequence text) {
+        title_tv.setText(text);
+    }
+
+    public void setContent(CharSequence text) {
+        content_tv.setText(text);
+    }
+
+
+    public void setButton(CharSequence text, OnClickListener onClickListener) {
+        close_but.setOnClickListener(onClickListener);
+        close_but.setText(text);
+    }
+
+}

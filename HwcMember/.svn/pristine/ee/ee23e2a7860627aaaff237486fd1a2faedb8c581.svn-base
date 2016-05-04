@@ -1,0 +1,524 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+
+import android.os.Handler;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.huimodel.api.response.MemberExtsResponse;
+import com.hwc.member.R;
+import com.hwc.member.anno.ViewTransform;
+import com.hwc.member.application.App;
+import com.hwc.member.bean.GetTuiMessage;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.presenter.MyShopPresenter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.GeTuiUtil;
+import com.hwc.member.util.PreferenceUtils;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.view.activity.DialogLoginActivity;
+import com.hwc.member.view.activity.my.AboutActivity;
+import com.hwc.member.view.activity.my.DiscountActivity;
+import com.hwc.member.view.activity.my.FollowDiascoveriesActivity;
+import com.hwc.member.view.activity.my.FollowProductActivity;
+import com.hwc.member.view.activity.my.FollowShopActivity;
+import com.hwc.member.view.activity.my.MakeMoneyActivity;
+import com.hwc.member.view.activity.my.MessageActivity;
+import com.hwc.member.view.activity.my.PlayIntegralActivity;
+import com.hwc.member.view.activity.my.RebateActivity;
+import com.hwc.member.view.activity.my.ShareActivity;
+import com.hwc.member.view.activity.my.TeamActivity;
+import com.hwc.member.view.activity.my.UpdateInfoActivity;
+import com.hwc.member.view.activity.my.WalletActivity;
+import com.hwc.member.view.activity.order.NewOrderActivity;
+import com.hwc.member.view.activity.view.IMyView;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.hwc.member.widget.CircleImageView;
+import com.hwc.member.widget.MyGridView;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.hwc.member.widget.header.HeadView.Dir;
+import com.hwc.member.widget.header.HeadView.OnHeadClickListener;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.BitmapUtils;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public class My_Fragment extends FormBaseFragment implements IMyView {
+
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.point_bt)
+	private ImageView point_bt;
+	@ViewInject(R.id.head_iv)
+	private CircleImageView head_iv;
+	@ViewInject(R.id.islogin_rl)
+	@ViewTransform(height = 260)
+	private RelativeLayout islogin_rl;
+	@ViewInject(R.id.nologin_rl)
+	@ViewTransform(height = 260)
+	private RelativeLayout nologin_rl;
+	@ViewInject(R.id.my_grid)
+	private MyGridView my_grid;
+	@ViewInject(R.id.username_tv)
+	private TextView username_tv;
+	@ViewInject(R.id.point_tv)
+	private TextView point_tv;
+	@ViewInject(R.id.yqm_tv)
+	private TextView yqm_tv;
+	private MyShopPresenter presenter = new MyShopPresenter(this);
+	final Handler handler = new Handler();
+	protected BitmapUtils utils;
+	@ViewInject(R.id.wallet_tv)
+	private TextView wallet_tv;
+	@ViewInject(R.id.makemoney_tv)
+	private TextView makemoney_tv;
+	@ViewInject(R.id.rebate_tv)
+	private TextView rebate_tv;
+	@ViewInject(R.id.coupon_tv)
+	private TextView coupon_tv;
+	@ViewInject(R.id.msg_tv)
+	private TextView msg_tv;
+	
+	
+	
+	//--修改后
+	
+	@ViewInject(R.id.my_data_rl)
+	private RelativeLayout my_data_rl;
+	
+	@ViewInject(R.id.my_shop_rl)
+	private RelativeLayout my_shop_rl;
+	
+	@ViewInject(R.id.my_goods_rl)
+	private RelativeLayout my_goods_rl;
+	
+	@ViewInject(R.id.my_discover_rl)
+	private RelativeLayout my_discover_rl;
+	
+	@ViewInject(R.id.my_integral_rl)
+	private RelativeLayout my_integral_rl;
+	
+	@ViewInject(R.id.my_message_rl)
+	private RelativeLayout my_message_rl;
+	
+	@ViewInject(R.id.my_share_rl)
+	private RelativeLayout my_share_rl;
+	
+	@ViewInject(R.id.my_team_rl)
+	private RelativeLayout my_team_rl;
+	
+	@ViewInject(R.id.my_about_rl)
+	private RelativeLayout my_about_rl;
+	
+	
+	@ViewInject(R.id.rebate_ll)
+	private LinearLayout rebate_ll;
+	
+	
+	@Override
+	public int getLayoutId() {
+		return R.layout.fm_my;
+	}
+
+	@Override                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+	protected void init() {
+		initView();
+		utils = new BitmapUtils(getActivity());
+		utils.configDefaultLoadingImage(R.drawable.user_photo);
+		utils.configDefaultLoadFailedImage(R.drawable.user_photo);
+//		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//		lp.setMargins(0, 0, 36, 0);
+//		header.rightText().setLayoutParams(lp);
+		if(!Member.isNull()){//如果登录了
+			VISIBLE(islogin_rl);
+			GONE(nologin_rl);
+			initUserData();
+			presenter.getExts();
+			header.setRightText("注销");
+			
+			
+		}else{
+			VISIBLE(nologin_rl);
+			GONE(islogin_rl);
+			header.setRightText("");
+		}
+		
+//		setListAdapter();
+		//presenter.getMsgs();
+		
+	}
+	
+	
+	//初始化视图
+	public void initView(){
+		ViewTransformUtil.layoutParams(my_data_rl, my_data_rl.getLayoutParams(), android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 80);
+		ViewTransformUtil.layoutParams(my_shop_rl, my_shop_rl.getLayoutParams(), android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 80);
+		ViewTransformUtil.layoutParams(my_team_rl, my_team_rl.getLayoutParams(), android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 80);		
+		ViewTransformUtil.layoutParams(my_goods_rl, my_goods_rl.getLayoutParams(), android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 80);
+		ViewTransformUtil.layoutParams(my_discover_rl, my_discover_rl.getLayoutParams(), android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 80);
+		ViewTransformUtil.layoutParams(my_integral_rl, my_integral_rl.getLayoutParams(), android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 80);
+		ViewTransformUtil.layoutParams(my_message_rl, my_message_rl.getLayoutParams(), android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 80);
+		ViewTransformUtil.layoutParams(my_share_rl, my_share_rl.getLayoutParams(), android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 80);
+		ViewTransformUtil.layoutParams(my_about_rl, my_about_rl.getLayoutParams(), android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, 80);
+		
+	}
+	
+
+	@Override
+	public void initListener() {
+		header.setOnHeadClickListener(new OnHeadClickListener() {
+			
+			@Override
+			public void onHeadClick(Dir dir, View view) {
+				switch (dir) {
+				case Right:
+					DialogUtil.showDialog(Constant.Dialog, "是否确定要退出账号？", Gravity.CENTER, mContext, null, new OnClickListener() {
+						
+						@Override
+						public void onClick(DialogPlus dialog, View view) {
+							switch (view.getId()) {
+							case R.id.cancel:
+								break;
+
+							case R.id.confirm:
+								
+								GeTuiUtil.unbindAlias(mContext, "alias_" + Member.getInstance().getMobile());
+								Member.setMember(null);
+								PreferenceUtils.setPrefString(mContext.getApplicationContext(), "pwd","");
+								PreferenceUtils.setSettingLong(mContext.getApplicationContext(), "sid",0l);
+								PreferenceUtils.setSettingLong(mContext.getApplicationContext(), "uid",0l);
+								if(!Member.isNull()){//如果登录了
+									VISIBLE(islogin_rl);
+									GONE(nologin_rl);
+									initUserData();
+									VISIBLE(my_team_rl);
+									header.setRightText("注销");
+								}else{
+									VISIBLE(nologin_rl);
+									GONE(islogin_rl);
+									header.setRightText("");
+								}
+								resWallet();
+								T("注销成功");
+								break;
+							}
+							dialog.dismiss();
+						}
+					}, null);	
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+	}
+
+	@OnClick(R.id.point_bt)
+	public void pointClick(View v) {
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+			presenter.signPoint();
+		}
+
+	}
+
+	
+	//个人资料
+	@OnClick(R.id.my_data_rl)
+	public void dataClick(View v) {
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+			goTo(UpdateInfoActivity.class);
+		}
+	}
+	
+	//关注店铺
+	@OnClick(R.id.my_shop_rl)
+	public void shopClick(View v) {
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+			goTo(FollowShopActivity.class);
+		} 
+	}
+	
+	//关注商品
+	@OnClick(R.id.my_goods_rl)
+	public void goodsClick(View v) {
+		if (Member.isNull()) {
+		goTo(DialogLoginActivity.class);
+	} else {
+		goTo(FollowProductActivity.class);
+	}
+	}
+	
+	//我的发现
+	@OnClick(R.id.my_discover_rl)
+	public void discoverClick(View v) {
+		if (Member.isNull()) {
+		goTo(DialogLoginActivity.class);
+	} else {
+		goTo(FollowDiascoveriesActivity.class);
+	}
+	}
+	
+	//积分
+	@OnClick(R.id.my_integral_rl)
+	public void integralClick(View v) {
+		if (Member.isNull()) {
+		goTo(DialogLoginActivity.class);
+	} else {
+		goTo(PlayIntegralActivity.class);
+	}
+	}
+	
+	//消息
+	@OnClick(R.id.my_message_rl)
+	public void messageClick(View v) {
+		goTo(MessageActivity.class);
+	}
+	
+	//分享
+	@OnClick(R.id.my_share_rl)
+	public void shareClick(View v) {
+		String title="惠万村会员版上线啦~";
+		String desc ="一个能装下家门口所有商品的APP，用最少的钱买更多的商品!";
+		goTo(ShareActivity.class,title,desc,"http://hwcimages.huiwancun.net/admin/hylogo.png",Constant.shareAppUrl);
+	}
+	
+	
+	
+	public void setUnReadMsg() {
+		// 读取未阅读的消息
+		List<GetTuiMessage> list;
+		try {
+			DbUtils mdb = DbUtils.create(App.mContext, Constant.dbName);
+			list = mdb.findAll(Selector.from(GetTuiMessage.class).where(
+					"ishow", "=", false).and("mobile","=", Member.getInstance().getMobile()));
+			if (list != null && list.size() >= 0) {
+				//加消息提示
+				//myAdapter.setImageBitmap(list.size() + "");
+				msg_tv.setText(list.size()+"条");
+			} else {
+				System.out.println("数据为空");
+			}
+		} catch (DbException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void onResume() {
+		if(!Member.isNull()){//如果登录了
+			VISIBLE(islogin_rl);
+			GONE(nologin_rl);
+			initUserData();
+			presenter.getExts();
+			header.setRightText("注销");
+			point_tv.setText("积    分：" + CommonUtil.conversionInt(Member.getInstance().getPoint()));
+			setUnReadMsg();
+		}else{
+			VISIBLE(nologin_rl);
+			GONE(islogin_rl);
+			header.setRightText("");
+		}
+		
+//		setListAdapter();
+	
+		super.onResume();
+	}
+
+	public void initUserData() {
+		yqm_tv.setText(Member.getInstance().getInvitation_code()==null?"":Member.getInstance().getInvitation_code());
+		username_tv.setText(Member.getInstance().getNick());
+		point_tv.setText("积    分：" + CommonUtil.conversionInt(Member.getInstance().getPoint()));
+		
+		utils.display(head_iv, Member.getInstance().getAvatar());	
+		
+		if (Member.getInstance().isSign()) {
+			setPointBt();
+		}else{
+			point_bt.setEnabled(true);
+			point_bt.setImageResource(R.drawable.nopoint);
+		}
+
+		if(Member.getInstance().getVip_info()!=null&&Member.getInstance().getVip_info().equals("05")){
+			VISIBLE(my_team_rl);
+			VISIBLE(rebate_ll);
+		}else{
+			GONE(rebate_ll);
+			GONE(my_team_rl);
+		}
+	}
+
+	@Override
+	public void setAutoTest(List<String> list) {
+
+	}
+	
+	@Override
+	public void clearLoadPage() {
+	}
+
+	@Override
+	public void showErrorPage() {
+	}
+
+	@Override
+	public void setPointBt() {
+		point_bt.setEnabled(false);
+		point_bt.setImageResource(R.drawable.ispoint);
+	}
+
+	@Override
+	public void setPointText(Double point) {
+		point_tv.setText("积    分：" + CommonUtil.conversionInt(point));
+		Member.getInstance().setPoint(point);
+		Member.getInstance().setSign(true);
+	}
+	
+	@OnClick(R.id.allorder_ll)
+	public void allOrderClick(View v){
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+//			goTo(OrderActivity.class, 0);
+			goTo(NewOrderActivity.class,4);
+		}	
+	}
+	
+	@OnClick(R.id.waitpay_ll)
+	public void waitPayClick(View v){
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+			goTo(NewOrderActivity.class, 0);
+		}	
+	}
+	
+	@OnClick(R.id.waitdelivery_ll)
+	public void waitDeliveryClick(View v){
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+			goTo(NewOrderActivity.class, 1);
+		}	
+	}
+	
+	@OnClick(R.id.waitreceipt_ll)
+	public void waitReceipt_rlClick(View v){
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+			goTo(NewOrderActivity.class, 2);
+		}	
+	}
+	
+	@OnClick(R.id.aftersale_ll)
+	public void afterSaleClick(View v){
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+			goTo(NewOrderActivity.class, 3);
+		}
+	}
+	
+	
+	@OnClick(R.id.my_about_rl)
+	public void about(View v){
+		goTo(AboutActivity.class);
+	}
+	
+	
+	
+	@OnClick(R.id.gologin_iv)
+	public void goToLogin(View v){
+		goTo(DialogLoginActivity.class);
+	}
+	//我的钱包
+	@OnClick(R.id.wallet_ll)
+	private void walletClick(View v){
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+			goTo(WalletActivity.class);
+		}
+	}
+	//我的团队
+	@OnClick(R.id.my_team_rl)
+	public void myteam(View vs){
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+			goTo(TeamActivity.class, 3);
+		}	
+	}
+	
+	//惠赚钱
+	@OnClick(R.id.makemoney_ll)
+	private void makemoneyClick(View v){
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+			goTo(MakeMoneyActivity.class);
+		}
+	}
+	//返利
+	@OnClick(R.id.rebate_ll)
+	private void rebateClick(View v){
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+			goTo(RebateActivity.class);
+		}
+	}
+	//优惠券
+	@OnClick(R.id.coupon_ll)
+	private void couponClick(View v){
+		if (Member.isNull()) {
+			goTo(DialogLoginActivity.class);
+		} else {
+			goTo(DiscountActivity.class);
+		}
+	}
+
+	@Override
+	public void setWallet(MemberExtsResponse obj) {
+		wallet_tv.setText(CommonUtil.conversionDouble(obj.getHwcpay().getAvailable_balance())+"");
+		makemoney_tv.setText(CommonUtil.conversionDouble(obj.getHwcpay().getIncome())+"");
+		rebate_tv.setText(CommonUtil.conversionDouble(obj.getHwcpay().getRebate())+"");
+		coupon_tv.setText(obj.getCoupon()+"");
+		point_tv.setText("积    分：" + CommonUtil.conversionInt(obj.getPoint()));
+	}
+	
+	public void resWallet(){
+		wallet_tv.setText("0.00");
+		makemoney_tv.setText("0.00");
+		rebate_tv.setText("0.00");
+		coupon_tv.setText("0");
+		GONE(rebate_ll);
+	}
+
+}

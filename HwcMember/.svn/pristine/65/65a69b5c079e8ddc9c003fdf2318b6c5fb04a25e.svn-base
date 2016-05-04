@@ -1,0 +1,261 @@
+/**
+ * 
+ */
+package com.hwc.member.view.base;
+
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.hwc.member.R;
+import com.hwc.member.anno.MirUtil;
+import com.hwc.member.application.App;
+import com.hwc.member.util.CacheDataUtil;
+import com.hwc.member.util.ToastUtil;
+import com.hwc.member.widget.MirDialog;
+import com.lidroid.xutils.BitmapUtils;
+import com.lidroid.xutils.ViewUtils;
+import com.umeng.analytics.MobclickAgent;
+
+/**
+ * @author FZ FormBaseFragment.java 2015-6-26 下午4:41:28
+ */
+public abstract class FormBaseFragment extends BaseFragment {
+
+	protected Context mContext = null;
+	private Dialog dialog;
+	protected App application;
+	protected BitmapUtils bitmapUtils;
+	protected Gson gson;
+	private View view;
+	protected CacheDataUtil cacheDataUtil ;
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		super.onCreateView(inflater, container, savedInstanceState);		
+		if (view == null) {
+			view = inflater.inflate(getLayoutId(), null);
+			this.mContext = inflater.getContext();
+			bitmapUtils = new BitmapUtils(mContext);
+			bitmapUtils.configDefaultLoadingImage(R.drawable.icon_defultbg);
+			bitmapUtils.configDefaultLoadFailedImage(R.drawable.icon_defultbg);
+			ViewUtils.inject(this, view);
+			MirUtil.init(this, inflater, view);
+			application = (App) getActivity().getApplication();
+			this.cacheDataUtil = CacheDataUtil.getInstance(App.mContext);
+			gson = new Gson();
+			init();
+			initListener();
+		}			
+		return view;
+	}
+
+	protected abstract void init();
+
+	public void initListener() {
+	}
+
+	public abstract int getLayoutId();
+
+
+
+
+
+	/** 显示Toast信息 **/
+	public void T(Object s) {
+		ToastUtil.show(mContext, s);
+	}
+
+	/** 得到加载对话框,子类可以重写DIY **/
+	protected Dialog getProgressDialog(String msg) {
+		if (dialog == null) {
+			dialog = new MirDialog(mContext, msg);
+		}
+		return dialog;
+	}
+
+	/** 显示加载对话框 **/
+	public void showProgressDialog(String msg) {
+		getProgressDialog(msg).show();
+	}
+
+	/** 取消加载对话框 **/
+	public void dismissProgressDialog() {
+		if (dialog != null && dialog.isShowing()) {
+			dialog.dismiss();
+		}
+	}
+
+	public void goTo(Class<?> goToCls, Object... values) {
+		goTo(goToCls, false, values);
+	}
+
+	// 参数传递(注：该方法为了方便传参,参数类型有局限性,传递特殊类型时单独构建Intent)
+	public void goTo(Class<?> goToCls, boolean finish, Object... values) {
+		Intent intent = new Intent(getActivity(), goToCls);
+		int i = 0;
+		for (Object value : values) {
+			Class<?> cls = value.getClass();
+			String key = String.valueOf(i);
+			if (cls == String.class) {
+				intent.putExtra(key, (String) value);
+			} else if (cls == int.class || cls == Integer.class) {
+				intent.putExtra(key, (Integer) value);
+			} else if (cls == long.class || cls == Long.class) {
+				intent.putExtra(key, (Long) value);
+			} else if (cls == boolean.class || cls == Boolean.class) {
+				intent.putExtra(key, (Boolean) value);
+			} else if (value instanceof Serializable) {
+				intent.putExtra(key, (Serializable) value);
+			} else if (cls == float.class || cls == Float.class) {
+				intent.putExtra(key, (Float) value);
+			} else if (cls == double.class || cls == Double.class) {
+				intent.putExtra(key, (Double) value);
+			} else if (cls == char.class || cls == Character.class) {
+				intent.putExtra(key, (Character) value);
+			} else if (cls == Bundle.class) {
+				intent.putExtra(key, (Bundle) value);
+			} else {
+				throw new RuntimeException("不支持参数类型: " + cls.getSimpleName());
+			}
+			i++;
+		}
+		startActivity(intent);
+	}
+
+
+
+	/** 参数传递(注：该方法为了方便传参,参数类型有局限性,传递特殊类型时单独构建Intent) **/
+	public void goToForResult(Class<?> goToCls, Object... values) {
+		goToForResult(false, goToCls, values);
+	}
+
+	/** 参数传递(注：该方法为了方便传参,参数类型有局限性,传递特殊类型时单独构建Intent) **/
+	public void goToForResult(boolean finish, Class<?> goToCls, Object... values) {
+		Intent intent = new Intent(getActivity(), goToCls);
+		int i = 0;
+		for (Object value : values) {
+			Class<?> cls = value.getClass();
+			String key = String.valueOf(i);
+			if (cls == String.class) {
+				intent.putExtra(key, (String) value);
+			} else if (value instanceof Serializable) {
+				intent.putExtra(key, (Serializable) value);
+			} else if (cls == int[].class) {
+				intent.putExtra(key, (int[]) value);
+			} else if (cls == long[].class) {
+				intent.putExtra(key, (long[]) value);
+			} else if (cls == boolean[].class) {
+				intent.putExtra(key, (boolean[]) value);
+			} else if (cls == float[].class) {
+				intent.putExtra(key, (float[]) value);
+			} else if (cls == double[].class) {
+				intent.putExtra(key, (double[]) value);
+			} else if (cls == char[].class) {
+				intent.putExtra(key, (char[]) value);
+			} else if (cls == String[].class) {
+				intent.putExtra(key, (String[]) value);
+			} else if (cls == Bundle.class) {
+				intent.putExtra(key, (Bundle) value);
+			} else {
+				throw new RuntimeException("不支持参数类型: " + cls.getSimpleName());
+			}
+			i++;
+		}
+		startActivityForResult(intent, 0);
+		if (finish) {
+			getActivity().finish();
+		}
+	}
+
+	/**
+	 * 获取控件信息
+	 */
+	public String getViewValue(View view) {
+		if (view instanceof EditText) {
+			return ((EditText) view).getText().toString();
+		} else if (view instanceof TextView) {
+			return ((TextView) view).getText().toString();
+		} else if (view instanceof CheckBox) {
+			return ((CheckBox) view).getText().toString();
+		} else if (view instanceof RadioButton) {
+			return ((RadioButton) view).getText().toString();
+		} else if (view instanceof Button) {
+			return ((Button) view).getText().toString();
+		}
+		return null;
+	}
+
+	public static boolean isEmpty(String s) {
+		return s == null || s.equals("");
+	}
+
+	public static void VISIBLE(View view) {
+		if (view != null) {
+			view.setVisibility(View.VISIBLE);
+		}
+	}
+
+	public static void INVISIBLE(View view) {
+		if (view != null) {
+			view.setVisibility(View.INVISIBLE);
+		}
+	}
+
+	public static void GONE(View view) {
+		if (view != null) {
+			view.setVisibility(View.GONE);
+		}
+	}
+
+	public Context getContext() {
+		return this.getActivity();
+	}
+
+	/** 获取当前时间 **/
+	protected String getTime() {
+		return new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA)
+				.format(new Date());
+	}
+
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		MobclickAgent.onPageStart(this.getClass().getName());
+	}
+
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		MobclickAgent.onPageEnd(this.getClass().getName());
+	}
+
+	  
+
+    public String formatDateTime(long time) {
+        if (0 == time) {
+            return "";
+        } 
+        SimpleDateFormat mDateFormat = new SimpleDateFormat("MM-dd HH:mm");
+        return mDateFormat.format(new Date(time));
+    }
+    
+
+}

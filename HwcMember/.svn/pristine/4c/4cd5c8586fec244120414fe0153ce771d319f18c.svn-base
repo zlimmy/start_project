@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <com.hwc.member.widget.header.LXHeadView
+        xmlns:my="http://schemas.android.com/apk/res/com.hwc.member"
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        my:centertitle="积分"
+        app:rightText="积分规则"
+        />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/show_rl"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@color/white" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="20dp"
+                    android:text="已获积分:"
+                    android:textSize="@dimen/text_16" />
+
+                <TextView
+                    android:id="@+id/point_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="1009"
+                    android:textColor="@color/main_color"
+                    android:textSize="@dimen/text_45" />
+
+                <TextView
+                    android:id="@+id/tomorrow_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/point_tv"
+                    android:layout_centerHorizontal="true"
+                    android:text="明日可领15积分"
+                    android:textColor="@color/yellow"
+                    android:textSize="@dimen/text_14"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/see_bt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="25dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/shape_my"
+                    android:text="签到领积分"
+                    android:textColor="#FBDA91"
+                    android:textSize="@dimen/text_12" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:background="@color/gray0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:drawableLeft="@drawable/category_indicator_selected"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:text="积分爽爽花"
+                android:visibility="gone" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:visibility="gone" >
+
+                <TextView
+                    android:id="@+id/scratch_tv"
+                    android:layout_width="80dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="20dp"
+                    android:background="@drawable/shape_point1"
+                    android:gravity="center"
+                    android:text="花积分\n刮红包"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:id="@+id/turntable_tv"
+                    android:layout_width="80dp"
+                    android:layout_height="48dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/shape_point2"
+                    android:gravity="center"
+                    android:text="积分玩\n大转盘"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:id="@+id/platlist_tv"
+                    android:layout_width="80dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/shape_point3"
+                    android:gravity="center"
+                    android:text="积分\n抽奖"
+                    android:textColor="@color/white" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:drawableLeft="@drawable/category_indicator_selected"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:text="小积分，用处多，天天都来囤一些"
+                android:visibility="gone" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:visibility="gone" >
+
+                <TextView
+                    android:id="@+id/share_tv"
+                    android:layout_width="80dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="20dp"
+                    android:background="@drawable/shape_point4"
+                    android:gravity="center"
+                    android:text="分享\n赚积分"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:id="@+id/shop_tv"
+                    android:layout_width="80dp"
+                    android:layout_height="48dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/shape_point5"
+                    android:gravity="center"
+                    android:text="逛店\n赚积分"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:id="@+id/update_tv"
+                    android:layout_width="80dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/shape_point6"
+                    android:gravity="center"
+                    android:text="完善个\n人资料"
+                    android:textColor="@color/white" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:background="@color/white" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="18dp"
+                    android:drawableLeft="@drawable/category_indicator_selected"
+                    android:gravity="center_vertical"
+                    android:text="积分兑换" />
+
+                <TextView
+                    android:id="@+id/gopointshop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="16dp"
+                    android:padding="5dp"
+                    android:text="进入积分商城>>"
+                    android:textSize="@dimen/text_12" />
+            </RelativeLayout>
+
+            <com.hwc.member.widget.MyGridView
+                android:id="@+id/gridview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:horizontalSpacing="5dp"
+                android:numColumns="3"
+                android:scrollbars="none"
+                android:verticalSpacing="20dp"
+                android:background="@color/white" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

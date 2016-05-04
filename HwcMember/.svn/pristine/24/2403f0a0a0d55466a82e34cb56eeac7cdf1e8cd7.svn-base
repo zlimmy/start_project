@@ -1,0 +1,104 @@
+package com.huimodel.api.base;
+
+public class WithdrawApply {
+	private java.lang.Long id;
+	private java.lang.Long user_id;
+	private java.lang.String user_nick;
+	private java.lang.String mobile;
+	private Double amount;
+	private java.lang.String status;
+	private java.lang.String pay_type;
+	private java.lang.String pay_accnt;
+	private java.lang.String pay_no;
+	private java.lang.String ref;
+	private java.lang.Long applyby;
+	private java.lang.String applytime;
+	private java.lang.String changed;
+	private java.lang.String created;
+	public java.lang.Long getId() {
+		return id;
+	}
+	public void setId(java.lang.Long id) {
+		this.id = id;
+	}
+	public java.lang.Long getUser_id() {
+		return user_id;
+	}
+	public void setUser_id(java.lang.Long user_id) {
+		this.user_id = user_id;
+	}
+	public java.lang.String getUser_nick() {
+		return user_nick;
+	}
+	public void setUser_nick(java.lang.String user_nick) {
+		this.user_nick = user_nick;
+	}
+	public java.lang.String getMobile() {
+		return mobile;
+	}
+	public void setMobile(java.lang.String mobile) {
+		this.mobile = mobile;
+	}
+	public Double getAmount() {
+		return amount;
+	}
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+	public java.lang.String getStatus() {
+		return status;
+	}
+	public void setStatus(java.lang.String status) {
+		this.status = status;
+	}
+	public java.lang.String getPay_type() {
+		return pay_type;
+	}
+	public void setPay_type(java.lang.String pay_type) {
+		this.pay_type = pay_type;
+	}
+	public java.lang.String getPay_accnt() {
+		return pay_accnt;
+	}
+	public void setPay_accnt(java.lang.String pay_accnt) {
+		this.pay_accnt = pay_accnt;
+	}
+	public java.lang.String getPay_no() {
+		return pay_no;
+	}
+	public void setPay_no(java.lang.String pay_no) {
+		this.pay_no = pay_no;
+	}
+	public java.lang.String getRef() {
+		return ref;
+	}
+	public void setRef(java.lang.String ref) {
+		this.ref = ref;
+	}
+	public java.lang.Long getApplyby() {
+		return applyby;
+	}
+	public void setApplyby(java.lang.Long applyby) {
+		this.applyby = applyby;
+	}
+	public java.lang.String getApplytime() {
+		return applytime;
+	}
+	public void setApplytime(java.lang.String applytime) {
+		this.applytime = applytime;
+	}
+	public java.lang.String getChanged() {
+		return changed;
+	}
+	public void setChanged(java.lang.String changed) {
+		this.changed = changed;
+	}
+	public java.lang.String getCreated() {
+		return created;
+	}
+	public void setCreated(java.lang.String created) {
+		this.created = created;
+	}
+	
+	
+}

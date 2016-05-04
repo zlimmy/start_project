@@ -1,0 +1,20 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.base.ShopPromLottery;
+import com.huimodel.api.response.PromLotteryDrawResponse;
+
+/**
+ * @author FZ
+ */
+public interface ITurntableView extends LoadDataView {
+
+	void setPrizeData(ShopPromLottery ppl);
+	
+	void setPrize(int i, PromLotteryDrawResponse obj);
+	
+	void goLogin();
+	
+}

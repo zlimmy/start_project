@@ -1,0 +1,12 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.Location;
+import com.huimodel.api.base.RequestBaseEntity;
+
+/**
+ * Created by fangzehua on 2016/4/28.
+ */
+public class LocationRequest extends RequestBaseEntity<Location> {
+
+}
+

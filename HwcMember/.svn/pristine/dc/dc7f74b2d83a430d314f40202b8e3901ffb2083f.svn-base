@@ -1,0 +1,103 @@
+package com.hwc.member.util;
+import java.util.Random;
+
+import android.content.Context;
+import android.content.Intent;
+
+import com.hwc.member.R;
+import com.hwc.member.bean.GetTuiMessage;
+import com.hwc.member.common.Constant;
+import com.hwc.member.view.activity.SatrtActivity;
+import com.hwc.member.view.activity.luckdraw.PlatFormScratchActivity;
+import com.hwc.member.view.activity.luckdraw.PlatFormTurntableActivity;
+import com.hwc.member.view.activity.my.MessageActivity;
+import com.hwc.member.view.activity.order.NewOrderActivity;
+import com.hwc.member.view.activity.order.OrderActivity;
+import com.hwc.member.view.activity.order.OrderDetailsActivity;
+import com.hwc.member.view.activity.product.HotProductListActivity;
+public class NoticeTransit {
+	
+	private NotificationAdmain admain;
+	private Intent mintent; 
+	private int smallIcon = R.drawable.icon_cu; //消息显示的图片
+	private Random random = new Random();
+	private Context mContext;
+	private GetTuiMessage mGetTuiMessage;
+	public NoticeTransit(Context context,GetTuiMessage getTuiMessage) {
+		// TODO Auto-generated constructor stub
+		this.mContext = context;
+		this.mGetTuiMessage = getTuiMessage;
+		this.admain = new NotificationAdmain(mContext,random.nextInt(10000));
+	
+	}
+	
+	//打开消息       
+	//消息类型	10000 平台消息,20000促销消息,30000优惠券消息
+	//要跳转的 app页面  1001 消息列表  1002商品详情,1004 发现,1005刮刮乐 1006大转盘
+	//private int tag; //类型        0后台执行专用    1.普通消息  	2跳转activit 
+	public void doNotice(){
+		admain.openLights(mContext); //点亮屏幕
+		mintent = new Intent(mContext, SatrtActivity.class);
+	 switch (mGetTuiMessage.getTag()) {
+		case 0: //后台执行
+//			ToastUtil.show(mContext, "后台执");
+			CacheDataUtil.getInstance(mContext).clearAllData();
+			break;	
+		case 1:
+//			ToastUtil.show(mContext, "打开主界面");
+			break;			
+		case 2://如果要跳转的消息
+			switch (mGetTuiMessage.getActivity()) {
+			case 1001://消息列表
+				//goTo(MessageActivity.class);
+				mintent = new Intent(mContext, MessageActivity.class);
+				Constant.gm = null;
+				break;
+			case 1002:// 1002商品列表	
+				ToastUtil.show(mContext,"商品列表"+mGetTuiMessage.getParamet().toString());
+				mintent = new Intent(mContext, HotProductListActivity.class);
+				break;
+			case 1003:// 1003 热卖商品列表	HotProductListActivity //需要传关键字  page=1003,key=邦华V95
+				//ToastUtil.show(mContext,"热卖商品列表"+mGetTuiMessage.getParamet().get("key").toString());
+				mintent = new Intent(mContext, HotProductListActivity.class);
+				mintent.putExtra("0", mGetTuiMessage.getParamet().get("key").toString());
+				mintent.putExtra("1", mGetTuiMessage.getParamet().get("title").toString());
+				break;
+			case 1004:// 1004 发现
+				//ToastUtil.show(mContext,"1004 发现"+mGetTuiMessage.getParamet().toString());	//跳转 Bustling_Fragment
+				mintent = new Intent(mContext, HotProductListActivity.class);
+				break;
+			case 1005://刮刮乐       // page=1005,code=1000
+				mintent = new Intent(mContext, PlatFormScratchActivity.class);
+				mintent.putExtra("0", mGetTuiMessage.getParamet().get("code").toString());
+				break;
+			case 1006://大转盘     // page=1006,code=1000
+				mintent = new Intent(mContext, PlatFormTurntableActivity.class);
+				mintent.putExtra("0", mGetTuiMessage.getParamet().get("code").toString());
+				break;
+			case 1007://订单 page=1007,code=1000
+				//ToastUtil.show(mContext,mGetTuiMessage.getTitle()+"");	//跳转 Bustling_Fragment
+				mintent = new Intent(mContext, NewOrderActivity.class);
+				mintent.putExtra("0",1);
+				break;
+			case 1008://订单 page=1007,code=1000
+				//ToastUtil.show(mContext,mGetTuiMessage.getTitle()+"");	//跳转 Bustling_Fragment
+				mintent = new Intent(mContext, OrderDetailsActivity.class);
+				mintent.putExtra("0",Long.parseLong(mGetTuiMessage.getParamet().get("id")));
+				break;	
+			default:
+				break;
+			}
+		
+			break;
+		default:
+	    
+			break;
+			
+	 }
+		
+		admain.normal_notification(mintent, smallIcon, mGetTuiMessage.getTitle(), mGetTuiMessage.getTitle(),mGetTuiMessage.getMsg());
+		
+	}
+
+}

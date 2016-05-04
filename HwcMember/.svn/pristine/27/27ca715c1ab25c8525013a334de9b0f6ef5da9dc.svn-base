@@ -1,0 +1,15 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.hwc.member.adapter.MainProductsAdapter;
+
+/**
+ * @author FZ
+ */
+public interface IHotProductListView extends LoadDataView {
+
+	void setGrid(MainProductsAdapter adapter);
+	
+}

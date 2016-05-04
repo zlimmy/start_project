@@ -1,0 +1,166 @@
+package com.hwc.member.view.activity;
+
+import android.content.Intent;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.huimodel.api.response.SmsMessageResponse;
+import com.hwc.member.R;
+import com.hwc.member.bean.MLocation;
+import com.hwc.member.common.Constant;
+import com.hwc.member.presenter.RegistPresenter;
+import com.hwc.member.util.LocationUtil;
+import com.hwc.member.view.activity.view.IRegistView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.SimpleHUD;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+@ContentView(R.layout.activity_regist_step3)
+public class RegistStep3Activity extends BaseActivity implements IRegistView {
+
+	// @ViewInject(R.id.head_iv)
+	// private CircleImageView head_iv;
+	@ViewInject(R.id.nick_et)
+	private EditText nick_et;
+	@ViewInject(R.id.pwd_et)
+	private EditText pwd_et;
+	@ViewInject(R.id.invitation_et)
+	private EditText invitation_et;
+	private String phone;
+
+	@ViewInject(R.id.head_rg)
+	private RadioGroup head_rg;
+	@ViewInject(R.id.woman_rb)
+	private RadioButton woman_rb;
+	@ViewInject(R.id.man_rb)
+	private RadioButton man_rb;
+
+	
+	@ViewInject(R.id.man_iv)
+	private ImageView man_iv;
+	@ViewInject(R.id.woman_iv)
+	private ImageView woman_iv;
+	private RegistPresenter presenter = new RegistPresenter(this);
+	private String head_url = "";
+	private MLocation mLocation = null;
+
+	@Override
+	protected void initView() {
+		getPosition();
+		phone = getIntent().getStringExtra("0");
+	}
+
+	@Override
+	protected void initListener() {
+		setBack();
+		head_rg.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				// TODO Auto-generated method stub
+				switch (checkedId) {
+				case R.id.man_rb:
+					head_url = Constant.OSSURL + "user/man.png";
+					break;
+				case R.id.woman_rb:
+					head_url = Constant.OSSURL + "user/woman.png";
+					break;
+				default:
+					break;
+				}
+			}
+		});
+		
+		man_rb.setChecked(true);
+
+	}
+	
+	@OnClick(R.id.man_iv)
+	public void man_iv(View v) {
+		man_rb.setChecked(true);
+	}
+	
+	@OnClick(R.id.woman_iv)
+	public void woman_iv(View v) {
+		woman_rb.setChecked(true);
+	}
+
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		// obtain.onActivityResult(requestCode, resultCode, data);
+	}
+
+	@Override
+	public void clearLoadPage() {
+	}
+
+	@Override
+	public void showErrorPage() {
+	}
+
+	@OnClick(R.id.goregist_bt)
+	public void userRegistClick(View v) {
+		if (isEmpty(getViewValue(pwd_et))) {
+			SimpleHUD.showErrorMessage(context, "请填写完注册信息");
+		} else {
+			String nick_str = "";
+			if (getViewValue(pwd_et) == null || getViewValue(pwd_et).equals("")) {
+				nick_str = phone;
+			} else {
+				nick_str = getViewValue(nick_et);
+			}
+			
+			
+			if(mLocation!=null){
+				presenter.goRegist(head_url,nick_str, getViewValue(pwd_et), getViewValue(invitation_et), phone,mLocation);	
+			}else{
+				SimpleHUD.showErrorMessage(context, "正在读取当前位置...");
+			}
+			
+		}
+	}
+
+	@Override
+	public void sendSmssuccee(SmsMessageResponse smsMessageResponse) {
+
+	}
+
+	@Override
+	public void validPhone(boolean isValid, String phone) {
+
+	}
+
+	// 定位
+	public void getPosition() {
+		LocationUtil.requestLocation(new BDLocationListener() {
+			@Override
+			public void onReceiveLocation(BDLocation arg0) {
+				LocationUtil.stop();
+				 mLocation = new MLocation();
+				mLocation.setId(1);
+				mLocation.setAddress(arg0.getAddress().address);
+				mLocation.setCity(arg0.getAddress().city);
+				mLocation.setCityCode(arg0.getAddress().cityCode);
+				mLocation.setCountry(arg0.getAddress().country);
+				mLocation.setCountryCode(arg0.getAddress().countryCode);
+				mLocation.setDistrict(arg0.getAddress().district);
+				mLocation.setProvince(arg0.getAddress().province);
+				mLocation.setStreet(arg0.getAddress().street);
+				mLocation.setStreetNumber(arg0.getAddress().streetNumber);
+				mLocation.setLatitude(arg0.getLatitude() + "");
+				mLocation.setLongitude(arg0.getLongitude() + "");
+	
+			}
+
+		});
+	}
+}

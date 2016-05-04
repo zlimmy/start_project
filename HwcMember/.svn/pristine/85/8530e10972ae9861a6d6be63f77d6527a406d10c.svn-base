@@ -1,0 +1,33 @@
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.widget.ImageView;
+
+import com.huimodel.api.base.DShop;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.lidroid.xutils.BitmapUtils;
+
+public class FollowShopAdapter extends MirAdapter<DShop>{
+	
+
+
+	public FollowShopAdapter(Context context, List<DShop> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, DShop item) {
+		helper.setText(R.id.name_tv, item.getNick());
+		ImageView iv = helper.getView(R.id.log_iv);
+		bitmapUtils.display(iv, item.getPic_path());
+
+	}
+	
+	
+
+}

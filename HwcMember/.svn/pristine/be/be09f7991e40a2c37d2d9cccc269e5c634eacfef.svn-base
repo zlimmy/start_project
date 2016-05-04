@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/shop_background"
+    >
+
+    <RelativeLayout
+        android:id="@+id/head_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/text_main"
+        android:padding="2dp" >
+
+        <com.hwc.member.widget.header.LXHeadView
+            xmlns:my="http://schemas.android.com/apk/res/com.hwc.member"
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            my:centertitle="" />
+
+        <RelativeLayout
+            android:id="@+id/search_ll"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="horizontal" >
+
+            <EditText
+                android:id="@+id/search_et"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:background="@drawable/bg_search"
+                android:gravity="left"
+                android:hint="搜索店铺内商品"
+                android:imeOptions="actionSearch"
+                android:padding="6dp"
+                android:singleLine="true"
+                android:drawableLeft="@drawable/search"
+                android:drawablePadding="10dp"
+                android:textColor="@color/text_important"
+                android:textColorHint="@color/text_less_important"
+                android:textSize="@dimen/text_14" />
+
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/category_iv"
+            android:layout_width="21dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="18dp"
+            android:src="@drawable/sysp_fl" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/head_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/head_rl"
+        android:orientation="vertical" >
+
+        <View
+            style="@style/divider_horizontal"
+            android:background="@color/gray2" />
+
+        <RadioGroup
+            android:id="@+id/rg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/comprehensive_rt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="综合"
+                android:textColor="@drawable/button_radio"
+                android:textSize="@dimen/text_16" />
+
+            <View
+                style="@style/divider_vertical"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp" />
+
+            <RadioButton
+                android:id="@+id/salesvol_rt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:button="@null"
+                android:drawableRight="@drawable/icon_none"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="销量"
+                android:textColor="@drawable/button_radio"
+                android:textSize="@dimen/text_16" />
+
+            <View
+                style="@style/divider_vertical"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp" />
+
+            <RadioButton
+                android:id="@+id/price_rt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:button="@null"
+                android:drawableRight="@drawable/icon_desc"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="价格"
+                android:textColor="@drawable/button_radio"
+                android:textSize="@dimen/text_16" />
+        </RadioGroup>
+
+        <View
+            style="@style/divider_horizontal"
+            android:background="@color/gray2" />
+    </LinearLayout>
+
+    <in.srain.cube.views.ptr.PtrFrameLayout
+        android:id="@+id/load_more_grid_view_ptr_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/head_ll">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include
+                android:id="@+id/nodata_page"
+                layout="@layout/load_nodata_gray_page"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <com.hwc.member.widget.LoadMoreContainerGridViewWithHeader
+                android:id="@+id/load_more_grid_view_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/shop_background">
+
+                <com.hwc.member.widget.ScrollGridViewWithFooter
+                    android:id="@+id/load_more_grid_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fadingEdge="none"
+                    android:focusable="false"
+                    android:listSelector="@android:color/transparent"
+                    android:numColumns="2"
+                    android:scrollbarStyle="outsideOverlay"
+                    android:stretchMode="columnWidth"
+                    android:verticalSpacing="8dp" />
+
+            </com.hwc.member.widget.LoadMoreContainerGridViewWithHeader>
+        </RelativeLayout>
+
+
+    </in.srain.cube.views.ptr.PtrFrameLayout>
+
+</RelativeLayout>

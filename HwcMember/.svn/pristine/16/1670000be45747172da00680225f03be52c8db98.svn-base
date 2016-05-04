@@ -1,0 +1,31 @@
+/**
+ * 
+ */
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.Address;
+import com.huimodel.api.base.ResponseBase;
+
+/**
+ * @author FZ
+ */
+public class UserAddressGetResponse extends ResponseBase {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private List<Address> list;
+
+	public List<Address> getList() {
+		return list;
+	}
+
+	public void setList(List<Address> list) {
+		this.list = list;
+	}
+
+}

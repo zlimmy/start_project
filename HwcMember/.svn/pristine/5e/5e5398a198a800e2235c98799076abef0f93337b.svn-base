@@ -1,0 +1,67 @@
+package com.hwc.member.adapter.base;
+
+import java.util.List;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+
+import com.hwc.member.application.App;
+import com.lidroid.xutils.BitmapUtils;
+/**
+ * @author FZ
+ * AdapterCommon.java
+ * 2015-8-14
+ * 下午1:55:17
+ * @param <T>
+ */
+public abstract class MirAdapter<T> extends BaseAdapter {
+	
+	protected LayoutInflater mInflater;
+	protected Context mContext;
+	protected List<T> mDatas;
+	protected final int mItemLayoutId;
+	protected BitmapUtils bitmapUtils;
+	public MirAdapter(Context context, List<T> mDatas, int itemLayoutId,BitmapUtils bitmapUtils) {
+		this.mContext = context;
+		this.bitmapUtils  = App.bitmapUtils;
+		this.mInflater = LayoutInflater.from(mContext);
+		this.mDatas = mDatas;
+		this.mItemLayoutId = itemLayoutId;
+	}
+
+	@Override
+	public int getCount() {
+		return mDatas.size();
+	}
+
+	@Override
+	public T getItem(int position) {
+		return mDatas.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
+	}
+
+	
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		final HolderEntity viewHolder = getViewHolder(position, convertView, parent);
+		convert(viewHolder, getItem(position));
+		return viewHolder.getConvertView();
+
+	}
+
+	
+	
+	public abstract void convert(HolderEntity helper, T item);
+
+	private HolderEntity getViewHolder(int position, View convertView, ViewGroup parent) {
+		return HolderEntity.get(mContext, convertView, parent, mItemLayoutId, position);
+	}
+
+}

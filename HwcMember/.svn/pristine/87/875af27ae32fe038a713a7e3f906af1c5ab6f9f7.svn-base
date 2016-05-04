@@ -1,0 +1,529 @@
+package com.hwc.member.view.activity.shop;
+
+import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RadioButton;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.ProductItem;
+import com.hwc.member.R;
+import com.hwc.member.adapter.ProductGridAdapter;
+import com.hwc.member.adapter.ShopCatAdapter;
+import com.hwc.member.presenter.AllGoodsPresenter;
+import com.hwc.member.view.activity.product.NewProductInfoActivity;
+import com.hwc.member.view.activity.view.IAllGoodsView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.LoadMoreContainerGridViewWithHeader;
+import com.hwc.member.widget.PopMenu;
+import com.hwc.member.widget.PullToRefreshFooter;
+import com.hwc.member.widget.PullToRefreshHeadView;
+import com.hwc.member.widget.ScrollGridViewWithFooter;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import in.srain.cube.views.loadmore.LoadMoreContainer;
+import in.srain.cube.views.loadmore.LoadMoreHandler;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
+
+@ContentView(R.layout.activity_good_category)
+public class AllGoodsActivity extends BaseActivity implements IAllGoodsView, OnClickListener {
+
+    @ViewInject(R.id.load_more_grid_view_ptr_frame)
+    private PtrFrameLayout mPtrFrameLayout;
+    @ViewInject(R.id.load_more_grid_view)
+    private ScrollGridViewWithFooter mGridView;
+    @ViewInject(R.id.load_more_grid_view_container)
+    private LoadMoreContainerGridViewWithHeader load_more_grid_view_container;
+
+    public ProductGridAdapter adapter;
+    private List<DProduct> productList = new ArrayList<DProduct>();
+
+
+    @ViewInject(R.id.comprehensive_rt)
+    private RadioButton comprehensive_rt;
+    @ViewInject(R.id.salesvol_rt)
+    private RadioButton salesvol_rt;
+    @ViewInject(R.id.price_rt)
+    private RadioButton price_rt;
+
+    @ViewInject(R.id.category_iv)
+    private ImageView category_iv;
+
+    @ViewInject(R.id.search_et)
+    private EditText search_et;
+
+    @ViewInject(R.id.nodata_page)
+    private View nodata_page;
+    @ViewInject(R.id.nodata_tv)
+    private TextView nodata_tv;
+    @ViewInject(R.id.nodata_but)
+    private Button nodata_but; // / 没有数据时的提示布局
+
+    PopupWindow openCatpopupWindow;
+    private PopMenu popMenu;
+    private ShopCatAdapter shopCatAdapter;
+
+    private List<ProductItem> productItemList;
+    private String[] items_str = new String[]{"从高到低", "从低到高"};
+    private int mIndex = 1;
+
+    private long sid;
+    private long cid;
+
+    private String order; // 排列方式
+    private boolean desc;// 升序降序
+
+    private boolean priceOrder = true;
+    private boolean saleOrder = true;
+
+    private String keyWords = "";
+
+    private int type;
+
+    private Drawable desc_drawable, asc_drawable, none_drawable;
+
+    private AllGoodsPresenter presenter = new AllGoodsPresenter(this);
+
+    @Override
+    protected void initView() {
+        // TODO Auto-generated method stub
+
+        sid = getIntent().getLongExtra("0", -1);
+        cid = getIntent().getLongExtra("1", -1);
+        keyWords = getIntent().getStringExtra("2") == null ? "" : getIntent().getStringExtra("2");
+
+        search_et.setText(keyWords);
+        search_et.setSelection(keyWords.length());
+
+        initPage(cid, "", false, 0);
+        presenter.getShopCat(sid);
+        comprehensive_rt.setChecked(true);
+//		goods_refres.setPullLoadEnabled(false);
+//		goods_refres.setScrollLoadEnabled(true);
+//		goods_refres.setHasMoreData(true);
+//		gridView = goods_refres.getRefreshableView();
+//		gridView.setPadding(ScreenUtil.dip2px(8), 0, ScreenUtil.dip2px(8), 0);
+//		goods_refres.doPullRefreshing(true, 0);
+        desc = true;
+        adapter = new ProductGridAdapter(getContext(), productList, R.layout.item_shop_product, null);
+        desc_drawable = getResources().getDrawable(R.drawable.icon_desc);
+        asc_drawable = getResources().getDrawable(R.drawable.icon_asc);
+        none_drawable = getResources().getDrawable(R.drawable.icon_none);
+        desc_drawable.setBounds(0, 0, asc_drawable.getMinimumWidth(), asc_drawable.getMinimumHeight());
+        asc_drawable.setBounds(0, 0, asc_drawable.getMinimumWidth(), asc_drawable.getMinimumHeight());
+        none_drawable.setBounds(0, 0, asc_drawable.getMinimumWidth(), asc_drawable.getMinimumHeight());
+
+    }
+
+    @Override
+    protected void initListener() {
+        // TODO Auto-generated method stub
+        setBack();
+
+        comprehensive_rt.setOnClickListener(this); // 全部商品
+        salesvol_rt.setOnClickListener(this);
+        price_rt.setOnClickListener(this);
+
+
+        mPtrFrameLayout.setDurationToClose(100);
+        PullToRefreshHeadView headView = new PullToRefreshHeadView(getContext());
+        headView.setLastUpdateTimeKey(this.getClass().getSimpleName());
+        mPtrFrameLayout.setHeaderView(headView);
+        mPtrFrameLayout.addPtrUIHandler(headView);
+        mPtrFrameLayout.setPtrHandler(new PtrHandler() {
+            @Override
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+
+                return PtrDefaultHandler.checkContentCanBePulledDown(frame, mGridView, header);
+            }
+
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                mIndex = 1;
+                if (type == 0) {
+                    presenter.refresh(sid, cid, order, desc, keyWords);
+                } else {
+                    presenter.refresh(sid, cid, order, type == 1 ? !saleOrder : !priceOrder, keyWords);
+                }
+            }
+        });
+
+        load_more_grid_view_container.setAutoLoadMore(true);
+        PullToRefreshFooter footer = new PullToRefreshFooter(getContext());
+        load_more_grid_view_container.setLoadMoreView(footer);
+        load_more_grid_view_container.setLoadMoreUIHandler(footer);
+        mGridView.setAdapter(adapter);//要先设置footview在设置adapter
+        // binding view and data
+        load_more_grid_view_container.setLoadMoreHandler(new LoadMoreHandler() {
+            @Override
+            public void onLoadMore(LoadMoreContainer loadMoreContainer) {
+                mIndex++;
+                if (type == 0) {
+                    presenter.more(sid, cid, order, desc, mIndex, keyWords);
+                } else {
+                    presenter.more(sid, cid, order, type == 1 ? !saleOrder : !priceOrder, mIndex, keyWords);
+                }
+            }
+        });
+
+        mGridView.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // TODO Auto-generated method stub
+                goTo(NewProductInfoActivity.class, adapter.getItem(position).getPid(), adapter.getItem(position).getShop_id(),
+                        adapter.getItem(position).getName());
+            }
+        });
+
+
+//        goods_refres.setOnRefreshListener(new OnRefreshListener<GridViewWithHeaderAndFooter>() {
+//
+//            @Override
+//            public void onPullDownToRefresh(PullToRefreshBase<GridViewWithHeaderAndFooter> refreshView) {
+//                // TODO Auto-generated method stub
+//                mIndex = 1;
+//                if (type == 0) {
+//                    presenter.refresh(sid, cid, order, desc, keyWords);
+//                } else {
+//                    presenter.refresh(sid, cid, order, type == 1 ? !saleOrder : !priceOrder, keyWords);
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onPullUpToRefresh(PullToRefreshBase<GridViewWithHeaderAndFooter> refreshView) {
+//                // TODO Auto-generated method stub
+//                mIndex++;
+//                if (type == 0) {
+//                    presenter.more(sid, cid, order, desc, mIndex, keyWords);
+//                } else {
+//                    presenter.more(sid, cid, order, type == 1 ? !saleOrder : !priceOrder, mIndex, keyWords);
+//                }
+//            }
+//        });
+//
+//
+//        gridView.setOnItemClickListener(new OnItemClickListener() {
+//
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                // TODO Auto-generated method stub
+//                goTo(NewProductInfoActivity.class, presenter.adapter.getItem(position).getPid(), presenter.adapter.getItem(position).getShop_id(),
+//                        presenter.adapter.getItem(position).getName());
+//
+//            }
+//        });
+
+        search_et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                /* 判断是否是“GO”键 */
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    /* 隐藏软键盘 */
+                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm.isActive()) {
+                        imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+                    }
+                    keyWords = getViewValue(search_et);
+                    initPage(cid, "", false, 0);
+                    comprehensive_rt.setChecked(true);
+                    presenter.refresh(sid, cid, "", desc, keyWords);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
+        mIndex = 1;
+        if (type == 0) {
+            presenter.refresh(sid, cid, order, desc, keyWords);
+        } else {
+            presenter.refresh(sid, cid, order, type == 1 ? !saleOrder : !priceOrder, keyWords);
+        }
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.comprehensive_rt:
+                initPage(cid, "", false, 0);
+                presenter.refresh(sid, cid, "", false, keyWords);
+                break;
+            case R.id.salesvol_rt:
+                showByOrder(1);
+                break;
+            case R.id.price_rt:
+                showByOrder(2);
+                break;
+        }
+    }
+
+    @OnClick(R.id.category_iv)
+    private void showCategory(View v) {
+        if (openCatpopupWindow != null && openCatpopupWindow.isShowing()) {
+            openCatpopupWindow.dismiss();
+        } else {
+            openCat(v);
+            setbackgroundAlpha(1f);
+        }
+    }
+
+    @Override
+    public void clearLoadPage() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void showErrorPage() {
+        // TODO Auto-generated method stub
+//        goods_refres.onPullDownRefreshComplete();
+//        goods_refres.onPullUpRefreshComplete();
+//        VISIBLE(nodata_page);
+//        nodata_tv.setText("没找到该类商品");
+//        INVISIBLE(nodata_but);
+
+        if(mPtrFrameLayout !=null){
+            mPtrFrameLayout.refreshComplete();
+            load_more_grid_view_container.loadMoreFinish(true, false);
+        }
+        productList.clear();
+        GONE(load_more_grid_view_container);
+        adapter.notifyDataSetChanged();
+        VISIBLE(nodata_page);
+        nodata_tv.setText("没找到该类商品!");
+        nodata_but.setText("马上去看看");
+        INVISIBLE(nodata_but);
+    }
+
+    @Override
+    public void setGridAdapter(ProductGridAdapter adapter) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setIsCanMore(boolean b) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * 打开宝贝分类
+     *
+     * @param v
+     */
+    public void openCat(View v) {
+        View contentView = LayoutInflater.from(context).inflate(R.layout.category_pop_window, null);
+        contentView.setBackgroundResource(R.drawable.tc);
+        ListView lv = (ListView) contentView.findViewById(R.id.cat_lv);
+        lv.setAdapter(shopCatAdapter);
+        shopCatAdapter.notifyDataSetChanged();
+        lv.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // TODO Auto-generated method stub
+                initPage(shopCatAdapter.getItem(position).getCid(), "", false, 0);
+                keyWords = "";
+                search_et.setText("");
+                presenter.refresh(sid, shopCatAdapter.getItem(position).getCid(), order, desc, keyWords);
+                if (openCatpopupWindow != null && openCatpopupWindow.isShowing()) {
+                    openCatpopupWindow.dismiss();
+                }
+                comprehensive_rt.setChecked(true);
+            }
+        });
+        openCatpopupWindow = new PopupWindow(contentView, 300, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, true);
+        openCatpopupWindow.setFocusable(true);
+        openCatpopupWindow.setOutsideTouchable(true);
+        openCatpopupWindow.setBackgroundDrawable(new BitmapDrawable());
+        openCatpopupWindow.showAsDropDown(v, -50, 0);
+    }
+
+    /**
+     * 设置添加屏幕的背景透明度
+     *
+     * @param bgAlpha
+     */
+    public void setbackgroundAlpha(float bgAlpha) {
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = bgAlpha; // 0.0-1.0
+        getWindow().setAttributes(lp);
+    }
+
+    // public void showDesc(View v, final List<ProductItem> items, final
+    // String[] strs, final int type) {
+    // // 初始化弹出菜单
+    // popMenu = new PopMenu(context);
+    // if(items == null && strs != null){
+    // popMenu.addItems(strs);
+    // }else if(strs == null && items != null){
+    // for (int i = 0; i < items.size(); i++) {
+    // popMenu.addItem(items.get(i).getName());
+    // }
+    //
+    // }
+    // popMenu.setOnItemClickListener(new OnItemClickListener() {
+    //
+    // @Override
+    // public void onItemClick(AdapterView<?> parent, View view,
+    // int position, long id) {
+    // if(items == null && strs != null){
+    // if(strs[position].equals("从高到低")){
+    // if(type == 1){
+    // presenter.refresh(sid, cid, "order_sort", false);
+    // initPage(cid, "order_sort", false);
+    // }else if(type == 2){
+    // presenter.refresh(sid, cid, "sale_price", false);
+    // initPage(cid, "sale_price", false);
+    // }
+    // }else if(strs[position].equals("从低到高")){
+    // if(type == 1){
+    // presenter.refresh(sid, cid, "order_sort", true);
+    // initPage(cid, "order_sort", true);
+    // }else if(type == 2){
+    // presenter.refresh(sid, cid, "sale_price", true);
+    // initPage(cid, "sale_price", true);
+    // }
+    // }
+    //
+    // }else if(strs == null && items != null){
+    //
+    // presenter.refresh(sid, items.get(position).getCid(), "", false);
+    // initPage(items.get(position).getCid(), "", false);
+    // }
+    // popMenu.dismiss();
+    // }
+    // });
+    //
+    // popMenu.showAsDropDown(v);
+    //
+    // }
+    //
+
+    public void showByOrder(int type) {
+        if (type == 1) {
+            price_rt.setCompoundDrawables(null, null, none_drawable, null);
+            if (!saleOrder) {
+                salesvol_rt.setCompoundDrawables(null, null, desc_drawable, null);
+            } else {
+                salesvol_rt.setCompoundDrawables(null, null, asc_drawable, null);
+            }
+            saleOrder = !saleOrder;
+            presenter.refresh(sid, cid, "order_sort", !saleOrder, keyWords);
+            priceOrder = true;
+            initPage(cid, "order_sort", saleOrder, type);
+        } else if (type == 2) {
+            salesvol_rt.setCompoundDrawables(null, null, none_drawable, null);
+            if (!priceOrder) {
+                price_rt.setCompoundDrawables(null, null, desc_drawable, null);
+            } else {
+                price_rt.setCompoundDrawables(null, null, asc_drawable, null);
+            }
+            priceOrder = !priceOrder;
+            presenter.refresh(sid, cid, "sale_price", !priceOrder, keyWords);
+            saleOrder = true;
+            initPage(cid, "sale_price", priceOrder, type);
+        }
+    }
+
+    public void initPage(long cid_l, String order_s, boolean desc_b, int type) {
+        cid = cid_l;
+        order = order_s;
+        this.type = type;
+        if ("".equals(order)) {
+            priceOrder = true;
+            saleOrder = true;
+            price_rt.setCompoundDrawables(null, null, none_drawable, null);
+            salesvol_rt.setCompoundDrawables(null, null, none_drawable, null);
+        }
+        desc = desc_b;
+        mIndex = 1;
+    }
+
+    @Override
+    public void refresh(List<DProduct> list) {
+        // TODO Auto-generated method stub
+
+//        INVISIBLE(nodata_page);
+//        gridView.setAdapter(adapter);
+//        goods_refres.onPullDownRefreshComplete();
+//        goods_refres.onPullUpRefreshComplete();
+//        goods_refres.setScrollLoadEnabled(true);
+//        goods_refres.setHasMoreData(true);
+
+        GONE(nodata_page);
+        VISIBLE(load_more_grid_view_container);
+        productList.clear();
+        productList.addAll(list);
+        adapter.notifyDataSetChanged();
+        mPtrFrameLayout.refreshComplete();
+        if (!(mGridView).isStackFromBottom()) {
+            mGridView.setStackFromBottom(true);
+        }
+        mGridView.setStackFromBottom(false);
+        // load more
+        if (productList.size() <= 0) {
+            showErrorPage();
+        } else if (productList.size() < 10) {
+            load_more_grid_view_container.loadMoreFinish(true, false);
+        } else {
+            load_more_grid_view_container.loadMoreFinish(false, true);
+        }
+
+    }
+
+    @Override
+    public void more(List<DProduct> list, boolean isEnd) {
+        // TODO Auto-generated method stub
+
+//        INVISIBLE(nodata_page);
+//        goods_refres.onPullDownRefreshComplete();
+//        goods_refres.onPullUpRefreshComplete();
+//        goods_refres.setHasMoreData(isEnd);
+
+
+        productList.addAll(list);
+        mPtrFrameLayout.refreshComplete();
+        // load more
+        load_more_grid_view_container.loadMoreFinish(false, isEnd);
+        adapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    public void setCat(List<ProductItem> productItem) {
+        // TODO Auto-generated method stub
+        productItemList = productItem;
+        shopCatAdapter = new ShopCatAdapter(context, productItemList, R.layout.item_shopcat, bitmapUtils);
+
+    }
+
+}

@@ -1,0 +1,48 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.MagazineAdapter;
+import com.hwc.member.presenter.ProductImagePresenter;
+import com.hwc.member.view.activity.view.IProductImageView;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.hwc.member.widget.CustListView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+/**
+ * @author FZ
+ */
+public class ProductPicFragment extends FormBaseFragment implements IProductImageView {
+
+	@ViewInject(R.id.listview)
+	private CustListView listview;
+	
+	private Long pid, shop_id;
+	private ProductImagePresenter presenter = new ProductImagePresenter(this);
+	
+	@Override
+	protected void init() {
+		pid = getActivity().getIntent().getLongExtra("0", -1);
+		shop_id = getActivity().getIntent().getLongExtra("1", -1);
+		presenter.getData(pid,shop_id);
+	}
+
+	@Override
+	public int getLayoutId() {
+		return R.layout.fragment_productpic;
+	}
+
+	@Override
+	public void clearLoadPage() {}
+
+	@Override
+	public void showErrorPage() {}
+
+	@Override
+	public void setList(MagazineAdapter adapter) {
+		listview.setAdapter(adapter);
+	}
+
+}

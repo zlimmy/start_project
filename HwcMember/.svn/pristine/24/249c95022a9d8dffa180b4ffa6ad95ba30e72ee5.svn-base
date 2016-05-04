@@ -1,0 +1,66 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+import com.hwc.member.view.activity.MainActivity.FragmentDao;
+import com.hwc.member.view.fragment.Bustling_Fragment;
+import com.hwc.member.view.fragment.My_Fragment;
+import com.hwc.member.view.fragment.NearbyFragment;
+import com.hwc.member.view.fragment.NewMainFragment;
+
+/**
+ * @author FZ
+ */
+public class FragmentAdapter implements FragmentDao {
+
+	// fragment对应类
+	private static final Class<?> fragments[] = { NewMainFragment.class,NearbyFragment.class, Bustling_Fragment.class, My_Fragment.class};
+	// 底部图片
+	private static final int images[] = { R.drawable.icon_index,R.drawable.icon_nearby, R.drawable.icon_bustling, R.drawable.icon_my};
+	// 底部文字
+	private static final String footTexts[] = { "首页","附近店铺", "惠赚钱", "我的"};
+
+	private Context context;
+
+	public FragmentAdapter(Context context) {
+		super();
+		this.context = context;
+	}
+
+	@SuppressLint("InflateParams")
+	@Override
+	public View getView(int position) {
+		LayoutInflater layoutInflater = LayoutInflater.from(context);
+		View view = layoutInflater.inflate(R.layout.tab_bottom_nav, null);
+
+		ImageView imageView = (ImageView) view.findViewById(R.id.iv_icon);
+		imageView.setImageResource(images[position]);
+
+		TextView textView = (TextView) view.findViewById(R.id.tv_icon);
+		textView.setText(footTexts[position]);
+
+		return view;
+	}
+
+	@Override
+	public int getCount() {
+		return fragments.length;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Class<? extends Fragment> getFragment(int position) {
+		return (Class<? extends Fragment>) fragments[position];
+	}
+
+}

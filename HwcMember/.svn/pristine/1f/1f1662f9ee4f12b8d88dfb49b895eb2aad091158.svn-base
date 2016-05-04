@@ -1,0 +1,29 @@
+package com.hwc.member.view.activity.view;
+
+import java.util.List;
+
+import com.huimodel.api.base.WithdrawApply;
+
+public interface IWithdrawalsView extends LoadDataView{
+
+	/**
+	 * 提现申请提交成功
+	 */
+	void submitSuccess();
+	
+
+	/**
+	 * 提现申请提交失败
+	 */
+	void submitFail();
+	
+	
+	
+	//刷新
+	 void refresh(List<WithdrawApply> list);
+		
+	//加载
+	 void more(List<WithdrawApply> list,boolean isEnd);
+	 
+	
+}

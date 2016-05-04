@@ -1,0 +1,46 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+
+import com.huimodel.api.base.Shop_saler_inv_code;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class MyCodeAdapter extends MirAdapter<Shop_saler_inv_code> {
+
+	public MyCodeAdapter(Context context, List<Shop_saler_inv_code> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+	}
+
+	@Override
+	public void convert(HolderEntity helper, Shop_saler_inv_code item) {
+		helper.setText(R.id.starttime_tv, "开始时间：" + item.getCreated()+"");
+		helper.setText(R.id.endtime_tv, "结束时间：" + item.getInvitation_expire()+"");
+		helper.setText(R.id.code_tv, "优惠码：" + item.getInvitation_code());
+		helper.setText(R.id.name_tv, "邀请人：" + item.getInvitation_name());
+		helper.setText(R.id.mobile_tv, "邀请人号码：" + item.getInvitation_mobile());
+		if(item.getInvitation_name() == null){
+			helper.setText(R.id.name_tv, "邀请人：");
+		}
+		if(item.getInvitation_mobile() == null){
+			helper.setText(R.id.mobile_tv, "邀请人号码：");
+		}
+		if(item.getStatus().equals("O")){
+			helper.setImageResource(R.id.iv, R.drawable.icon_use);
+		}else if(item.getStatus().equals("I")){
+			helper.setImageResource(R.id.iv, R.drawable.icon_unuse);
+		}
+	}
+
+}

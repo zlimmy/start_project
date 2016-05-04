@@ -1,0 +1,57 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+public class InvitationCodeRequest  extends RequestBase {
+	private java.lang.String invitation_code;
+	private java.lang.Long id;
+	private java.lang.String status;
+	private java.util.Date invitation_expire;
+	private java.lang.Long pid;
+	private java.lang.String invitation_name;
+	private java.lang.String invitation_mobile;
+	public java.lang.String getInvitation_code() {
+		return invitation_code;
+	}
+	public void setInvitation_code(java.lang.String invitation_code) {
+		this.invitation_code = invitation_code;
+	}
+	public java.lang.Long getId() {
+		return id;
+	}
+	public void setId(java.lang.Long id) {
+		this.id = id;
+	}
+	public java.lang.String getStatus() {
+		return status;
+	}
+	public void setStatus(java.lang.String status) {
+		this.status = status;
+	}
+	public java.util.Date getInvitation_expire() {
+		return invitation_expire;
+	}
+	public void setInvitation_expire(java.util.Date invitation_expire) {
+		this.invitation_expire = invitation_expire;
+	}
+	public java.lang.Long getPid() {
+		return pid;
+	}
+	public void setPid(java.lang.Long pid) {
+		this.pid = pid;
+	}
+	public java.lang.String getInvitation_name() {
+		return invitation_name;
+	}
+	public void setInvitation_name(java.lang.String invitation_name) {
+		this.invitation_name = invitation_name;
+	}
+	public java.lang.String getInvitation_mobile() {
+		return invitation_mobile;
+	}
+	public void setInvitation_mobile(java.lang.String invitation_mobile) {
+		this.invitation_mobile = invitation_mobile;
+	}
+	
+	
+}

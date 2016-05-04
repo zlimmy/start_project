@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.mir.mytitlebar.barutil.ObservableScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="40dp"
+        android:fillViewport="true" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/image_rl"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/parallax_image_height" >
+
+                <com.hwc.member.widget.MyAdGallery
+                    android:id="@+id/image_wall_gallery"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/gray0" >
+                </com.hwc.member.widget.MyAdGallery>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/ovalLayout"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_alignBottom="@+id/image_wall_gallery"
+                android:layout_alignParentLeft="true"
+                android:background="@color/white"
+                android:gravity="center"
+                android:orientation="horizontal" >
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingBottom="12dp"
+                android:paddingTop="12dp"
+                >
+
+                <TextView
+                    android:id="@+id/name_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="2"
+                    android:singleLine="false"
+                    android:text="商品名"
+                    android:layout_marginLeft="16dp"
+                    android:textSize="@dimen/text_18" />
+
+                <TextView
+                    android:id="@+id/description_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@id/name_tv"
+                    android:layout_below="@id/name_tv"
+                    android:layout_marginTop="10dp"
+                    android:text="商品描述"
+                    android:textColor="@color/orange2"
+                    android:textSize="@dimen/text_12" />
+
+                <TextView
+                    android:id="@+id/newprice_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@id/name_tv"
+                    android:layout_below="@id/description_tv"
+                    android:layout_marginTop="10dp"
+                    android:text="￥1000"
+                    android:textSize="@dimen/text_16" />
+
+                <TextView
+                    android:id="@+id/point_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@id/newprice_tv"
+                    android:layout_below="@id/newprice_tv"
+                    android:layout_marginTop="10dp"
+                    android:text="兑换积分："
+                    android:textColor="@color/main_color"
+                    android:textSize="@dimen/text_14" />
+
+            </RelativeLayout>
+            
+        </LinearLayout>
+    </com.mir.mytitlebar.barutil.ObservableScrollView>
+
+    <com.hwc.member.widget.header.LXHeadView
+        xmlns:my="http://schemas.android.com/apk/res/com.hwc.member"
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    
+    <Button 
+        android:id="@+id/buy_bt"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/main_color"
+        android:text="喜欢就兑换吧"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_14"
+        android:layout_gravity="bottom"/>
+
+</FrameLayout>

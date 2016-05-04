@@ -1,0 +1,52 @@
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+
+import com.huimodel.api.base.Discovery;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.ViewTransformUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+public class MakeMoneyAdapter extends MirAdapter<Discovery>{
+
+	
+	
+	public MakeMoneyAdapter(Context context, List<Discovery> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		// TODO Auto-generated constructor stub
+	}
+
+	
+	@Override
+	public void convert(HolderEntity helper, Discovery item) {
+		
+		try {
+			helper.setText(R.id.title_tv,item.getTitle());
+			RelativeLayout rl = helper.getView(R.id.make_money_rl);
+			ViewTransformUtil.layoutParams(rl, rl.getLayoutParams(), LayoutParams.MATCH_PARENT, 220);		
+			helper.setText(R.id.amount_tv, "参与人数:"+item.getViews()==null?"0人":"参与人数:"+item.getViews()+"人");
+			helper.setText(R.id.content_tv, item.getExcerpt());
+			helper.setText(R.id.time_tv, "还有"+item.getRule().getLeaveDay()==null?"5":"还有"+item.getRule().getLeaveDay()+"天");
+			ImageView ad_iv = helper.getView(R.id.ad_iv);	
+			ViewTransformUtil.layoutParams(ad_iv, ad_iv.getLayoutParams(),250, 188);
+			if(item.getPics() != null && item.getPics().size() > 0){
+				bitmapUtils.display(ad_iv, item.getPics().get(0).getUrl());
+			}else{
+				ad_iv.setImageResource(R.drawable.icon_defultbg);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		
+	}
+
+}

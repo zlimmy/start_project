@@ -1,0 +1,559 @@
+package com.hwc.member.view.activity.order;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Intent;
+import android.text.Html;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.huimodel.api.base.Address;
+import com.huimodel.api.base.DHwcpay;
+import com.huimodel.api.base.DPrizeCoupon;
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.OrderDetails;
+import com.huimodel.api.base.OrderPayDetail;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.response.OrderGetPayInfoResponse;
+import com.huimodel.api.response.ShopPostFeeStrategyResponse;
+import com.hwc.member.R;
+import com.hwc.member.adapter.ConfirmOrderAdapter;
+import com.hwc.member.anno.ViewTransform;
+import com.hwc.member.common.Constant;
+import com.hwc.member.presenter.ConfirmOrderPresenter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.view.activity.my.AddressActivity;
+import com.hwc.member.view.activity.shop.ShopCarActivity;
+import com.hwc.member.view.activity.view.IConfirmOrderView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.CircleImageView;
+import com.hwc.member.widget.MyListView;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+/**
+ * @author FZ
+ * 确认订单
+ */
+@ContentView(R.layout.activity_confirm_order)
+public class ConfirmOrderActivity extends BaseActivity implements IConfirmOrderView {
+
+	@ViewInject(R.id.listview)
+	private MyListView listview;
+	private List<DProduct> dpList = new ArrayList<DProduct>();
+	private ConfirmOrderPresenter presenter = new ConfirmOrderPresenter(this);
+	@ViewInject(R.id.shopname_tv)
+	private TextView shopname_tv;
+	@ViewInject(R.id.shoplogo_iv)
+	private CircleImageView shoplogo_iv;
+	private DProduct dp;
+	@ViewInject(R.id.marks)
+	private EditText marks;
+	@ViewInject(R.id.sure_bt)
+	private Button sure_bt;
+	@ViewInject(R.id.total_price)
+	private TextView total_price;
+	@ViewInject(R.id.nums_tv)
+	private TextView nums_tv;
+	@ViewInject(R.id.total_tv)
+	private TextView total_tv;
+	@ViewInject(R.id.address_rl)
+	@ViewTransform(height = 100)
+	private RelativeLayout vaddress_rl;
+	@ViewInject(R.id.pay_rg)
+	private RadioGroup  pay_rg;
+	@ViewInject(R.id.post_rg)
+	private RadioGroup  post_rg;
+	@ViewInject(R.id.add_name_tv)
+	private TextView add_name_tv;
+	@ViewInject(R.id.add_address_tv)
+	private TextView add_address_tv;
+	@ViewInject(R.id.add_phone)
+	private TextView add_phone;
+	private String paycode = Constant.PAYONLINE; //在线订单
+	private String shipping_type = Constant.POSTDELIVERY;//送货上门
+	@ViewInject(R.id.check_balance)
+	private CheckBox check_balance;
+	
+	@ViewInject(R.id.hwcpay_rl)
+	private RelativeLayout hwcpay_rl;
+	@ViewInject(R.id.hwcpay_tv)
+	private TextView hwcpay_tv;
+	
+	@ViewInject(R.id.coupons_rl)
+	private RelativeLayout coupons_rl;
+	@ViewInject(R.id.coupons_tv)
+	private TextView coupons_tv;
+	@ViewInject(R.id.couponsize_tv)
+	private TextView couponsize_tv;
+	private Address mAddress;
+	@ViewInject(R.id.since_rb)
+	private RadioButton since_rb;
+	@ViewInject(R.id.express_rb)
+	private RadioButton express_rb;
+	@ViewInject(R.id.line_rb)
+	private RadioButton line_rb;
+	@ViewInject(R.id.unonline_rb)
+	private RadioButton unonline_rb;
+	
+	private DPrizeCoupon dCoupon;
+	private Long sid = 0l; //店铺ID
+	private DHwcpay hwcpay;
+	private OrderGetPayInfoResponse or;
+	private double total = 0 ; //订单总金额
+	private double oldTotal = 0;//订单总金额备份
+	private double hpay = 0; //钱包支付
+	private double cpay = 0; //礼包抵扣
+	private List<OrderPayDetail> payDetails;
+	private OrderPayDetail odcoupon;
+	private OrderPayDetail odhwcpay;
+	private String payCode = "HWCPAY";
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void initView() {
+		payDetails = new ArrayList<OrderPayDetail>();
+		listview.setFocusable(false);
+		String count = getIntent().getStringExtra("0");
+		if(count.equals("1")){
+			dp = (DProduct) getIntent().getSerializableExtra("1");
+			sid = dp.getShop_id();
+			dpList.add(dp);
+		}else{
+			dpList = (List<DProduct>) getIntent().getSerializableExtra("1");
+			
+		}
+		if(dpList.size() > 0){
+			sid = dpList.get(0).getShop_id();
+			shopname_tv.setText(dpList.get(0).getShop_name());
+			bitmapUtils.display(shoplogo_iv, dpList.get(0).getShop_pic_path());	
+		}
+		
+		presenter.setData(dpList,this);
+		presenter.getPayInfo(sid);
+		presenter.getDefaultAddress();
+	
+		check_balance.setOnCheckedChangeListener(new OnCheckedChangeListener() {		
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
+				 if(isChecked){ 
+					
+	                  double  newTotal = 0; 
+	                   if(hwcpay.getBalance()>=total){//可以完全抵消
+	                	   newTotal = 0.00;
+	                	   payCode = "HWCPAY";
+	                   }else{
+	                	   
+	                	   newTotal = total - hwcpay.getBalance();
+	                   }
+	                   odhwcpay = new OrderPayDetail();
+	                   total_price.setText(Html.fromHtml("&nbsp;<font color='red'>￥"+CommonUtil.conversionDouble(newTotal)+"</font>&nbsp;元"));
+	                }else{
+	                	odhwcpay = null;
+	   
+	                	total_price.setText(Html.fromHtml("&nbsp;<font color='red'>￥"+CommonUtil.conversionDouble(total)+"</font>&nbsp;元"));
+	                }
+				
+			}
+		});
+		
+		pay_rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {			
+			@Override
+			public void onCheckedChanged(RadioGroup arg0, int id) {
+				// TODO Auto-generated method stub
+				switch (id) {
+				case R.id.line_rb:
+					VISIBLE(hwcpay_rl);
+					visible_coupons_rl();
+					if(dCoupon!=null){
+						setCoupon(dCoupon, 3);
+					}
+//					express_rb.setChecked(true);
+					break;
+				case R.id.unonline_rb:
+					GONE(hwcpay_rl);
+					GONE(coupons_rl);
+					odcoupon = null;
+					since_rb.setChecked(true);
+					check_balance.setChecked(false);
+					alculation();
+					break;
+				default:
+					break;
+				}
+			}
+		});
+		
+		post_rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {		
+			@Override
+			public void onCheckedChanged(RadioGroup arg0, int id) {
+				// TODO Auto-generated method stub
+				switch (id) {
+				case R.id.express_rb:
+					VISIBLE(hwcpay_rl);
+					visible_coupons_rl();
+					line_rb.setChecked(true);
+					break;
+				case R.id.since_rb:
+					check_balance.setChecked(false);
+					alculation();
+					break;
+				default:
+					break;
+				}
+			}
+		});
+		
+	}
+
+	
+	//显示礼券
+	public void visible_coupons_rl(){
+		
+		if(or.getCoupons()!=null&&or.getCoupons().size()>=1){
+			VISIBLE(coupons_rl);
+		}
+	}
+
+	
+	
+	@Override
+	protected void initListener() {
+		setBack();
+		alculation();
+	}
+	
+	@Override
+	public void setList(ConfirmOrderAdapter adapter) {
+		listview.setAdapter(adapter);
+		List<OrderDetails> orders  = new ArrayList<OrderDetails>();
+		
+		OrderDetails details = null;
+		for(int i=0;i<dpList.size();i++){
+			details = new OrderDetails();
+			details.setPid(dpList.get(i).getPid()+"");
+			details.setProduct_id(dpList.get(i).getProduct_id()+"");
+			details.setPrice(dpList.get(i).getPrice()+"");
+			details.setNum(dpList.get(i).getSale_num());
+			orders.add(details);
+		}
+		
+		presenter.getPayInfoWithOrder(sid,orders);
+	}
+
+	@Override
+	public void clearLoadPage() {}
+
+	@Override
+	public void showErrorPage() {}
+
+	@OnClick(R.id.address_rl)
+	public void address_rl(View v){
+		Intent intent = new Intent(context, AddressActivity.class);
+		startActivityForResult(intent, 100);
+	}
+	
+	
+	
+	@OnClick(R.id.sure_bt)
+	public void sure_bt(View v){
+		dpList = presenter.getDpList();
+		List<OrderDetails> orders = new ArrayList<OrderDetails>();
+		OrderDetails od = null;
+		for(int i =0;i<dpList.size();i++){
+			od = new OrderDetails();
+			if(dpList.get(i).getPsuite()!=null){
+				od.setSuite_id(dpList.get(i).getPsuite().getSuite_id());
+				od.setSuite_descript(dpList.get(i).getPsuite().getDescript());
+				od.setPrice(dpList.get(i).getPsuite().getSale_price().toString());
+				od.setPurchase_price(dpList.get(i).getPsuite().getPurchase_price().toString());
+			}else if(dpList.get(i).getProminfo()!=null){
+				od.setPrice(dpList.get(i).getProminfo().getProm_price()+"");
+				od.setPurchase_price(dpList.get(i).getPurchase_price().toString());	
+			}else{
+				od.setPrice(dpList.get(i).getPrice().toString());
+				od.setPurchase_price(dpList.get(i).getPurchase_price().toString());	
+			}
+			od.setPid(dpList.get(i).getPid().toString());
+			od.setNum(dpList.get(i).getSale_num());
+			orders.add(od);
+		}
+		
+		
+		RadioButton button  = (RadioButton)findViewById(pay_rg.getCheckedRadioButtonId());
+		if(button.getText().toString().equals("在线支付")){
+			paycode = Constant.PAYONLINE;
+		}else{
+			paycode = Constant.PAYOFFLINE;
+		}
+		
+		RadioButton button2  = (RadioButton)findViewById(post_rg.getCheckedRadioButtonId());
+		if(button2.getText().toString().equals("送货上门")){
+			shipping_type = Constant.POSTDELIVERY;
+		}else{
+			shipping_type = Constant.POSTOFFLINE;
+		}
+	
+
+		
+		
+		if(odhwcpay!=null){
+			odhwcpay.setPaycode(payCode);
+			payDetails.add(odhwcpay);
+		}
+		
+		if(odcoupon!=null&&!odcoupon.getCoupon_no().equals("clear")){
+			payDetails.add(odcoupon);
+		}
+		
+		presenter.doSubmit(dpList.get(0).getShop_id(), orders,marks.getText().toString(),paycode,shipping_type,payDetails,mAddress);
+
+	}
+	
+	
+	
+	
+	@Override
+	public void sumbit() {
+		// TODO Auto-generated method stub
+		
+	
+	}
+
+	@Override
+	public void alculation() {
+		// TODO Auto-generated method stub
+		dpList = presenter.getDpList(); //获取商品数量
+		total = 0;
+		int nums = 0;
+		for(int i=0;i<dpList.size();i++){
+			if(dpList.get(i).getPsuite()!=null){
+				total = total+dpList.get(i).getPsuite().getSale_price()*dpList.get(i).getSale_num();
+			
+			}else if(dpList.get(i).getProminfo()!=null){
+				total = total+dpList.get(i).getProminfo().getProm_price()*dpList.get(i).getSale_num();
+			}else{
+				total = total+dpList.get(i).getPrice()*dpList.get(i).getSale_num();
+			}	
+			nums = nums+dpList.get(i).getSale_num();
+			
+		}
+
+	
+		nums_tv.setText(Html.fromHtml("共<font color='red'>&nbsp;"+nums+"&nbsp;</font>件商品"));
+		total_price.setText(Html.fromHtml("&nbsp;<font color='red'>￥"+CommonUtil.conversionDouble(total)+"</font>&nbsp;元"));
+		total_tv.setText(Html.fromHtml("&nbsp;<font color='red'>￥"+CommonUtil.conversionDouble(total)+"</font>&nbsp;元"));
+		oldTotal = total;
+	}
+	
+	//支付成功 跳转
+	@Override
+	public void doOrderInfo(ResponseBase obj) {
+		
+		//在购物车中清空该商品
+//		System.out.println(""+gson.toJson(dpList));
+		
+		if(ShopCarActivity.shopCarActivity!=null){
+			presenter.delProductForCart(dpList);
+			ShopCarActivity.shopCarActivity.finish();
+		}
+		//Response--{"params":{"balance":"100.00","rid":"9723","status":"N","total_fee":"100.00","paycode":"ONLINE"},"success":true}
+		//盘点下钱是不是已经持平
+		if(obj.getParams().get("status").equals("N")&&obj.getParams().get("paycode").equals(Constant.PAYONLINE)){
+			goTo(CounterInfoActivity.class,Long.parseLong(obj.getParams().get("rid")),sid);
+		}else{ //跳转支付界面
+			goTo(OrderDetailsActivity.class,Long.parseLong(obj.getParams().get("rid")));
+		}
+	
+		finish();
+	}
+
+	@Override
+	public void setAddress(Address address) {
+		if(address != null){
+			mAddress = address;
+			add_name_tv.setText("联系人：" + (address.getReceiver_name() == null ? "" : address.getReceiver_name()));
+			add_address_tv.setText("地址：" + (address.getReceiver_address() == null ? "" : address.getReceiver_address()));
+			add_phone.setText("联系电话：" + (address.getReceiver_phone() == null ? "" : address.getReceiver_phone()));
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case 100: 
+		 if (resultCode == RESULT_OK) {  
+			  mAddress = (Address) data.getSerializableExtra("address");
+			 if(mAddress != null){
+				add_name_tv.setText("联系人：" + (mAddress.getReceiver_name() == null ? "" : mAddress.getReceiver_name()));
+				add_address_tv.setText("地址：" + (mAddress.getReceiver_address() == null ? "" : mAddress.getReceiver_address()));
+				add_phone.setText("联系电话：" + (mAddress.getReceiver_phone() == null ? "" : mAddress.getReceiver_phone()));
+			}
+		  }  
+		 	break;
+		default:
+			break;
+		}
+	}
+
+
+
+	@Override
+	public void setPayInfo(OrderGetPayInfoResponse payinfo) {
+		or = payinfo;
+		VISIBLE(check_balance);
+		if(payinfo.getHwcpay()!=null){
+			hwcpay = payinfo.getHwcpay();
+			
+			VISIBLE(hwcpay_rl);
+			if(payinfo.getHwcpay().getBalance()<=total){
+				
+				hwcpay_tv.setText(Html.fromHtml("钱包余额&nbsp;<font color='red'>"+CommonUtil.conversionDouble(payinfo.getHwcpay().getBalance())+"</font>元"));	
+			}else{
+
+				hwcpay_tv.setText(Html.fromHtml("钱包余额&nbsp;<font color='red'>"+CommonUtil.conversionDouble(payinfo.getHwcpay().getBalance())+"</font>元"));	
+			}
+		}
+		
+		if(payinfo.getCoupons()!=null&&payinfo.getCoupons().size()>0){
+			dCoupon = payinfo.getCoupons().get(0);
+			setCoupon(dCoupon,payinfo.getCoupons().size());
+		}
+	}
+	
+	/**
+	 * 使用礼券
+	 * @param dCoupon
+	 * @param size
+	 */
+	@SuppressWarnings("unused")
+	public void setCoupon(DPrizeCoupon dCoupon,int size){
+		VISIBLE(coupons_rl);//+CommonUtil.conversionDouble(payinfo.getCoupons().get(0).getPrice())+"
+		coupons_tv.setText(dCoupon.getDescript());
+		couponsize_tv.setText(Html.fromHtml("<font color='#e73828'>-"+dCoupon.getPrice()+"</font>")+"元");	
+	    odcoupon = new OrderPayDetail();
+	    odcoupon.setPaycode("COUPON");
+	    odcoupon.setCredit(dCoupon.getPrice());
+	    odcoupon.setCoupon_no(dCoupon.getCoupon_id());
+			if(dCoupon.getPrice()>=total){
+				total = 0;
+				cpay = total;
+				total_price.setText(Html.fromHtml("&nbsp;<font color='red'>￥"+CommonUtil.conversionDouble(total)+"</font>&nbsp;元"));
+			}else{
+				total = total - dCoupon.getPrice();
+				cpay = dCoupon.getPrice();
+				total_price.setText(Html.fromHtml("&nbsp;<font color='red'>￥"+CommonUtil.conversionDouble(total)+"</font>&nbsp;元"));
+			}
+	}
+	
+	
+	/**
+	 * 重新选择礼券
+	 * @param coupon
+	 */
+	public void restCoupon(DPrizeCoupon coupon){
+		check_balance.setChecked(false);
+		if(odcoupon==null){
+			odcoupon = new OrderPayDetail();
+		}
+	    odcoupon.setPaycode("COUPON");
+	    odcoupon.setCredit(coupon.getPrice());
+	    odcoupon.setCoupon_no(coupon.getCoupon_id());
+		coupons_tv.setText(coupon.getDescript());	
+		if(coupon.getPrice()>=oldTotal){
+			total = oldTotal;
+			total = 0;
+			total_price.setText(Html.fromHtml("&nbsp;<font color='#e73828'>￥"+CommonUtil.conversionDouble(total)+"</font>&nbsp;元"));
+		}else{
+			total = oldTotal;
+			total = total - coupon.getPrice();
+			total_price.setText(Html.fromHtml("&nbsp;<font color='#e73828'>￥"+CommonUtil.conversionDouble(total)+"</font>&nbsp;元"));
+		}
+	    
+		
+	}
+	
+//	
+//	DPrizeCoupon d = null;
+//	@OnClick(R.id.coupons_rl)
+//	public void getCouponsList(View v){
+//	   if(d == null){
+//		  d = new DPrizeCoupon();
+//		  d.setDescript("不使用礼券");
+//		  d.setCoupon_id("clear");
+//		  d.setPrice(0.00d);
+//		  or.getCoupons().add(d);
+//	  }
+//
+//		DialogUtil.setCouponsDialog(context, "",or.getCoupons());
+//		
+//		
+//	}
+
+
+	@Override
+	public void noAddress(String msg) {
+		// TODO Auto-generated method stub
+		DialogUtil.showDialog(Constant.Dialog, "还没有收货地址呢,马上去设置！", Gravity.CENTER, context, null, new OnClickListener() {
+			
+			@Override
+			public void onClick(DialogPlus dialog, View view) {
+				switch (view.getId()) {
+				case R.id.cancel:
+					break;
+
+				case R.id.confirm:
+					Intent intent = new Intent(context, AddressActivity.class);
+					startActivityForResult(intent, 100);
+					break;
+				}
+				dialog.dismiss();
+			}
+		}, null);
+	}
+
+
+	@Override
+	public void wrongStatus(String msg) {
+		// TODO Auto-generated method stub
+		DialogUtil.showScratchDialog(context, msg, false);
+		
+	}
+
+	@Override
+	public void setOrderInfo(ShopPostFeeStrategyResponse response) {
+		if (response.getStrategy() != null) {
+			if (response.getStrategy().getCod().equals("T")) {
+				VISIBLE(since_rb);
+			}else {
+				INVISIBLE(since_rb);
+			}
+			if (response.getStrategy().getOnline_delivery().equals("T")) {
+				VISIBLE(express_rb);
+			}else {
+				INVISIBLE(express_rb);
+				since_rb.setChecked(true);
+			}
+			if (since_rb.getVisibility() == View.INVISIBLE) {
+				INVISIBLE(unonline_rb);
+			}else {
+				VISIBLE(unonline_rb);
+			}
+		}
+	}
+
+}

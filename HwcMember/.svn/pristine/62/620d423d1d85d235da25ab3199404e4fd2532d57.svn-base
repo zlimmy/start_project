@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <com.hwc.member.widget.header.LXHeadView
+        xmlns:my="http://schemas.android.com/apk/res/com.hwc.member"
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        my:centertitle="提现"
+        my:rightText="提现记录"/>
+
+    
+    <View style="@style/divider_horizontal"  android:layout_marginTop="30dp"/>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_height="60dp"
+        android:background="@color/white"
+         >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textColor="@color/gray5"
+            android:textSize="@dimen/text_16"
+            android:layout_marginLeft="18dp"
+            android:text="提现金额" />
+        
+
+           <View
+                android:id="@+id/name_view"
+                style="@style/divider_vertical" />
+           
+		<EditText android:layout_width="0px" android:layout_height="0px"/>
+			
+            <com.hwc.member.widget.EditDelText
+                android:id="@+id/amount_et"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:drawableRight="@drawable/del_edit"
+                android:hint="请输入提现金额"
+                android:textColorHint="@color/gray3"
+                android:textColor="@color/main_color"
+                android:textSize="@dimen/text_18"
+                android:inputType="numberDecimal"
+                android:singleLine="true"
+                android:text="0.00"
+                android:layout_marginLeft="16dp" 
+                android:maxLength="10"/>
+            
+            
+    </LinearLayout>
+    
+     <View style="@style/divider_horizontal"/>
+
+       <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/white"
+         >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textColor="@color/gray5"
+            android:layout_marginLeft="18dp"
+            android:textSize="@dimen/text_14"
+            android:text="@string/txts" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/gray6"
+            android:textSize="@dimen/text_14"
+            android:layout_marginLeft="16dp"
+            android:text="@string/txsm" />
+
+    </LinearLayout>
+     
+     
+     <RelativeLayout
+         android:layout_marginTop="40dp"
+         android:layout_width="match_parent"
+         android:layout_height="40dp" >
+
+         <Button
+             android:id="@+id/submit_but"
+             style="@style/btn_tv_style"
+             android:layout_width="250dp"
+             android:layout_height="wrap_content"
+             android:layout_alignParentTop="true"
+             android:layout_centerHorizontal="true"
+             android:text="申请提现" />
+         
+     </RelativeLayout>
+
+</LinearLayout>

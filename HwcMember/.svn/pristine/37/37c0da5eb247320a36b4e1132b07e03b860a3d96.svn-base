@@ -1,0 +1,15 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.hwc.member.adapter.PointHistoryAdapter;
+
+/**
+ * @author FZ
+ */
+public interface IPointHistoryView extends LoadDataView {
+
+	void setList(PointHistoryAdapter adapter);
+	
+}

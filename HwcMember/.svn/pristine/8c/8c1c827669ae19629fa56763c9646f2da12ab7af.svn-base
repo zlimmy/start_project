@@ -1,0 +1,92 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import android.widget.Toast;
+
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.ResetPasswordRequest;
+import com.huimodel.api.request.SmsMessageRequest;
+import com.huimodel.api.response.SmsMessageResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.view.activity.view.IForgetPwdView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class ForgetPwdPresenter {
+
+	private IHwcBizMain iHwcBizMainImpl;
+	private IForgetPwdView forgetPwdView;
+	
+	public ForgetPwdPresenter(IForgetPwdView forgetPwdView){
+		this.forgetPwdView = forgetPwdView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	/** 修改**/
+	public void update(){
+		ResetPasswordRequest rpwd = new ResetPasswordRequest();
+		rpwd.setMobile(forgetPwdView.getUserName());
+		rpwd.setNewpwd(forgetPwdView.getPassword());
+		rpwd.setImei(Constant.IMEI);
+		forgetPwdView.showProgressDialog(null);
+		iHwcBizMainImpl.restpasswrod(rpwd, forgetPwdView.getContext(), new IResult<ResponseBase>() {
+			
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				forgetPwdView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						Toast.makeText(forgetPwdView.getContext(),"密码重置成功",Toast.LENGTH_SHORT).show();
+						forgetPwdView.finishView();
+					}else{
+						SimpleHUD.showErrorMessage(forgetPwdView.getContext(), obj.getMsg());
+					}
+					
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(forgetPwdView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+
+
+	/**
+	 * 获取验证码
+	 * @param mobile
+     */
+	public void sendSms(String mobile) {
+		SmsMessageRequest sms = new SmsMessageRequest();
+		sms.setMobile(mobile);
+		sms.setNotify_type("reset_pwd");
+		iHwcBizMainImpl.smsMessageNotify(sms, forgetPwdView.getContext(), new IResult<SmsMessageResponse>() {
+			@Override
+			public void result(SmsMessageResponse obj, Code code) {
+				switch (code) {
+					case OK:
+						forgetPwdView.sendSmssuccee(obj);
+						break;
+					default:
+						break;
+
+				}
+			}
+		});
+	}
+	/** 清空 **/
+	public void clear(){
+		forgetPwdView.clearEditText();
+	}
+}

@@ -1,0 +1,121 @@
+///**
+// * 
+// */
+//package com.hwc.member.view.fragment;
+//
+//import java.util.List;
+//
+//import android.view.View;
+//import android.widget.AdapterView;
+//import android.widget.Button;
+//import android.widget.TextView;
+//
+//import com.huimodel.api.base.Order;
+//import com.hwc.member.R;
+//import com.hwc.member.adapter.FollowShopAdapter;
+//import com.hwc.member.presenter.FollowShopPresenter;
+//import com.hwc.member.util.AnimationUtil;
+//import com.hwc.member.util.MyRefreshListener;
+//import com.hwc.member.util.MyRefreshListener.Callback;
+//import com.hwc.member.view.activity.product.NewProductCategoryActivity;
+//import com.hwc.member.view.activity.shop.NewShopInfoActivity;
+//import com.hwc.member.view.activity.view.IFollowShopView;
+//import com.hwc.member.view.base.FormBaseFragment;
+//import com.hwc.member.widget.PullToRefreshLayout;
+//import com.hwc.member.widget.PullableListView;
+//import com.lidroid.xutils.view.annotation.ViewInject;
+//import com.lidroid.xutils.view.annotation.event.OnClick;
+//import com.lidroid.xutils.view.annotation.event.OnItemClick;
+//
+///**
+// * @author FZ
+// */
+//public class FollowShopFragment extends FormBaseFragment implements IFollowShopView {
+//
+//	@ViewInject(R.id.listview)
+//	private PullableListView listview;
+//	@ViewInject(R.id.refresh_view)
+//	private PullToRefreshLayout refresh_view;
+//    private int mIndex = 0;
+//    private int mRefreshIndex = 1;
+//	
+//	private FollowShopPresenter presenter = new FollowShopPresenter(this);
+//	
+//	@ViewInject(R.id.nodata_page)
+//	private View nodata_page;
+//	@ViewInject(R.id.nodata_tv)
+//	private TextView nodata_tv;
+//	@ViewInject(R.id.nodata_but)
+//	private Button nodata_but;
+//	
+//	private MyRefreshListener myRefreshListener;
+//	
+//	@Override
+//	protected void init() {
+//		presenter.setListData(null);	
+//	}
+//	
+//	@Override
+//	public void initListener() {
+//		listview.setLayoutAnimation(AnimationUtil.getListAnim()); // ListView 设置动画效果
+//		myRefreshListener = new MyRefreshListener(getActivity(), new Callback() {
+//			
+//			@Override
+//			public void refresh(PullToRefreshLayout pullToRefreshLayout) {
+//				presenter.setListData(pullToRefreshLayout);
+//			}
+//			
+//			@Override
+//			public void loadMore(PullToRefreshLayout pullToRefreshLayout) {
+//				mIndex = ++mRefreshIndex;
+//		    	presenter.addMoreData(mIndex, pullToRefreshLayout);
+//			}
+//		});
+//		refresh_view.setOnRefreshListener(myRefreshListener);
+//	}
+//
+//	@Override
+//	public int getLayoutId() {
+//		return R.layout.fragment_shop;
+//	}
+//	
+//	@Override
+//	public void setListAdapter(FollowShopAdapter adapter) {
+//		listview.setAdapter(adapter);
+//	}
+//	
+//	@OnItemClick(R.id.listview)
+//	public void onListItemClick(AdapterView<?> parent, View view,
+//			int position, long id) {
+//		goTo(NewShopInfoActivity.class, presenter.adapter.getItem(position).getSid());
+//	}
+//
+//	@Override
+//	public void clearLoadPage() {}
+//
+//	@Override
+//	public void showErrorPage() {
+//		VISIBLE(nodata_page);
+//		nodata_tv.setText("没有关注过店铺呢!");
+//		nodata_but.setText("马上去看看");
+//	}
+//	
+//	@OnClick(R.id.nodata_but)
+//	public void nodata_but(View v){
+//		goTo(NewProductCategoryActivity.class);
+//	}
+//
+//	@Override
+//	public void refresh(List<Order> list) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void more(List<Order> list, boolean isEnd) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//
+//}

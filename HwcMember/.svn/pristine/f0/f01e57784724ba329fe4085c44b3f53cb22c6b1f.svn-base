@@ -1,0 +1,36 @@
+/**
+ * 
+ */
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+
+import com.huimodel.api.base.Advert;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.widget.RoundCornerImageView;
+import com.lidroid.xutils.BitmapUtils;
+
+/**
+ * @author FZ
+ */
+public class HotGoodsAdapter extends MirAdapter<Advert> {
+
+	public HotGoodsAdapter(Context context, List<Advert> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void convert(HolderEntity helper, Advert item) {
+		RoundCornerImageView imageView = helper.getView(R.id.iv);
+		ViewTransformUtil.layoutParams(imageView, imageView.getLayoutParams(), 232, 218);
+		bitmapUtils.display(imageView, item.getAd_url());
+	}
+
+}

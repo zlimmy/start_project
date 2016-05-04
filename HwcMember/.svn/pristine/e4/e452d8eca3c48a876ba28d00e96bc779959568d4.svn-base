@@ -1,0 +1,187 @@
+package com.hwc.member.presenter;
+
+import android.view.View;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.AdvertEarn;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.AdvertEarnRequest;
+import com.huimodel.api.request.DiscoveryDetailRequest;
+import com.huimodel.api.request.DiscoveryGetRequest;
+import com.huimodel.api.response.DiscoveryDetailResponse;
+import com.huimodel.api.response.DiscoveryGetResponse;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.biz.IHwcBizPostImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.util.LocationUtil;
+import com.hwc.member.view.activity.view.IMakeMoenyView;
+
+public class MakeMoenyPresenter {
+
+	private IMakeMoenyView iMakeMoenyView;
+	private IHwcBizPostImpl bizPostImpl;
+	private IHwcBizMainImpl bizMainImpl;
+	public boolean pageisover = false;
+	public int pageSize = 5;
+	public Gson gson;
+
+	public MakeMoenyPresenter(IMakeMoenyView iMakeMoenyView) {
+		this.iMakeMoenyView = iMakeMoenyView;
+		this.bizPostImpl = IHwcBizPostImpl.getInstance(App.mContext);
+		this.bizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		this.gson = new Gson();
+	}
+
+	/**
+	 * 刷新
+	 */
+
+
+	public void refresh() {
+		DiscoveryGetRequest dgr = new DiscoveryGetRequest();
+		dgr.setLatitude(Constant.latitude);
+		dgr.setLongitude(Constant.longitude);
+		dgr.setPage(1);
+		dgr.setCat("AD");
+		dgr.setUser_id_by(Member.getInstance().getUser_id());
+		dgr.setPage_size(pageSize);
+		dgr.setImei(Constant.IMEI);
+		bizPostImpl.getPostList(dgr, iMakeMoenyView.getContext(), new IResult<DiscoveryGetResponse>() {
+			@Override
+			public void result(DiscoveryGetResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				iMakeMoenyView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if (obj.isSuccess()) {
+						if(obj.getDiscoverys()!=null){
+								iMakeMoenyView.refresh(obj.getDiscoverys());
+						}
+						else{
+							iMakeMoenyView.showErrorPage();
+						}
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+
+	}
+
+	/**
+	 * 获取更多
+	 * 
+	 * @param mCurIndex
+	 */
+	public void more(int mCurIndex) {
+		DiscoveryGetRequest dgr = new DiscoveryGetRequest();
+		dgr.setLatitude(Constant.latitude);
+		dgr.setLongitude(Constant.longitude);
+		dgr.setPage(mCurIndex);
+		dgr.setCat("AD");
+		dgr.setUser_id_by(Member.getInstance().getUser_id());
+		dgr.setPage_size(pageSize);
+		dgr.setImei(Constant.IMEI);
+		bizPostImpl.getPostList(dgr, iMakeMoenyView.getContext(), new IResult<DiscoveryGetResponse>() {
+			@Override
+			public void result(DiscoveryGetResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				boolean isEnd = true;
+				switch (code) {
+				case OK:
+					if (obj.isSuccess()) {
+						if (obj.getDiscoverys().size() == 0) {
+							isEnd = false;
+						}
+						iMakeMoenyView.more(obj.getDiscoverys(), isEnd);
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+	}
+
+	/**
+	 * 点击赚钱
+	 * 
+	 * @param discovery_id
+	 */
+	public void advertEarnRequest(Long discovery_id, final View v) {
+		AdvertEarn ad = new AdvertEarn();
+		ad.setPost_id(discovery_id);
+		AdvertEarnRequest ddr = new AdvertEarnRequest();
+		ddr.setUser_id_by(Member.getInstance().getUser_id());
+		ddr.setEarn(ad);
+		ddr.setImei(Constant.IMEI);
+		ddr.setLatitude(Constant.latitude);
+		ddr.setLongitude(Constant.longitude);
+		ddr.setVersion(LocationUtil.getVersionForCode(iMakeMoenyView.getContext()));
+		bizMainImpl.advertEarn(ddr, iMakeMoenyView.getContext(), new IResult<ResponseBase>() {
+
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				// TODO Auto-generated method stub
+				switch (code) {
+				case OK:
+					if (obj.isSuccess()) {
+						iMakeMoenyView.advertEarnSucces(v, obj.getParams().get("cost_used"));
+
+					} else if ("52".equals(obj.getErrorCode())) {// 钱领完了
+						iMakeMoenyView.advertEarnFail(v);
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+
+	}
+
+	/**
+	 * 获取广告ID
+	 * 
+	 * @param postid
+	 */
+	public void getDiscoveryDetail(Long postid) {
+
+		DiscoveryDetailRequest dcr = new DiscoveryDetailRequest();
+		dcr.setImei(Constant.IMEI);
+		dcr.setDiscovery_id(postid);
+		if (!Member.isNull()) {
+			dcr.setUser_id_by(Member.getInstance().getUser_id());
+		}
+		bizMainImpl.getDiscoveryDetail(dcr, iMakeMoenyView.getContext(), new IResult<DiscoveryDetailResponse>() {
+
+			@Override
+			public void result(DiscoveryDetailResponse obj, Code code) {
+				// TODO Auto-generated method stub
+				switch (code) {
+				case OK:
+					if (obj.isSuccess()) {
+						if (!Member.isNull()) {
+							iMakeMoenyView.setButIsShow(obj.getDiscovery().getEarned());
+						}
+
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+
+	}
+}

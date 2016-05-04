@@ -1,0 +1,12 @@
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.WithdrawApply;
+
+public class WithdrawApplyListResponse extends ResponseBaseList<WithdrawApply> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+}

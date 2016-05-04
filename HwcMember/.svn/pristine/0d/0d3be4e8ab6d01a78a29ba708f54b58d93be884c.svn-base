@@ -1,0 +1,107 @@
+package com.hwc.member.anno;
+
+import java.lang.reflect.Field;
+
+import android.app.Activity;
+import android.content.Context;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.RelativeLayout.LayoutParams;
+
+import com.hwc.member.util.ViewTransformUtil;
+
+/**
+ * @author FZ
+ * 注解的注解处理器
+ */
+public class MirUtil {
+
+	/** 初始化Acitvity中的注解处理 **/
+	public static void init(Activity activity) {
+		Class<?> cls = activity.getClass();
+
+		Field[] fields = cls.getDeclaredFields();
+		for (Field field : fields) {
+			if (field.isAnnotationPresent(ViewTransform.class)) {
+				ViewTransform viewTransform = field.getAnnotation(ViewTransform.class);
+				int id = viewTransform.value();
+				int width = viewTransform.width();
+				int height = viewTransform.height();
+				if (id == 0) {
+					id = getValue(activity, "id", field.getName());	
+				}
+				if (id != 0) {
+					field.setAccessible(true);
+					try {
+						View v = activity.findViewById(id);
+						
+						if(width == 0){
+							width = LayoutParams.MATCH_PARENT;
+						}
+						if(width != 0){
+							if(height != 0){
+								ViewTransformUtil.layoutParams(v, v.getLayoutParams(), width, height);
+							}
+						}
+								
+						field.set(activity, field.getType().cast(v));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+
+	}
+	
+	/** 找出R文件下对应的资源id，查找失败或者查找不到时默认返回0 **/
+	private static int getValue(Context context, String resourceType, String resourceName) {
+		try {
+			String packageName = context.getPackageName();
+			return context.getResources().getIdentifier(resourceName, resourceType, packageName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	/** 对Fragment的注解进行处理 **/
+	public static void init(Fragment fragment, LayoutInflater inflater, View view) {
+		Class<?> cls = fragment.getClass();
+		try {
+			//处理注解控件
+			Field[] fields = cls.getDeclaredFields();
+			for (Field field : fields) {
+				if (field.isAnnotationPresent(ViewTransform.class)) {
+					ViewTransform viewTransform = field.getAnnotation(ViewTransform.class);
+					int id = viewTransform.value();
+					int width = viewTransform.width();
+					int height = viewTransform.height();
+					if (id == 0) {
+						id = getValue(fragment.getActivity(), "id", field.getName());
+					}
+					if (id != 0) {
+						View v = view.findViewById(id);
+						if(width == 0){
+							width = LayoutParams.MATCH_PARENT;
+						}
+						if(width != 0){
+							if(height != 0){
+								ViewTransformUtil.layoutParams(v, v.getLayoutParams(), width, height);
+							}
+						}
+						if (v != null) {
+							field.setAccessible(true);
+							field.set(fragment, field.getType().cast(v));
+						}
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			//e.printStackTrace();
+		}
+	}
+
+}

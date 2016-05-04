@@ -1,0 +1,336 @@
+package com.hwc.member.view.activity.order;
+
+import java.math.BigDecimal;
+import java.util.regex.Pattern;
+
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.base.ShopFacepay;
+import com.hwc.member.R;
+import com.hwc.member.common.Member;
+import com.hwc.member.presenter.PreferentialPayPresenter;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.view.activity.view.IPreferentialView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.header.HeadView.Dir;
+import com.hwc.member.widget.header.HeadView.OnHeadClickListener;
+import com.hwc.member.widget.header.LXHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+/**
+ * 优惠买单界面
+ * @author Administrator
+ *
+ */
+@ContentView(R.layout.activity_preferentialpay)
+public class PreferentialPayActivity extends BaseActivity implements IPreferentialView {
+
+	@ViewInject(R.id.header)
+	private LXHeadView header;
+	@ViewInject(R.id.moeny_et)
+	private EditText moeny_et;
+	@ViewInject(R.id.notparticipate_et)
+	private EditText notparticipate_et;
+	@ViewInject(R.id.actual_tv)
+	private TextView actual_tv;
+	@ViewInject(R.id.save_tv)
+	private TextView save_tv;
+	@ViewInject(R.id.pay_rl)
+	private RelativeLayout pay_rl;
+	@ViewInject(R.id.desc_rl)
+	private RelativeLayout desc_rl;
+	@ViewInject(R.id.notparticipate_rl)
+	private RelativeLayout notparticipate_rl;
+
+	@ViewInject(R.id.notparticipate_cb)
+	private CheckBox notparticipate_cb;
+
+	private Long sid;
+	@ViewInject(R.id.desc_tv)
+	private TextView desc_tv;
+	@ViewInject(R.id.desc_iv)
+	private ImageView desc_iv;
+	private PreferentialPayPresenter presenter = new PreferentialPayPresenter(this);
+	private String shopname = "";
+	private ResponseBase responseBase;
+	@ViewInject(R.id.notice_tv)
+	private TextView notice_tv;
+	private String notice = "";
+	@ViewInject(R.id.notice_rl)
+	private RelativeLayout notice_rl;
+	
+	@Override
+	public void beforeOnCreate() {
+		// TODO Auto-generated method stub
+		super.beforeOnCreate();
+		sid = getIntent().getLongExtra("0", 1);
+		shopname = getIntent().getStringExtra("1");
+	}
+
+	@Override
+	protected void initView() {
+		// TODO Auto-generated method stub
+
+		ViewTransformUtil.layoutParams(moeny_et, moeny_et.getLayoutParams(), LayoutParams.MATCH_PARENT, 90);
+		ViewTransformUtil.layoutParams(notparticipate_et, notparticipate_et.getLayoutParams(), LayoutParams.MATCH_PARENT, 90);
+		ViewTransformUtil.layoutParams(pay_rl, pay_rl.getLayoutParams(), LayoutParams.MATCH_PARENT, 120);
+		ViewTransformUtil.layoutParams(desc_rl, desc_rl.getLayoutParams(), LayoutParams.MATCH_PARENT, 90);
+
+		header.setTitle(shopname);
+		// 显示2的光标
+		moeny_et.requestFocus();
+		moeny_et.setCursorVisible(true);
+		// 隐藏1的光标
+		notparticipate_et.clearFocus();
+		moeny_et.addTextChangedListener(new EditChangedListener());
+		notparticipate_et.addTextChangedListener(new EditChangedListener2());
+
+		notparticipate_cb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean flag) {
+				// TODO Auto-generated method stub
+				if (flag) {
+					VISIBLE(notparticipate_rl);
+					notparticipate_et.setText("");
+					calculation();
+				} else {
+					notparticipate_et.setText("");
+					GONE(notparticipate_rl);
+					calculation();
+
+				}
+			}
+		});
+	}
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+		setBack();
+		header.setOnHeadClickListener(new OnHeadClickListener() {
+
+			@Override
+			public void onHeadClick(Dir dir, View view) {
+				// TODO Auto-generated method stub
+				switch (dir) {
+				case Right:
+					DialogUtil.showBoradFragment(context, "优惠说明", "1.优惠买单仅限到店支付\n\n2.其他优惠活动请咨询店家", "我知道了", new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							DialogUtil.dismissBoardFragment(context);
+						}
+					});
+					
+
+					break;
+				default:
+					break;
+				}
+			}
+		});
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setPreferential(ShopFacepay shopFacepay) {
+		notice = shopFacepay.getNotice();
+		if (shopFacepay.getType().equals("ABATEMENT")) {// 蛮贱
+			ViewTransformUtil.layoutImageView(desc_iv, desc_iv.getLayoutParams(), R.drawable.yhmd_j, true, 38, 38);
+			desc_tv.setText("每满" + shopFacepay.getMinimum_charge() + "减" + shopFacepay.getFix());
+		} else {
+			ViewTransformUtil.layoutImageView(desc_iv, desc_iv.getLayoutParams(), R.drawable.yhmd_z, true, 38, 38);
+			desc_tv.setText("满" + shopFacepay.getMinimum_charge() + "打" + shopFacepay.getDiscount() * 10 + "折");
+		}
+
+		if(shopFacepay.getNotice()==null){
+			GONE(notice_rl);
+		}else{
+			notice_tv.setText(shopFacepay.getNotice());
+			VISIBLE(notice_rl);
+		}
+		
+		notice_tv.setText(shopFacepay.getNotice()==null?"":shopFacepay.getNotice());
+	}
+
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		presenter.getPreferential(sid);
+
+	}
+
+	class EditChangedListener implements TextWatcher {
+		private CharSequence temp;// 监听前的文本
+		private int editStart;// 光标开始位置
+		private int editEnd;// 光标结束位置
+		private final int charMaxNum = 10;// 最大可用的数值长度
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+			Log.i(TAG, "输入文本之前的状态");
+			temp = s;
+			if (temp.length() == 1 && temp.equals(".")) {
+				temp = "0.";
+			}
+
+		}
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+			Log.i(TAG, "输入文字中的状态，count是一次性输入字符数");
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+
+			Log.i(TAG, "输入文字后的状态 :" + s);
+			/** 得到光标开始和结束位置 ,超过最大数后记录刚超出的数字索引进行控制 */
+			editStart = moeny_et.getSelectionStart();
+			editEnd = moeny_et.getSelectionEnd();
+			if (temp.length() > charMaxNum) {
+				Toast.makeText(getApplicationContext(), "金额输入过大！", Toast.LENGTH_LONG).show();
+				s.delete(editStart - 1, editEnd);
+				int tempSelection = editStart;
+				moeny_et.setText(s);
+				moeny_et.setSelection(tempSelection);
+			}
+
+			if (!Pattern.matches("^[0-9]+(.[0-9]{0,2})?$", temp)) {
+				if (temp.length() > 0) {
+					s.delete(editStart - 1, editEnd);
+					int tempSelection = editStart;
+					moeny_et.setText(s);
+					moeny_et.setSelection(tempSelection);
+				}
+			}
+
+			calculation();
+		}
+	}
+
+	class EditChangedListener2 implements TextWatcher {
+		private CharSequence temp;// 监听前的文本
+		private int editStart;// 光标开始位置
+		private int editEnd;// 光标结束位置
+		private final int charMaxNum = 10;// 数字的最大长度
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+			Log.i(TAG, "输入文本之前的状态");
+			temp = s;
+		}
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+			Log.i(TAG, "输入文字中的状态，count是一次性输入字符数");
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+
+			Log.i(TAG, "输入文字后的状态 :" + s);
+			/** 得到光标开始和结束位置 ,超过最大数后记录刚超出的数字索引进行控制 */
+			editStart = notparticipate_et.getSelectionStart();
+			editEnd = notparticipate_et.getSelectionEnd();
+			if (temp.length() > charMaxNum) {
+				Toast.makeText(getApplicationContext(), "金额输入过大！", Toast.LENGTH_LONG).show();
+				s.delete(editStart - 1, editEnd);
+				int tempSelection = editStart;
+				notparticipate_et.setText(s);
+				notparticipate_et.setSelection(tempSelection);
+			}
+			calculation();
+		}
+	}
+
+	public void calculation() {
+
+		// 套用公式
+		double notparticipate = 0.0d;
+		double moeny = 0.0d;
+		if (!getViewValue(notparticipate_et).equals("")) {
+			notparticipate = Double.parseDouble(getViewValue(notparticipate_et));
+		}
+
+		if (!getViewValue(moeny_et).equals("")) {
+			moeny = Double.parseDouble(getViewValue(moeny_et));
+		}
+
+		presenter.calculateFacepayment(moeny, notparticipate, sid, Member.getInstance().getUser_id());
+	}
+
+	@Override
+	public void calculateFacepayment(ResponseBase obj) {
+		responseBase = obj;
+		actual_tv.setText("￥" + obj.getParams().get("payment"));
+
+		if (moeny_et.getText().toString().length() > 0 && obj.getParams().get("payment").length() > 0) {
+			double d = Double.parseDouble(moeny_et.getText().toString()) - Double.parseDouble(obj.getParams().get("payment"));
+			BigDecimal b = new BigDecimal(d);
+			double f1 = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+			save_tv.setText("节约了:" + f1 + "元");
+		} else {
+			save_tv.setText("");
+		}
+	}
+
+	@OnClick(R.id.pay_bt)
+	public void pay_bt(View v) {
+
+		if (responseBase == null) {
+			T("请输入正确的消费金额");
+			return;
+		}
+		double actualAmount = Double.parseDouble(responseBase.getParams().get("payment"));
+
+		if (actualAmount > 0) {
+			doCounterInfo();
+		} else {
+			T("请输入正确的消费金额");
+		}
+	}
+
+	@Override
+	public void doCounterInfo() {
+		double actualAmount = Double.parseDouble(responseBase.getParams().get("payment"));
+		goTo(PreferentialResultActivity.class, sid, shopname, actualAmount, getViewValue(notparticipate_et), getViewValue(moeny_et));
+
+	}
+
+}

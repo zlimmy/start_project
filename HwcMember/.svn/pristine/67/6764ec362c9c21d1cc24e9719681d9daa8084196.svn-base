@@ -1,0 +1,20 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.response.PayTypeResponse;
+import com.huimodel.api.response.UserLoginResponse;
+
+/**
+ * @author FZ
+ */
+public interface IUpdateInfoView extends LoadDataView {
+
+	void updataSuccess();
+	
+	void setData(UserLoginResponse userInfo);
+	
+	void setRadio(PayTypeResponse obj);
+	
+}

@@ -1,0 +1,78 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.product;
+
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ScrollView;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.HotGoodsAdapter;
+import com.hwc.member.adapter.ProductCategoryAdapter;
+import com.hwc.member.presenter.NewProductCategoryPresenter;
+import com.hwc.member.view.activity.shop.ShopListActivity;
+import com.hwc.member.view.activity.view.INewProductCategoryView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.MyGridView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnItemClick;
+
+/** 逛街
+ * @author FZ
+ */
+@ContentView(R.layout.activity_newproduct_category)
+public class NewProductCategoryActivity extends BaseActivity implements INewProductCategoryView {
+
+	@ViewInject(R.id.scrollview)
+	private ScrollView scrollview;
+	@ViewInject(R.id.hot_gridview)
+	private MyGridView hot_gridview;
+	@ViewInject(R.id.gridview)
+	private MyGridView gridview;
+	
+	private NewProductCategoryPresenter presenter = new NewProductCategoryPresenter(this);
+	
+	@Override
+	protected void initView() {
+		scrollview.smoothScrollTo(0,20);
+		presenter.setPromProdcut();
+		presenter.setItemCat();
+	}
+
+	@Override
+	protected void initListener() {
+		setBack();
+	}
+
+	@Override
+	public void clearLoadPage() {}
+
+	@Override
+	public void showErrorPage() {}
+
+	@Override
+	public void setHotGridAdapter(HotGoodsAdapter adapter) {
+		hot_gridview.setAdapter(adapter);
+	}
+
+	@Override
+	public void setGridAdapter(ProductCategoryAdapter adapter) {
+		gridview.setAdapter(adapter);
+	}
+	
+	@OnItemClick(R.id.hot_gridview)
+	public void onHotGridItemClick(AdapterView<?> parent, View view,
+			int position, long id) {
+		goTo(HotProductListActivity.class, presenter.adapter.getItem(position).getPa(),presenter.adapter.getItem(position).getSell_pt());
+	}
+	
+	@OnItemClick(R.id.gridview)
+	public void onGridItemClick(AdapterView<?> parent, View view,
+			int position, long id) {
+//		presenter.selCategoryGoTo(presenter.adapter2.getItem(position).getCid());
+		goTo(ShopListActivity.class, presenter.adapter2.getItem(position).getCid(), presenter.adapter2.getItem(position).getName());
+	}
+
+}

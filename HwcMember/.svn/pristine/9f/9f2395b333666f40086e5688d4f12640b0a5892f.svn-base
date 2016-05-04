@@ -1,0 +1,39 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.ProductItem;
+import com.huimodel.api.base.ShopFacepay;
+import com.huimodel.api.response.ShopInfoResponse;
+import com.hwc.member.adapter.ProductGridAdapter;
+
+import java.util.List;
+
+/**
+ * @author FZ
+ */
+public interface IShopIndexView extends LoadDataView {
+
+	void setGridAdapter(ProductGridAdapter adapter);
+	
+	void setShopMsg(String name, int shopfans, String products, String promotions, String address, String bulletin, boolean hasFacepay , ShopFacepay facepay);
+	
+	void setShopIcon(String icon, String shopbg);
+	
+	void setAttention(boolean is_attention);
+	
+	void getShopInfo(ShopInfoResponse obj);
+	
+	
+	void setCat(List<ProductItem> productItem);
+	
+	
+	void refresh(List<DProduct> list);
+
+	// 加载
+	void more(List<DProduct> list,boolean isEnd);
+	
+	
+}

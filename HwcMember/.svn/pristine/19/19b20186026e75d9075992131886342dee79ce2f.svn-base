@@ -1,0 +1,27 @@
+package com.hwc.member.view.activity.view;
+
+import java.util.List;
+
+import android.view.View;
+
+import com.huimodel.api.base.Discovery;
+
+public interface IMakeMoenyView extends LoadDataView{
+	
+	
+	//刷新
+	 void refresh(List<Discovery> list);
+		
+	//加载
+	 void more(List<Discovery> list,boolean isEnd);
+	 
+	//设置是否显示
+	void setButIsShow(boolean earned);
+	
+	//广告获取成功
+	void advertEarnSucces(View v,String gold);
+	
+	//钱已经被领完
+	void advertEarnFail(View v);
+	 
+}

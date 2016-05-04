@@ -1,0 +1,36 @@
+/**
+ * 
+ */
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.DPrizeCoupon;
+import com.huimodel.api.base.ResponseBase;
+
+
+
+/**
+ * @author FZ
+ * 代理人卡包信息
+ */
+public class MyConponResponse extends ResponseBase {
+
+	private static final long serialVersionUID = 17855835063873792L;
+
+	private int total;
+	private List<DPrizeCoupon> prizecoupon;
+	public int getTotal() {
+		return total;
+	}
+	public void setTotal(int total) {
+		this.total = total;
+	}
+	public List<DPrizeCoupon> getPrizecoupon() {
+		return prizecoupon;
+	}
+	public void setPrizecoupon(List<DPrizeCoupon> prizecoupon) {
+		this.prizecoupon = prizecoupon;
+	}
+	
+}

@@ -1,0 +1,50 @@
+package com.hwc.member.presenter;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.response.SubjectProductReponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.view.activity.view.IPlatformPromotionView;
+import com.hwc.member.widget.SimpleHUD;
+
+public class SubjectProductPresenter {
+	private IPlatformPromotionView iPlatformPromotionView;
+	private IHwcBizMain iHwcBizMainImpl;
+	public Gson gson;
+	
+	public SubjectProductPresenter(IPlatformPromotionView iPlatformPromotionView) {
+		// TODO Auto-generated constructor stub
+		this.iPlatformPromotionView = iPlatformPromotionView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		this.gson = new  Gson();
+	}
+	
+	
+	/**
+	 * 获取平台推荐商品
+	 */
+	public void getSubjectProduct(){
+		
+		RequestBase t = new RequestBase();
+		iHwcBizMainImpl.getSubjectProduct(t, iPlatformPromotionView.getContext(), new IResult<SubjectProductReponse>() {
+			
+			@Override
+			public void result(SubjectProductReponse obj, Code code) {
+				switch (code) {
+				case OK:
+					System.out.println(gson.toJson(obj));
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(iPlatformPromotionView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+		
+	}
+}

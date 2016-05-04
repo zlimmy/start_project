@@ -1,0 +1,24 @@
+package com.hwc.member.view.activity;
+
+import android.app.Dialog;
+import android.content.Context;
+
+import com.hwc.member.R;
+import com.hwc.member.view.activity.view.IMainFragView;
+
+public class LoactionDialog extends Dialog {
+
+	private IMainFragView mainFragView;
+	private Context context;
+
+	protected LoactionDialog(Context context, boolean cancelable,
+			OnCancelListener cancelListener, IMainFragView mainFragView) {
+		super(context, cancelable, cancelListener);
+		this.mainFragView = mainFragView;
+		this.context = mainFragView.getContext();
+
+		setContentView(R.layout.dialog_loaction_list);
+
+	}
+
+}

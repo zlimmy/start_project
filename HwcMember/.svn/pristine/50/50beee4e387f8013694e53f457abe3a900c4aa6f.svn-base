@@ -1,0 +1,59 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.request.PlatformPrizeRequest;
+import com.huimodel.api.response.PlatformPrizeResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.PlayIntegralAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.view.activity.view.IPointShopView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class PointShopPresenter {
+
+	private IPointShopView view;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public PlayIntegralAdapter adapter;
+	
+	public PointShopPresenter(IPointShopView view){
+		this.view = view;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void setGridData(){
+		PlatformPrizeRequest ppr = new PlatformPrizeRequest();
+		ppr.setCids(new Long[]{1l,2l,3l,4l});
+		ppr.setImei(Constant.IMEI);
+		
+		iHwcBizMainImpl.getPlatformPrizes(ppr, view.getContext(), new IResult<PlatformPrizeResponse>() {
+			
+			@Override
+			public void result(PlatformPrizeResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						adapter = new PlayIntegralAdapter(view.getContext(), obj.getEntities(), R.layout.item_play_intrgral_grid, null);
+						view.setGridAdapter(adapter);
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(view.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+}

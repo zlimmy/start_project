@@ -1,0 +1,443 @@
+package com.huimodel.api.base;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+
+ 
+
+public class Product implements Serializable, Comparable<Product> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private String binds;
+	/*
+	 * 类目
+	 */
+	private long cid;
+	private String cat_name;
+
+	private String customerProps;
+	/*
+	 * 商品描述
+	 */
+	private String desc;
+	private String extraInfo;
+	/*
+	 * 图片信息
+	 */
+	private FileItem image;
+
+	private String imageurl;
+	/*
+	 * 商品名
+	 */
+	private String name;
+	private String status;
+	private String unit;
+	private String barcode;
+	/*
+	 * 外部编码
+	 */
+	private String outerId;
+	/*
+	 * 包装清单
+	 */
+	private String packingList;
+	/*
+	 * 卖价
+	 */
+	private Double price;
+	/***
+	 * 进货价
+	 */
+	private Double purchase_price;
+	/***
+	 * 供应商id
+	 */
+	private Long supplier_id;
+
+	private String propertyAlias;
+	/*
+	 * 关键属性
+	 * 结构:pid:vid;pid:vid.调用taobao.itemprops.get获取pid,调用taobao.itempropvalues
+	 * .get获取vid;如果碰到用户自定义属性,请用customer_props.
+	 */
+	private String props;
+	/*
+	 * 销售属性
+	 */
+	private String saleProps;
+	/*
+	 * 商品卖点描述
+	 */
+	private String sellPt;
+
+	private Long templateId;
+
+	private int num;
+
+	private Long pid;
+
+	private Long product_id;
+
+	// 外部id 比如手机的IMEI号
+	private List<String> out_ids;
+
+	private List<ProductProperty> pvlist;
+	
+	//创建时间
+	private String created;
+	
+	//门店销量	
+	private int sale_num;
+	//图片信息
+	private List<ProductPropImg> product_prop_imgs;
+	// 是否显示库存
+	private boolean is_show_num;
+	// 促销信息
+	private Product_prom prominfo;
+	
+	//店长推荐
+	private Integer has_showcase;
+	
+	//首字母
+	private String first_letter;
+
+	public Double getAmount1() {
+		return amount1;
+	}
+
+	public void setAmount1(Double amount1) {
+		this.amount1 = amount1;
+	}
+
+	public Double getAmount2() {
+		return amount2;
+	}
+
+	public void setAmount2(Double amount2) {
+		this.amount2 = amount2;
+	}
+
+	public Double getAmount3() {
+		return amount3;
+	}
+
+	public void setAmount3(Double amount3) {
+		this.amount3 = amount3;
+	}
+
+	public void setCid(long cid) {
+		this.cid = cid;
+	}
+
+	private Double amount1;
+	private Double amount2;
+	private Double amount3;
+
+	public List<ProductProperty> getPvlist() {
+		return pvlist;
+	}
+
+	public void setPvlist(List<ProductProperty> pvlist) {
+		this.pvlist = pvlist;
+	}
+	
+	private List<String> productPics=new ArrayList<String>();//存放产品的图片
+
+
+	public List<String> getProductPics() {
+		return productPics;
+	}
+
+	public void setProductPics(List<String> productPics) {
+		this.productPics = productPics;
+	}
+
+	public String getBinds() {
+		return binds;
+	}
+
+	public void setBinds(String binds) {
+		this.binds = binds;
+	}
+
+	public Long getCid() {
+		return cid;
+	}
+
+	public void setCid(Long cid) {
+		this.cid = cid;
+	}
+
+	public String getCustomerProps() {
+		return customerProps;
+	}
+
+	public void setCustomerProps(String customerProps) {
+		this.customerProps = customerProps;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
+	public String getExtraInfo() {
+		return extraInfo;
+	}
+
+	public void setExtraInfo(String extraInfo) {
+		this.extraInfo = extraInfo;
+	}
+
+	public FileItem getImage() {
+		return image;
+	}
+
+	public void setImage(FileItem image) {
+		this.image = image;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getOuterId() {
+		return outerId;
+	}
+
+	public void setOuterId(String outerId) {
+		this.outerId = outerId;
+	}
+
+	public String getPackingList() {
+		return packingList;
+	}
+
+	public void setPackingList(String packingList) {
+		this.packingList = packingList;
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
+	public String getPropertyAlias() {
+		return propertyAlias;
+	}
+
+	public void setPropertyAlias(String propertyAlias) {
+		this.propertyAlias = propertyAlias;
+	}
+
+	public String getProps() {
+		return props;
+	}
+
+	public void setProps(String props) {
+		this.props = props;
+	}
+
+	public String getSaleProps() {
+		return saleProps;
+	}
+
+	public void setSaleProps(String saleProps) {
+		this.saleProps = saleProps;
+	}
+
+	public String getSellPt() {
+		return sellPt;
+	}
+
+	public void setSellPt(String sellPt) {
+		this.sellPt = sellPt;
+	}
+
+	public Long getTemplateId() {
+		return templateId;
+	}
+
+	public void setTemplateId(Long templateId) {
+		this.templateId = templateId;
+	}
+
+	public static Long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public int getNum() {
+		return num;
+	}
+
+	public void setNum(int num) {
+		this.num = num;
+	}
+
+	public Long getPid() {
+		return pid;
+	}
+
+	public void setPid(Long pid) {
+		this.pid = pid;
+	}
+
+	public String getImageurl() {
+		return imageurl;
+	}
+
+	public void setImageurl(String imageurl) {
+		this.imageurl = imageurl;
+	}
+
+	public Long getSupplier_id() {
+		return supplier_id;
+	}
+
+	public void setSupplier_id(Long supplier_id) {
+		this.supplier_id = supplier_id;
+	}
+
+	public Long getProduct_id() {
+		return product_id;
+	}
+
+	public void setProduct_id(Long product_id) {
+		this.product_id = product_id;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
+
+	public String getBarcode() {
+		return barcode;
+	}
+
+	public void setBarcode(String barcode) {
+		this.barcode = barcode;
+	}
+
+	public String getCat_name() {
+		return cat_name;
+	}
+
+	public void setCat_name(String cat_name) {
+		this.cat_name = cat_name;
+	}
+
+	public List<String> getOut_ids() {
+		return out_ids;
+	}
+
+	public void setOut_ids(List<String> out_ids) {
+		this.out_ids = out_ids;
+	}
+
+	public Double getPurchase_price() {
+		return purchase_price;
+	}
+
+	public void setPurchase_price(Double purchase_price) {
+		this.purchase_price = purchase_price;
+	}
+
+	public List<ProductPropImg> getProduct_prop_imgs() {
+		return product_prop_imgs;
+	}
+
+	public void setProduct_prop_imgs(List<ProductPropImg> product_prop_imgs) {
+		this.product_prop_imgs = product_prop_imgs;
+	}
+
+	public boolean isIs_show_num() {
+		return is_show_num;
+	}
+
+	public void setIs_show_num(boolean is_show_num) {
+		this.is_show_num = is_show_num;
+	}
+
+	public Product_prom getProminfo() {
+		return prominfo;
+	}
+
+	public void setProminfo(Product_prom prominfo) {
+		this.prominfo = prominfo;
+	}
+
+	public int getSale_num() {
+		return sale_num;
+	}
+
+	public void setSale_num(int sale_num) {
+		this.sale_num = sale_num;
+	}
+
+	public Integer getHas_showcase() {
+		return has_showcase;
+	}
+
+	public void setHas_showcase(Integer has_showcase) {
+		this.has_showcase = has_showcase;
+	}
+	
+	public String getCreated() {
+		return created;
+	}
+
+	public void setCreated(String created) {
+		this.created = created;
+	}
+
+	public String getFirst_letter() {
+		return first_letter;
+	}
+
+	public void setFirst_letter(String first_letter) {
+		this.first_letter = first_letter;
+	}
+
+	@Override
+	public int compareTo(Product another) {
+		if (this.getFirst_letter().equals("@")
+				|| another.getFirst_letter().equals("#")) {
+			return -1;
+		} else if (this.getFirst_letter().equals("#")
+				|| another.getFirst_letter().equals("@")) {
+			return 1;
+		} else {
+			return this.getFirst_letter().compareTo(another.getFirst_letter());
+		}
+	}
+
+	
+}

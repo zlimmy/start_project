@@ -1,0 +1,31 @@
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.DShop;
+import com.huimodel.api.base.ResponseBase;
+
+public class CollectionShopResponse extends ResponseBase {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private List<DShop> entities;
+	private Long totalRows;
+
+	public List<DShop> getEntities() {
+		return entities;
+	}
+
+	public void setEntities(List<DShop> entities) {
+		this.entities = entities;
+	}
+
+	public Long getTotalRows() {
+		return totalRows;
+	}
+
+	public void setTotalRows(Long totalRows) {
+		this.totalRows = totalRows;
+	}
+}

@@ -1,0 +1,26 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import java.util.List;
+
+import com.huimodel.api.base.DProduct;
+import com.hwc.member.bean.ShoppingCartBean;
+
+/**
+ * @author FZ
+ */
+public interface IShopCarView extends LoadDataView {
+
+	void setShopCarData(List<ShoppingCartBean> data);
+	
+	void noity();
+	
+	void delAfter(int groupPosition, int childPosition);
+	
+	void updateError(DProduct obj, final String action);
+	
+	void clearView();
+	
+}

@@ -1,0 +1,20 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.AdvertEarn;
+import com.huimodel.api.base.RequestBase;
+
+public class AdvertEarnRequest extends RequestBase{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6149750430930840376L;
+	private AdvertEarn earn;
+
+	public AdvertEarn getEarn() {
+		return earn;
+	}
+
+	public void setEarn(AdvertEarn earn) {
+		this.earn = earn;
+	}
+}

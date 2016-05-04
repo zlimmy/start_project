@@ -1,0 +1,33 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+import android.view.View;
+
+import com.hwc.member.R;
+import com.hwc.member.view.activity.MainActivity;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+/**
+ * @author FZ
+ */
+public class WelcomeFragment4 extends FormBaseFragment {
+
+	@Override
+	protected void init() {}
+	
+	@Override
+	public int getLayoutId() {
+		return R.layout.fragment_welcome4;
+	}
+	
+	@OnClick(R.id.gomain_bt)
+	public void goMainClick(View v){
+		goTo(MainActivity.class);
+		getActivity().finish();
+	}
+
+}
+

@@ -1,0 +1,69 @@
+package com.huimodel.api.base;
+
+import java.util.List;
+
+public class PromLottery {
+	private String prom_code;
+	private String prom_descript;
+	private String prom_begin;
+	private String prom_end;
+	//还剩下几次
+	private int remain_times;
+	//促销说明图
+	private String pic_url;
+	//促销玩法
+	private String prom_cat;
+	//促销奖项
+	private List<PromPrize> prizes;
+	public String getProm_code() {
+		return prom_code;
+	}
+	public void setProm_code(String prom_code) {
+		this.prom_code = prom_code;
+	}
+	public String getProm_descript() {
+		return prom_descript;
+	}
+	public void setProm_descript(String prom_descript) {
+		this.prom_descript = prom_descript;
+	}
+	public String getProm_begin() {
+		return prom_begin;
+	}
+	public void setProm_begin(String prom_begin) {
+		this.prom_begin = prom_begin;
+	}
+	public String getProm_end() {
+		return prom_end;
+	}
+	public void setProm_end(String prom_end) {
+		this.prom_end = prom_end;
+	}
+	public int getRemain_times() {
+		return remain_times;
+	}
+	public void setRemain_times(int remain_times) {
+		this.remain_times = remain_times;
+	}
+	public String getPic_url() {
+		return pic_url;
+	}
+	public void setPic_url(String pic_url) {
+		this.pic_url = pic_url;
+	}
+	public String getProm_cat() {
+		return prom_cat;
+	}
+	public void setProm_cat(String prom_cat) {
+		this.prom_cat = prom_cat;
+	}
+	public List<PromPrize> getPrizes() {
+		return prizes;
+	}
+	public void setPrizes(List<PromPrize> prizes) {
+		this.prizes = prizes;
+	}
+	
+	
+
+}

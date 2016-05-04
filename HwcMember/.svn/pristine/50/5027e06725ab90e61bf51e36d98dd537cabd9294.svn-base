@@ -1,0 +1,85 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+import android.view.View;
+import android.widget.AdapterView;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.HorizontalListViewAdapter;
+import com.hwc.member.presenter.MoreShopIndexPresenter;
+import com.hwc.member.view.activity.luckdraw.ScratchActivity;
+import com.hwc.member.view.activity.luckdraw.TurntableActivity;
+import com.hwc.member.view.activity.product.ProductInfoActivity;
+import com.hwc.member.view.activity.shop.MoreShopInfoActivity;
+import com.hwc.member.view.activity.view.IMoreShopIndexView;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.hwc.member.widget.MyGridView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.lidroid.xutils.view.annotation.event.OnItemClick;
+
+/**
+ * @author FZ
+ */
+public class MoreShopIndexFragment extends FormBaseFragment implements IMoreShopIndexView {
+
+	@ViewInject(R.id.gridview)
+	private MyGridView gridview;
+	
+	private MoreShopIndexPresenter presenter = new MoreShopIndexPresenter(this);
+	private Long sid;
+	
+	@Override
+	protected void init() {
+		gridview.setFocusable(false);
+		sid =  getActivity().getIntent().getLongExtra("0", -1);
+		presenter.setData(sid);
+	}
+
+	@Override
+	public int getLayoutId() {
+		return R.layout.fm_moreshopindex;
+	}
+
+	@Override
+	public void setGridAdapter(HorizontalListViewAdapter adapter) {
+		gridview.setAdapter(adapter);
+	}
+	
+	@OnItemClick(R.id.gridview)
+	public void onGridItemClick(AdapterView<?> parent, View view,
+			int position, long id) {
+		goTo(ProductInfoActivity.class, presenter.adapter.getItem(position).getPid(), presenter.adapter.getItem(position).getShop_id());
+	}
+	
+	@OnClick(R.id.lucklypan_rl)
+	public void goLucklyPan(View v){
+		goTo(TurntableActivity.class);
+	}
+	
+	@OnClick(R.id.guaguale_rl)
+	public void goGua(View v){
+		goTo(ScratchActivity.class);
+	}
+
+	@Override
+	public void setShopMsg(String name) {
+		MoreShopInfoActivity activity = (MoreShopInfoActivity) getActivity();
+		activity.header.setTitle(name);
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

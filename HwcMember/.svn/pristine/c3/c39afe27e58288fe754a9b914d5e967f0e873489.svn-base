@@ -1,0 +1,24 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+public class PrizeListGetRequest extends RequestBase {
+	private boolean expire;
+	private String status;
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public boolean isExpire() {
+		return expire;
+	}
+
+	public void setExpire(boolean expire) {
+		this.expire = expire;
+	}
+}

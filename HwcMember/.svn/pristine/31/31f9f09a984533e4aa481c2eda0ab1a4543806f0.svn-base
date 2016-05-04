@@ -1,0 +1,94 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+public class DiscoveryGetRequest extends RequestBase {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 939458338536971602L;
+	/**
+	 * 发现大类
+	 */
+	private Long cid;
+	/**
+	 *  发现类型
+	 */
+	private String cat;
+	/**
+	 *  标题
+	 */
+	private java.lang.String title;
+	/**
+	 * 摘要
+	 */
+	private java.lang.String excerpt;
+	/**
+	 * 状态
+	 */
+	private String status;
+	/**
+	 * 地址
+	 */
+	private String addr;
+	
+	private Boolean limitDistance=true;
+	
+	public String getCat() {
+		return cat;
+	}
+
+	public void setCat(String cat) {
+		this.cat = cat;
+	}
+
+	public Long getCid() {
+		return cid;
+	}
+
+	public void setCid(Long cid) {
+		this.cid = cid;
+	}
+
+	public java.lang.String getTitle() {
+		return title;
+	}
+
+	public void setTitle(java.lang.String title) {
+		this.title = title;
+	}
+
+	public java.lang.String getExcerpt() {
+		return excerpt;
+	}
+
+	public void setExcerpt(java.lang.String excerpt) {
+		this.excerpt = excerpt;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getAddr() {
+		return addr;
+	}
+
+	public void setAddr(String addr) {
+		this.addr = addr;
+	}
+
+	public Boolean getLimitDistance() {
+		return limitDistance;
+	}
+
+	public void setLimitDistance(Boolean limitDistance) {
+		this.limitDistance = limitDistance;
+	}
+	
+	
+}

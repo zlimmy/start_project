@@ -1,0 +1,379 @@
+package com.hwc.member.view.activity.order;
+
+import java.io.IOException;
+
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.huimodel.api.ConstantApis;
+import com.huimodel.api.base.Order;
+import com.huimodel.api.response.OrderDetailResponse;
+import com.hwc.member.R;
+import com.hwc.member.adapter.NewOrderInfoAdapter;
+import com.hwc.member.common.Constant;
+import com.hwc.member.presenter.OrderInfoPresenter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.view.activity.view.IOrderInfoView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.pingplusplus.android.PaymentActivity;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+/**
+ *  收银台
+ */
+@ContentView(R.layout.activity_new_order_counter)
+public class CounterInfoActivity extends BaseActivity implements
+		IOrderInfoView {
+
+	public static final String URL = ConstantApis.PAY_URL;
+	private static final int REQUEST_CODE_PAYMENT = 1;
+	private static final String CHANNEL_WECHAT = "WX";
+	private static final String CHANNEL_ALIPAY = "ALIPAY";
+	private String paychannel = CHANNEL_WECHAT; 
+	
+	private Long rid,sid;
+	private Order mOrder;
+	private OrderInfoPresenter presenter = new OrderInfoPresenter(this);
+	@ViewInject(R.id.balance_tv)
+	private TextView balance_tv;
+	@ViewInject(R.id.orderid_tv)
+	private TextView orderid_tv;
+	@ViewInject(R.id.created_tv)
+	private TextView created_tv;
+	@ViewInject(R.id.radioGroup)
+	private RadioGroup radioGroup;
+	@ViewInject(R.id.zfb_radio)
+	private RadioButton zfb_radio;
+	@ViewInject(R.id.wx_radio)
+	private RadioButton wx_radio;
+	@ViewInject(R.id.pay_bt)
+	private Button pay_bt;
+	@Override
+	protected void initView() {
+		rid = getIntent().getLongExtra("0", -1);
+		sid = getIntent().getLongExtra("1", -1);
+		presenter.setData(rid);
+	}
+
+	@Override
+	protected void initListener() {
+	setBack(R.drawable.back, null, new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				exitClick();
+			}
+		});
+	
+	radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+		
+		@Override
+		public void onCheckedChanged(RadioGroup arg0, int id) {
+			// TODO Auto-generated method stub
+			switch (id) {
+			case R.id.zfb_radio:
+				paychannel = CHANNEL_ALIPAY;
+				break;
+			case R.id.wx_radio:
+				paychannel = CHANNEL_WECHAT;
+				break;
+			default:
+				break;
+			}
+		}
+	});
+	
+	}
+
+	@Override
+	public void setOrderData(final Order order) {
+
+	}
+
+	/**
+	 * 关闭界面前如果没使用本次抽奖提示用户
+	 */
+	private void exitClick() {
+			DialogUtil.showDialog(Constant.Dialog, "订单未支付完成，现在退出吗？", Gravity.CENTER, context, null, new OnClickListener() {
+				
+				@Override
+				public void onClick(DialogPlus dialog, View view) {
+					switch (view.getId()) {
+					case R.id.cancel:
+						break;
+
+					case R.id.confirm:
+						if(OrderDetailsActivity.activity!=null){
+							OrderDetailsActivity.activity.finish();
+						}
+						goTo(OrderDetailsActivity.class, mOrder.getRid());
+						finish();	
+						break;
+					}
+					dialog.dismiss();
+				}
+			}, null);	
+		
+	}
+	
+	/**
+	 * 菜单、返回键响应
+	 */
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			exitClick();
+		}
+		return false;
+	}
+	
+//	// 关闭订单
+//	@OnClick(R.id.close_but)
+//	public void close_but(View v) {
+//		DialogUtil.showDialog(Constant.Dialog, "确定取消订单吗？", Gravity.CENTER,
+//				context, null, new OnClickListener() {
+//
+//					@Override
+//					public void onClick(DialogPlus dialog, View view) {
+//						switch (view.getId()) {
+//						case R.id.cancel:
+//							break;
+//
+//						case R.id.confirm:
+//							presenter.closeOrder(rid);
+//						}
+//						dialog.dismiss();
+//					}
+//
+//				}, null);
+//
+//	}
+
+	@OnClick(R.id.pay_bt)
+	public void pay_bt(View v) {
+		pay_bt.setClickable(false);
+		System.out.println("paychannel:"+paychannel);
+			new PaymentTask().execute(new PaymentRequest(
+					paychannel, Math.abs(mOrder.getBalance()),
+					rid, "",paychannel));
+			
+			
+
+//			new PaymentTask().execute(new PaymentRequest(
+//					CHANNEL_WECHAT, mOrder.getBalance(),
+//					rid, ""));
+		
+	}
+
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		pay_bt.setClickable(true);
+	}
+	
+	@Override
+	public void clearLoadPage() {
+	}
+
+	@Override
+	public void showErrorPage() {
+	}
+
+
+	@Override
+	public void setMobile(String mobile) {
+		
+	}
+
+	class PaymentTask extends AsyncTask<PaymentRequest, Void, String> {
+
+		@Override
+		protected void onPreExecute() {
+			// 按键点击之后的禁用，防止重复点击
+		}
+
+		@Override
+		protected String doInBackground(PaymentRequest... pr) {
+
+			PaymentRequest paymentRequest = pr[0];
+
+			String data = null;
+			String json = new Gson().toJson(paymentRequest);
+			try {
+				// 向Your Ping++ Server SDK请求数据
+				data = postJson(URL, json);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return data;
+		}
+
+		/**
+		 * 获得服务端的charge，调用ping++ sdk。
+		 */
+		@Override
+		protected void onPostExecute(String data) {
+			if (null == data) {
+				showMsg("请求出错", "请检查URL", "URL无法获取charge");
+				return;
+			}
+			Log.d("charge", data);
+			Intent intent = new Intent();
+			String packageName = getPackageName();
+			ComponentName componentName = new ComponentName(packageName,
+					packageName + ".wxapi.WXPayEntryActivity");
+			intent.setComponent(componentName);
+			intent.putExtra(PaymentActivity.EXTRA_CHARGE, data);
+			startActivityForResult(intent, REQUEST_CODE_PAYMENT);
+		}
+
+	}
+
+	/**
+	 * onActivityResult 获得支付结果，如果支付成功，服务器会收到ping++ 服务器发送的异步通知。 最终支付成功根据异步通知为准
+	 */
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// 支付页面返回处理
+		if (requestCode == REQUEST_CODE_PAYMENT) {
+			if (resultCode == Activity.RESULT_OK) {
+				String result = data.getExtras().getString("pay_result");
+				String errorMsg = data.getExtras().getString("error_msg"); // 错误信息
+				String extraMsg = data.getExtras().getString("extra_msg"); // 错误信息
+				showMsg(result, errorMsg, extraMsg);
+			}
+		}
+	}
+
+	public void showMsg(final String title, String msg1, String msg2) {
+		String str = "";
+		if (title.equals("success")) { 
+			str = "支付成功";
+		} else if (title.equals("fail")) {
+			str = "支付失败";
+		} else if (title.equals("cancel")) {
+			str = "取消支付";
+		} else {
+			str = "系统异常";
+		}
+
+		if (null != msg1 && msg1.length() != 0) {
+			str += "\n" + msg1;
+		}
+		if (null != msg2 && msg2.length() != 0) {
+			str += "\n" + msg2;
+		}
+		
+		presenter.setData(rid);
+		if (title.equals("success")) {
+			goTo(PaymentResultActivity.class,"D", mOrder.getRid(),sid,title,Math.abs(mOrder.getBalance())+"");
+		} else {
+			goTo(PaymentResultActivity.class,"D", mOrder.getRid(),sid,title,Math.abs(mOrder.getBalance())+"");
+		}
+		finish();
+//		AlertDialog.Builder builder = new Builder(CounterInfoActivity.this);
+//		builder.setMessage(str);
+//		builder.setTitle("提示");
+//		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//
+//			@Override
+//			public void onClick(DialogInterface arg0, int arg1) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
+//		builder.create().show();
+	}
+
+	private static String postJson(String url, String json) throws IOException {
+		MediaType type = MediaType.parse("application/json; charset=utf-8");
+		RequestBody body = RequestBody.create(type, json);
+		Request request = new Request.Builder().url(url).post(body).build();
+
+		OkHttpClient client = new OkHttpClient();
+		Response response = client.newCall(request).execute();
+
+		return response.body().string();
+	}
+
+	class PaymentRequest {
+		String channel;
+		String paycode;
+		Double amount;
+		Long rid;
+		String pay_channel;
+		String client_ip;
+
+		public PaymentRequest(String channel, Double amount, Long rid,
+				String ip,String pay_channel) {
+			this.channel = channel;
+			this.paycode = channel;
+			this.pay_channel = pay_channel;
+			this.amount = amount;
+			this.rid = rid;
+			this.client_ip = ip;
+		}
+	}
+
+	@Override
+	public void closeOrder(String str) {
+		// TODO Auto-generated method stub
+		T("订单取消成功");
+
+		if (OrderActivity.instance != null) {
+			OrderActivity.instance.finish();
+		}
+
+		new Handler().postDelayed(new Runnable() {
+			public void run() {
+				goTo(OrderActivity.class, 0);
+				finish();
+			}
+		}, 1000);
+
+	}
+
+	@Override
+	public void setList(NewOrderInfoAdapter adapter) {
+		// TODO Auto-generated method stub
+		
+	}
+	//Response--{"params":{"balance":"2298.00","status":"P","rid":"9729","total_fee":"2398.00","paycode":"ONLINE"},"success":true}
+	@Override
+	public void setOrderDetail(OrderDetailResponse order) {
+		// TODO Auto-generated method stub
+		mOrder = order.getEntity();
+		
+		balance_tv.setText("￥"+CommonUtil.conversionDouble(Math.abs(mOrder.getBalance())));
+		created_tv.setText("创建时间："+mOrder.getCreated());
+		orderid_tv.setText("订单编号："+mOrder.getRid());
+	}
+
+
+
+
+}

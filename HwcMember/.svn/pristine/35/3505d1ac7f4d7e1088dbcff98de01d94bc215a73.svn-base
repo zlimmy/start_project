@@ -1,0 +1,76 @@
+package com.hwc.member.presenter;
+
+import java.util.List;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.MessageAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.bean.GetTuiMessage;
+import com.hwc.member.common.Constant;
+import com.hwc.member.view.activity.view.IMessageView;
+import com.hwc.member.widget.SimpleHUD;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
+import com.lidroid.xutils.exception.DbException;
+
+public class MessagePresenter {
+	
+	private IMessageView messageView;
+	private MessageAdapter adapter;
+	private List<GetTuiMessage> list;
+	private DbUtils mdb;
+	public MessagePresenter(IMessageView messageView){
+		this.messageView = messageView;
+		mdb = DbUtils.create(App.mContext, Constant.dbName);
+	}
+	
+	
+	/**
+	 * 清理数据
+	 * @param type
+	 */
+	public void clearData(int type){
+		try {
+			mdb.delete(GetTuiMessage.class, WhereBuilder.b("type", "=", type));
+			SimpleHUD.showSuccessMessage(messageView.getContext(), "消息已清空");
+			if(adapter != null){
+				adapter.notifyDataSetChanged();
+			}
+		} catch (DbException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * 读取消息
+	 * @param type
+	 * @param pageno
+	 */
+	public void setListData(int type){
+		messageView.clearLoadPage();
+		try {
+			list = mdb.findAll(Selector.from(GetTuiMessage.class).where("type", "=", type).orderBy("sendTime",true));
+			if(list!=null&&list.size()>0){
+				adapter = new MessageAdapter(messageView.getContext(), list, R.layout.item_message_list, null);
+				messageView.setListAdapter(adapter);
+				//标记所有该种类消息为已读	注意当主键id为空时会抛出异常
+				for (int i = 0; i < list.size(); i++) {
+					list.get(i).setIshow(true);
+					mdb.update(list.get(i));
+				}
+			}else{
+				messageView.showErrorPage();
+			}
+			
+		} catch (DbException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+}

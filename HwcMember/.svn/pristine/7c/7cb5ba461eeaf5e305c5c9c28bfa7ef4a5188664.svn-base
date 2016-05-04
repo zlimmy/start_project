@@ -1,0 +1,68 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <com.hwc.member.widget.header.LXHeadView
+        xmlns:my="http://schemas.android.com/apk/res/com.hwc.member"
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        my:centertitle="成员返利" />
+
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="12dp">
+        
+       <TextView
+           android:id="@+id/nick_tv"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="昵称：张三"
+        	android:layout_marginLeft="6dp" /> 
+        	
+       <TextView
+           android:id="@+id/mobile_tv"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="手机：15262626262"
+        	android:layout_below="@id/nick_tv"
+        	android:layout_marginTop="6dp"
+        	android:layout_marginLeft="6dp" /> 
+        	
+       <TextView
+           android:id="@+id/tv"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="返利总额"
+        	android:textSize="12sp"
+        	android:textColor="@color/gray4"
+        	android:layout_alignBottom="@id/mobile_tv"
+        	android:layout_alignParentRight="true"
+        	android:layout_marginRight="6dp" /> 
+       
+       <TextView
+           android:id="@+id/money_tv"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_alignBottom="@id/nick_tv"
+        	android:layout_alignRight="@id/tv"
+        	android:text="125.08"
+        	android:textSize="18sp"
+        	android:textColor="@color/main_color" /> 
+        	
+       
+        
+    </RelativeLayout>
+
+    <ExpandableListView
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" />
+
+</LinearLayout>

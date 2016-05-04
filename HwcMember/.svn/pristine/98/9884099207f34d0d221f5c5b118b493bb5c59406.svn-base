@@ -1,0 +1,105 @@
+package com.hwc.member.view.activity;
+
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.huimodel.api.base.ResponseBase;
+import com.hwc.member.R;
+import com.hwc.member.presenter.UserLoginPresenter;
+import com.hwc.member.util.UtilPhone;
+import com.hwc.member.view.activity.view.ILoginView;
+import com.hwc.member.view.base.BaseActivity;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+@ContentView(R.layout.activity_login)
+public class LoginActivity extends BaseActivity implements ILoginView {
+
+	@ViewInject(R.id.user_et)
+	private EditText user_et;
+	@ViewInject(R.id.pwd_et)
+	private EditText pwd_et;
+	@ViewInject(R.id.reg)
+	private TextView reg;
+	
+	private UserLoginPresenter presenter = new UserLoginPresenter(this);
+	
+	@Override
+	protected void initView(){
+		presenter.auto();
+	}
+	
+	@Override
+	protected void initListener(){}
+	
+	//登录
+	@OnClick(R.id.login_bt)
+	public void goLogin(View v){
+		if(isEmpty(getViewValue(user_et))){
+			user_et.startAnimation(shake);
+			return;
+		}
+		if(isEmpty(getViewValue(pwd_et))){
+			pwd_et.startAnimation(shake);
+			return;
+		}
+		
+		presenter.login(getViewValue(user_et), getViewValue(pwd_et), UtilPhone.getAppVersionName(context));
+	}
+
+	
+	//找回密码
+	@OnClick(R.id.forgetpwd_bt)
+	public void forgetPwd(View v){
+		goTo(ForgetPwdActivity.class);
+	}
+	
+	//注册账号
+	@OnClick(R.id.reg)
+	public void forgetReg(View v){
+		goTo(RegistStep1Activity.class);
+	}
+
+	@Override
+	public void clearEditText() {
+		user_et.setText("");
+		pwd_et.setText("");
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void loginSuccess() {
+		goTo(MainActivity.class);
+	}
+
+	@Override
+	public void setUserinfo(String username, String password) {
+		user_et.setText(username);
+		pwd_et.setText(password);
+	}
+
+	@Override
+	public void reset(String uname) {
+		// TODO Auto-generated method stub
+		goTo(ForgetPwdActivity.class, uname);
+	}
+
+
+	@Override
+	public void doRegist(ResponseBase responseBase) {
+
+	}
+}

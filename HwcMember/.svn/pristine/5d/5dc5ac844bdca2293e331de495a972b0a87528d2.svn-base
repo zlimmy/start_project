@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical" >
+    
+
+
+    <RelativeLayout
+        android:id="@+id/logistics_message"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_dialog" >
+		
+
+        
+        <RelativeLayout
+            android:id="@+id/top_ll"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:orientation="vertical" >
+            
+               <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="请设置提现方式"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/text_main"
+                    android:textSize="@dimen/text_18" />
+               
+                     	<ImageView
+       		android:id="@+id/close_iv"
+       		android:layout_width="wrap_content"
+       		android:layout_height="wrap_content"
+       		android:layout_alignParentRight="true"
+       		android:layout_marginRight="10dp"
+       		android:src="@drawable/prom_close" />
+        </RelativeLayout>
+
+        <View
+            style="@style/divider_horizontal"
+            android:layout_below="@id/top_ll" />
+
+        <LinearLayout
+            android:id="@+id/second_ll"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:layout_below="@id/top_ll"
+            android:orientation="horizontal" >
+
+            <RelativeLayout
+                android:layout_width="82dp"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:text="提现方式"
+                    android:textColor="@color/text_less_important"
+                    android:textSize="@dimen/text_14" />
+            </RelativeLayout>
+
+            <View style="@style/divider_vertical" />
+
+            <RadioGroup
+                android:id="@+id/pay_all"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="10dp"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/pay_alipay"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="支付宝" />
+
+                <RadioButton
+                    android:id="@+id/pay_wechat"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="微信" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <View
+            style="@style/divider_horizontal"
+            android:layout_below="@id/second_ll" />
+
+        <LinearLayout
+            android:id="@+id/third_ll"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:layout_below="@id/second_ll"
+            android:orientation="horizontal" >
+
+            <RelativeLayout
+                android:layout_width="82dp"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:text="提现账号"
+                    android:textColor="@color/text_less_important"
+                    android:textSize="@dimen/text_14" />
+            </RelativeLayout>
+
+            <View style="@style/divider_vertical" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <EditText
+                    android:id="@+id/pay_num"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@null"
+                    android:inputType="text"
+                    android:textColor="@color/text_less_important"
+                    android:textSize="@dimen/text_14" />
+            </RelativeLayout>
+        </LinearLayout>
+
+
+        <View
+            style="@style/divider_horizontal"
+            android:layout_below="@id/third_ll" />
+
+        <RelativeLayout
+            android:id="@+id/bottom_ll"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/third_ll" >
+
+            <Button
+                android:visibility="gone"
+                android:id="@+id/cancel_bt"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/shape_bt"
+                android:text="取消"
+                android:textColor="@color/white" />
+
+            <Button
+                android:id="@+id/confirm_bt"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/shape_bt"
+                android:text="确认"
+                android:textColor="@color/white" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,18 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.hwc.member.adapter.SalesVolumeAdapter;
+
+/**
+ * @author FZ
+ */
+public interface ISalesVolumeView extends LoadDataView {
+
+	void setToday(String amount);
+	
+	void setAll(String amount);
+	
+	void setList(SalesVolumeAdapter adapter);
+}

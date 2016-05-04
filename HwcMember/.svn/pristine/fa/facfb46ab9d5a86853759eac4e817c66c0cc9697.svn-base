@@ -1,0 +1,40 @@
+/**
+ * 
+ */
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.PlatformPrize;
+import com.huimodel.api.base.RequestBase;
+
+/**
+ * @author FZ
+ */
+public class PlatformPrizeRequest extends RequestBase {
+	
+	private PlatformPrize prize;
+	private Long cids[];
+
+	public PlatformPrize getPrize() {
+		return prize;
+	}
+
+	public void setPrize(PlatformPrize prize) {
+		this.prize = prize;
+	}
+
+	/**
+	 * @return the cids
+	 */
+	public Long[] getCids() {
+		return cids;
+	}
+
+	/**
+	 * @param cids the cids to set
+	 */
+	public void setCids(Long[] cids) {
+		this.cids = cids;
+	}
+	
+	
+}

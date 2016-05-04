@@ -1,0 +1,135 @@
+package com.hwc.member.widget;
+
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+import com.hwc.member.util.ViewTransformUtil;
+
+public class RabbitCustomDialog extends DialogFragment implements View.OnClickListener {
+    private Context mContext;
+
+    //	private ImageView icon_rabbit;
+    private Button left_button;
+    private Button right_button;
+    private TextView content_tv;
+    private RelativeLayout dialog_rl;
+
+    private DialogInterface.OnClickListener onClickListener;
+
+    private View view;
+
+
+    public RabbitCustomDialog() {
+//        mContext = getContext();
+//        view = LayoutInflater.from(mContext).inflate(R.layout.rabbit_custom_dialog, null, false);
+//        content_tv = (TextView) view.findViewById(R.id.content_tv);
+//        left_button = (Button) view.findViewById(R.id.left_button);
+//        right_button = (Button) view.findViewById(R.id.right_button);
+////		icon_rabbit = (ImageView) view.findViewById(R.id.icon_rabbit);
+//        dialog_rl = (RelativeLayout) view.findViewById(R.id.dialog_rl);
+//
+//
+//        ViewTransformUtil.layoutParams(dialog_rl, dialog_rl.getLayoutParams(), 600, 500);
+////		ViewTransformUtil.layoutParams(icon_rabbit, icon_rabbit.getLayoutParams(), 260, 260);
+//
+//        left_button.setOnClickListener(this);
+//        right_button.setOnClickListener(this);
+    }
+
+    public static final RabbitCustomDialog NewInewInstance(Context context) {
+        RabbitCustomDialog fragment = new RabbitCustomDialog();
+        fragment.mContext = context;
+        fragment.view = LayoutInflater.from(fragment.mContext).inflate(R.layout.rabbit_custom_dialog, null, false);
+        fragment.content_tv = (TextView) fragment.view.findViewById(R.id.content_tv);
+        fragment.left_button = (Button) fragment.view.findViewById(R.id.left_button);
+        fragment.right_button = (Button) fragment.view.findViewById(R.id.right_button);
+//		icon_rabbit = (ImageView) view.findViewById(R.id.icon_rabbit);
+        fragment.dialog_rl = (RelativeLayout) fragment.view.findViewById(R.id.dialog_rl);
+
+
+        ViewTransformUtil.layoutParams(fragment.dialog_rl, fragment.dialog_rl.getLayoutParams(), 600, 500);
+//		ViewTransformUtil.layoutParams(icon_rabbit, icon_rabbit.getLayoutParams(), 260, 260);
+
+        fragment.left_button.setOnClickListener(fragment);
+        fragment.right_button.setOnClickListener(fragment);
+        return fragment;
+    }
+
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        // TODO Auto-generated method stub
+        super.onCreate(savedInstanceState);
+        setCancelable(false);
+    }
+
+    @Override
+    @Nullable
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // TODO Auto-generated method stub
+        super.onCreateView(inflater, container, savedInstanceState);
+        getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        return view;
+    }
+
+    @Override
+    public void onClick(View v) {
+        // TODO Auto-generated method stub
+        switch (v.getId()) {
+            case R.id.left_button:
+                if (onClickListener != null) {
+                    onClickListener.onClick(getDialog(), 1);
+                }
+                break;
+            case R.id.right_button:
+                if (onClickListener != null) {
+                    onClickListener.onClick(getDialog(), 2);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void setButtonListener(OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
+    }
+
+//	public void setRabbitIcon(int drawableId) {
+//		icon_rabbit.setImageResource(drawableId);
+//	}
+
+    public void setContent(CharSequence content) {
+        content_tv.setText(content);
+    }
+
+    public void setButton(CharSequence left, CharSequence right) {
+        if (left.equals("")) {
+            left_button.setVisibility(View.GONE);
+        } else {
+            left_button.setText(left);
+        }
+        if (right.equals("")) {
+            right_button.setVisibility(View.GONE);
+        } else {
+            right_button.setText(right);
+        }
+    }
+
+}

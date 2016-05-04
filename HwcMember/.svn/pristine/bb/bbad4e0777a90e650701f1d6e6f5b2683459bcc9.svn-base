@@ -1,0 +1,90 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+import java.util.List;
+
+import com.huimodel.api.base.DProduct;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.response.ProductSuiteGetResponse;
+import com.hwc.member.R;
+import com.hwc.member.adapter.ProductInfoAdapter;
+import com.hwc.member.presenter.ProductInfoPresenter;
+import com.hwc.member.view.activity.view.IProductInfoView;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.hwc.member.widget.CustListView;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+/**
+ * @author FZ
+ */
+public class ProductParamFragment extends FormBaseFragment implements IProductInfoView {
+
+	@ViewInject(R.id.listview)
+	private CustListView listview;
+	
+	private Long pid, shop_id;
+	private ProductInfoPresenter presenter = new ProductInfoPresenter(this);
+	
+	@Override
+	protected void init() {
+		pid = getActivity().getIntent().getLongExtra("0", -1);
+        shop_id = getActivity().getIntent().getLongExtra("1", -1);
+        presenter.setGoodsInfo(pid, shop_id);
+	}
+
+	@Override
+	public int getLayoutId() {
+		return R.layout.fragment_productparam;
+	}
+
+	@Override
+	public void clearLoadPage() {}
+
+	@Override
+	public void showErrorPage() {}
+
+	@Override
+	public void setAdGalleryImg(List<String> list) {}
+
+	@Override
+	public void setGoodsInfo(DProduct obj) {}
+
+	@Override
+	public void setList(ProductInfoAdapter adapter) {
+		listview.setAdapter(adapter);
+	}
+
+	@Override
+	public void showDisCodeDialog(ResponseBase base) {}
+
+	@Override
+	public void doBuy(DProduct obj, int flag) {}
+
+	@Override
+	public void openProductSuite(ProductSuiteGetResponse psg) {}
+
+	@Override
+	public void setAttenImg() {}
+
+	@Override
+	public void setUnAttenImg() {}
+
+	@Override
+	public void setMobile(String mobile, String address, double distance, String name, String bulletin) {}
+
+	@Override
+	public void hideMore(boolean flag) {}
+
+	@Override
+	public void noGoods() {}
+
+	@Override
+	public void doBuy(DProduct obj, int flag, DialogPlus dialog) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

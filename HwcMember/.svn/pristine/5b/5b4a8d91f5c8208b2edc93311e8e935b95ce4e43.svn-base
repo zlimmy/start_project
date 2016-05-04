@@ -1,0 +1,26 @@
+package com.hwc.member.view.activity.bustling;
+
+import com.hwc.member.view.base.BaseActivity;
+
+/**
+ * 热闹 产品列表（下拉刷新）
+ * @author Administrator
+ *
+ */
+public class RareProductListActivity extends BaseActivity {
+
+	
+	
+	@Override
+	protected void initView() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void initListener() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

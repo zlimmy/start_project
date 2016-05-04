@@ -1,0 +1,85 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.PlatformPrize;
+import com.huimodel.api.base.ResponseBase;
+
+public class PlatformPromLotteryDrawResponse extends ResponseBase {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String prom_code;
+	// 是否能中奖
+	private boolean is_win;
+	// 奖项
+	private String awards;
+	// 抽中的奖品
+	private PlatformPrize prize;
+
+	// 今天剩下抽奖次数
+	private int remain_times;
+
+	private boolean iscanbuy;
+
+	private int buy_point;
+
+	public boolean isIscanbuy() {
+		return iscanbuy;
+	}
+
+	public void setIscanbuy(boolean iscanbuy) {
+		this.iscanbuy = iscanbuy;
+	}
+
+	public int getBuy_point() {
+		return buy_point;
+	}
+
+	public void setBuy_point(int buy_point) {
+		this.buy_point = buy_point;
+	}
+
+	public void setPrize(PlatformPrize prize) {
+		this.prize = prize;
+	}
+
+	public String getProm_code() {
+		return prom_code;
+	}
+
+	public void setProm_code(String prom_code) {
+		this.prom_code = prom_code;
+	}
+
+	public boolean isIs_win() {
+		return is_win;
+	}
+
+	public void setIs_win(boolean is_win) {
+		this.is_win = is_win;
+	}
+
+	public int getRemain_times() {
+		return remain_times;
+	}
+
+	public void setRemain_times(int remain_times) {
+		this.remain_times = remain_times;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public String getAwards() {
+		return awards;
+	}
+
+	public void setAwards(String awards) {
+		this.awards = awards;
+	}
+	public PlatformPrize getPrize() {
+		return prize;
+	}
+
+}

@@ -1,0 +1,20 @@
+/**
+ * 
+ */
+package com.huimodel.api.response;
+
+import com.huimodel.api.base.ResponseBase;
+
+/**
+ * @author FZ
+ */
+public class SignPointResponse extends ResponseBase {
+	private static final long serialVersionUID = 1L;
+	private Double point;
+	public Double getPoint() {
+		return point;
+	}
+	public void setPoint(Double point) {
+		this.point = point;
+	}
+}

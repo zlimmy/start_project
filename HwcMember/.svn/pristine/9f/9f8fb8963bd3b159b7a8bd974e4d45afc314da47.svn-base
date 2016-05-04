@@ -1,0 +1,174 @@
+package com.hwc.member.view.activity.my;
+
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.hwc.member.R;
+import com.hwc.member.adapter.PlayIntegralAdapter;
+import com.hwc.member.anno.ViewTransform;
+import com.hwc.member.common.Member;
+import com.hwc.member.presenter.PlayIntegralPresenter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.view.activity.luckdraw.PlatFormListActivity;
+import com.hwc.member.view.activity.luckdraw.ScratchActivity;
+import com.hwc.member.view.activity.luckdraw.TurntableActivity;
+import com.hwc.member.view.activity.product.ProductIntegralActivity;
+import com.hwc.member.view.activity.shop.ShopListActivity;
+import com.hwc.member.view.activity.view.IPlayIntegralView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.MyGridView;
+import com.hwc.member.widget.header.HeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.lidroid.xutils.view.annotation.event.OnItemClick;
+
+/**
+ * @author qqx 玩转积分
+ */
+@ContentView(R.layout.activity_play_integral)
+public class PlayIntegralActivity extends BaseActivity implements
+		IPlayIntegralView {
+
+
+
+	@ViewInject(R.id.show_rl)
+	@ViewTransform(height = 200)
+	private RelativeLayout show_rl;
+	@ViewInject(R.id.gridview)
+	private MyGridView gridview;
+	@ViewInject(R.id.see_bt)
+	private Button see_bt;
+	@ViewInject(R.id.scratch_tv)
+	private TextView scratch_tv;
+	@ViewInject(R.id.turntable_tv)
+	private TextView turntable_tv;
+	@ViewInject(R.id.share_tv)
+	private TextView share_tv;
+	@ViewInject(R.id.shop_tv)
+	private TextView shop_tv;
+	@ViewInject(R.id.update_tv)
+	private TextView update_tv;
+	@ViewInject(R.id.point_tv)
+	private TextView point_tv;
+
+	private PlayIntegralPresenter presenter = new PlayIntegralPresenter(this);
+
+	@Override
+	protected void initView() {
+		setBack();
+		point_tv.setText(CommonUtil.conversionInt(Member.getInstance().getPoint())+"");
+		if (Member.getInstance().isSign()) {
+			setPointBt();
+		}
+		presenter.setGridData();
+		presenter.getExts();
+	}
+
+	@Override
+	protected void initListener() {
+		header.setOnHeadClickListener(new HeadView.OnHeadClickListener() {
+			@Override
+			public void onHeadClick(HeadView.Dir dir, View view) {
+				switch (dir){
+					case Right:
+						goTo(PlayIntegralRuleActivity.class);
+						break;
+				}
+			}
+		});
+	}
+
+	@Override
+	public void setGridAdapter(PlayIntegralAdapter adapter) {
+		gridview.setAdapter(adapter);
+	}
+
+	@OnItemClick(R.id.gridview)
+	public void onGridItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		goTo(ProductIntegralActivity.class, presenter.adapter.getItem(position).getCode());
+	}
+	
+	//刮红包
+	@OnClick(R.id.scratch_tv)
+	public void showScratch(View v){
+		goTo(ScratchActivity.class);
+	}
+	
+	//大转盘
+	@OnClick(R.id.turntable_tv)
+	public void showTurntable(View v){
+		goTo(TurntableActivity.class);
+	}
+	
+	//积分攻略
+	@OnClick(R.id.see_bt)
+	public void showIntegra(View v){
+//		DialogUtil.showIntegraDialog(context);
+		presenter.signPoint();
+	}
+	
+	@OnClick(R.id.platlist_tv)
+	public void platlistClick(View v){
+		goTo(PlatFormListActivity.class);
+	}
+	
+	//分享
+	@OnClick(R.id.share_tv)
+	public void showShare(View v){
+		goTo(ShareActivity.class);
+	}
+	
+	//逛店
+	@OnClick(R.id.shop_tv)
+	public void showShop(View v){
+		goTo(ShopListActivity.class);
+	}
+
+	//个人资料
+	@OnClick(R.id.update_tv)
+	public void showUpdate(View v){
+		goTo(UpdateInfoActivity.class);
+	}
+	
+	@OnClick(R.id.gopointshop)
+	public void goPointShop(View v){
+		goTo(PointShopActivity.class);
+	}
+
+	@Override
+	public void clearLoadPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showErrorPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onResume() {
+		point_tv.setText(CommonUtil.conversionInt(Member.getInstance().getPoint())+"");
+		super.onResume();
+	}
+
+	@Override
+	public void setPointBt() {
+		see_bt.setEnabled(false);
+		see_bt.setText("本日已签到");
+	}
+
+	@Override
+	public void setPointText(Double point) {
+		point_tv.setText(CommonUtil.conversionInt(point)+"");
+		Member.getInstance().setPoint(point);
+		Member.getInstance().setSign(true);
+	}
+
+}

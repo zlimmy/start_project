@@ -1,0 +1,50 @@
+package com.hwc.member.view.activity;
+
+import android.support.v4.view.ViewPager;
+
+import com.hwc.member.R;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.view.fragment.WelcomeFragment1;
+import com.hwc.member.view.fragment.WelcomeFragment2;
+import com.hwc.member.view.fragment.WelcomeFragment3;
+import com.hwc.member.view.fragment.WelcomeFragment4;
+import com.hwc.member.widget.smarttablaout.SmartTabLayout;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
+
+@ContentView(R.layout.activity_welcome)
+public class WelcomeActivity extends BaseActivity {
+
+	@ViewInject(R.id.viewpager)
+	private ViewPager viewPager;
+	@ViewInject(R.id.viewpagertab)
+	private SmartTabLayout viewPagerTab;
+	
+	@Override
+	protected void initView() {
+		FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
+		        getSupportFragmentManager(), FragmentPagerItems.with(this)
+		        .add("1", WelcomeFragment1.class)
+		        .add("2", WelcomeFragment2.class)
+		        .add("3", WelcomeFragment3.class)
+		        .add("4", WelcomeFragment4.class)
+		        .create());
+		 
+		viewPager.setAdapter(adapter);
+		 
+		viewPagerTab.setViewPager(viewPager);
+	}
+
+	@Override
+	protected void initListener() {}
+	
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		// TODO Auto-generated method stub
+		super.onWindowFocusChanged(hasFocus);
+		
+	}
+
+}

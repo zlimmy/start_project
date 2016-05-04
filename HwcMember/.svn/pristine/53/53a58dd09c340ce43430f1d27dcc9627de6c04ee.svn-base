@@ -1,0 +1,15 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.hwc.member.adapter.PromLotteryAdapter;
+
+/**
+ * @author FZ
+ */
+public interface IPlatFormListView extends LoadDataView {
+
+	void setList(PromLotteryAdapter adapter);
+	
+}

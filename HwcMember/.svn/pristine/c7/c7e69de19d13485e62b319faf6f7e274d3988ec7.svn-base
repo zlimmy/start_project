@@ -1,0 +1,97 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.request.SignPointRequest;
+import com.huimodel.api.response.MemberExtsResponse;
+import com.huimodel.api.response.SignPointResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IMyView;
+import com.hwc.member.widget.SimpleHUD;
+
+
+/**
+ * @author FZ
+ */
+public class MyShopPresenter {
+
+	private IMyView myView;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	private List<String> str = new ArrayList<String>();
+	
+	public MyShopPresenter(IMyView myView){
+		this.myView = myView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void getMsgs(){
+		for (int i = 0; i < 5; i++) {
+			str.add("会员<font color='red'>[213333]</font>邀请好友获取10元优惠券" + i);
+		}	
+		myView.setAutoTest(str);
+	}
+	
+	public void signPoint(){
+		SignPointRequest spr = new SignPointRequest();
+		spr.setUser_id_by(Member.getInstance().getUser_id());
+		spr.setImei(Constant.IMEI);
+		iHwcBizMainImpl.signpoint(spr, myView.getContext(), new IResult<SignPointResponse>() {
+			
+			@Override
+			public void result(SignPointResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						SimpleHUD.showSuccessMessage(myView.getContext(), obj.getMsg());
+						myView.setPointText(obj.getPoint());
+					}else{
+						SimpleHUD.showErrorMessage(myView.getContext(), obj.getMsg());
+					}
+					myView.setPointBt();
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(myView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+	public void getExts(){
+		RequestBase request = new RequestBase();
+		request.setUser_id_by(Member.getInstance().getUser_id());
+		iHwcBizMainImpl.getMemberExts(request, myView.getContext(), new IResult<MemberExtsResponse>() {
+			
+			@Override
+			public void result(MemberExtsResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						myView.setWallet(obj);
+					}else{
+						SimpleHUD.showErrorMessage(myView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(myView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+	
+}

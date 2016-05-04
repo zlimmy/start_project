@@ -1,0 +1,60 @@
+package com.hwc.member.presenter;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.Location;
+import com.huimodel.api.base.RequestBase;
+import com.huimodel.api.request.LocationRequest;
+import com.huimodel.api.response.LocationsGetResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.LocationListAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.view.activity.view.ILocationView;
+import com.hwc.member.widget.SimpleHUD;
+
+import java.util.List;
+
+/**
+ * Created by xtsxx on 2016/4/28.
+ */
+public class LocationAddressPresenter {
+    private ILocationView locationView;
+    private IHwcBizMain iHwcBizMainImpl;
+    private Gson gson;
+    private List<Location> locations;
+    private LocationListAdapter locationListAdapter;
+
+    public List<Location> getLocations() {
+        return locations;
+    }
+
+    public LocationAddressPresenter(ILocationView locationView) {
+        this.locationView = locationView;
+        this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+        this.gson = new Gson();
+    }
+
+    public void getAddress() {
+        LocationRequest locationRequest = new LocationRequest();
+        iHwcBizMainImpl.searchLocations(locationRequest, locationView.getContext(), new IResult<LocationsGetResponse>() {
+            @Override
+            public void result(LocationsGetResponse obj, Code code) {
+                switch (code) {
+                    case OK:
+                        if (obj.getEntities() != null) {
+                            locations = obj.getEntities();
+                            locationListAdapter = new LocationListAdapter(locationView.getContext(), locations, R.layout.address_item, null);
+                            locationView.setLocation(locationListAdapter);
+                        }
+                        break;
+                    default:
+                        SimpleHUD.showInfoMessage(locationView.getContext(), code + "");
+                        break;
+                }
+            }
+        });
+    }
+}

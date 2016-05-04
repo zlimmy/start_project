@@ -1,0 +1,133 @@
+package com.hwc.member.view.activity.my;
+
+import android.annotation.SuppressLint;
+import android.view.KeyEvent;
+import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.hwc.member.R;
+import com.hwc.member.anno.ViewTransform;
+import com.hwc.member.util.WeiXinShareUtil;
+import com.hwc.member.view.base.BaseActivity;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.umeng.socialize.bean.SHARE_MEDIA;
+import com.umeng.socialize.bean.SocializeEntity;
+import com.umeng.socialize.controller.listener.SocializeListeners;
+
+/**
+ * 分享
+ * @author Administrator
+ *
+ */
+@SuppressLint("SetJavaScriptEnabled")
+@ContentView(R.layout.activity_share)
+public class ShareActivity extends BaseActivity {
+	
+	@ViewInject(R.id.title_rl)
+	@ViewTransform(height = 90)
+	private RelativeLayout title_rl;
+	@ViewInject(R.id.title_iv)
+	private TextView title_iv;
+	@ViewInject(R.id.wxshare_tv)
+	private TextView wxshare_tv;
+	@ViewInject(R.id.pb)
+	private ProgressBar progressbar;
+	@ViewInject(R.id.share_web)
+	private WebView share_web;
+	private String title,desc,image,url;
+	@Override
+	protected void initView() {
+		
+		title = getIntent().getStringExtra("0");
+		desc =  getIntent().getStringExtra("1");
+		image = getIntent().getStringExtra("2");
+		url =   getIntent().getStringExtra("3");
+		title_iv.setText(title);
+		progressbar.setMax(100);
+        share_web.getSettings().setJavaScriptEnabled(true);//设置使用够执行JS脚本  
+        share_web.getSettings().setBuiltInZoomControls(true);//设置使支持缩放  
+        share_web.getSettings().setUseWideViewPort(true); 
+        share_web.getSettings().setLoadWithOverviewMode(true); 
+        share_web.setWebChromeClient(new WebChromeClient());
+        share_web.loadUrl(url);  
+        share_web.setWebViewClient(new WebViewClient(){  
+            @Override  
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {  
+                view.loadUrl(url);// 使用当前WebView处理跳转  
+                return true;
+            }  
+            @Override   //转向错误时的处理  
+            public void onReceivedError(WebView view, int errorCode,  
+                    String description, String failingUrl) {  
+                Toast.makeText(ShareActivity.this, "加载失败" + description, Toast.LENGTH_SHORT).show();  
+            }  
+        });  
+	}
+	
+	@OnClick(R.id.wxshare_tv)
+	public void share(View v){
+			
+		    WeiXinShareUtil wx = new WeiXinShareUtil(mController, context, image, title, desc, url);
+		    wx.initShare();	
+		    mController.openShare(ShareActivity.this, new SocializeListeners.SnsPostListener() {
+				@Override
+				public void onStart() {
+					// TODO Auto-generated method stub
+					T("开始分享");
+				}
+				
+				@Override
+				public void onComplete(SHARE_MEDIA arg0, int eCode, SocializeEntity arg2) {
+					// TODO Auto-generated method stub
+					if(eCode==200){
+						T("分享成功");
+					}else{
+						T("分享失败");
+					}
+				}
+			});
+	}	
+	
+	
+	public class WebChromeClient extends android.webkit.WebChromeClient {
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            if (newProgress == 100) {
+                progressbar.setVisibility(View.GONE);
+            } else {
+                if (progressbar.getVisibility() == View.GONE)
+                    progressbar.setVisibility(View.VISIBLE);
+                progressbar.setProgress(newProgress);
+            }
+            super.onProgressChanged(view, newProgress);
+        }
+
+    } 
+
+	@Override
+	protected void initListener() {
+		
+	}
+	
+	@OnClick(R.id.back_iv)
+	public void back_iv(View v){
+		finish();
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK) && share_web.canGoBack()) {
+			share_web.goBack();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+}

@@ -1,0 +1,23 @@
+package com.huimodel.api.response;
+
+import java.util.List;
+
+import com.huimodel.api.base.HotWords;
+import com.huimodel.api.base.ResponseBase;
+
+public class HotwordsResponse extends ResponseBase {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8196490737675503499L;
+	private List<HotWords> list;
+
+	public List<HotWords> getList() {
+		return list;
+	}
+
+	public void setList(List<HotWords> list) {
+		this.list = list;
+	}
+}

@@ -1,0 +1,148 @@
+package com.hwc.member.presenter;
+
+import android.view.Gravity;
+import android.view.View;
+
+import com.google.gson.Gson;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.CouponDetailGetRequest;
+import com.huimodel.api.request.CouponDonationRequest;
+import com.huimodel.api.request.UserInfoGetByMobileRequest;
+import com.huimodel.api.response.CouponDetailGetResponse;
+import com.huimodel.api.response.UserInfoGetByMobileResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.CodeFragAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.util.DialogUtil;
+import com.hwc.member.util.ToastUtil;
+import com.hwc.member.view.activity.view.ICouponView;
+import com.hwc.member.widget.SimpleHUD;
+import com.hwc.member.widget.dialogplus.DialogPlus;
+import com.hwc.member.widget.dialogplus.OnClickListener;
+
+public class CounponPresenter {
+	private ICouponView iCouponView;
+	public CodeFragAdapter adapter;
+	private IHwcBizMain iHwcBizMainImpl;
+	private Gson gson;
+	public CounponPresenter(ICouponView iCouponView){
+		this.iCouponView = iCouponView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		this.gson = new Gson();
+	}
+	
+	/**
+	 * 获取礼券详情
+	 * @param coupon_id
+	 */
+	public void getMyCounponByNo(String coupon_id){
+		CouponDetailGetRequest t = new CouponDetailGetRequest();
+		t.setUser_id_by(Member.getInstance().getUser_id());
+		t.setCoupon_id(coupon_id);
+		t.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getCouponByNo(t, iCouponView.getContext(),  new IResult<CouponDetailGetResponse>() {
+
+			@Override
+			public void result(CouponDetailGetResponse obj, Code code) {
+				switch (code) {
+				case OK:
+					iCouponView.initCounpon(obj.getCoupon());
+					break;
+				default:
+					SimpleHUD.showErrorMessage(iCouponView.getContext(), code+"");
+					break;
+				}
+				
+			}
+
+			
+		});
+	}
+	
+	/**
+	 * 转赠
+	 * @param mobile
+	 * @param sendMsg
+	 */
+	public void doGive(String mobile,boolean sendMsg,final String coupon_id){
+		UserInfoGetByMobileRequest  umr = new UserInfoGetByMobileRequest();
+		umr.setMobile(mobile);
+		umr.setImei(Constant.IMEI);
+		iHwcBizMainImpl.getuserinfobymobile(umr, iCouponView.getContext(), new IResult<UserInfoGetByMobileResponse>() {
+
+			@Override
+			public void result(final UserInfoGetByMobileResponse obj, Code code) {
+			
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						DialogUtil.showDialog(Constant.Dialog, "["+obj.getName()+"]将收到您赠送的优惠券!", Gravity.CENTER, iCouponView.getContext(), null, new OnClickListener() {
+							@Override
+							public void onClick(DialogPlus dialog, View view) {
+								switch (view.getId()) {
+								case R.id.cancel:
+									break;									
+								case R.id.confirm:
+									postGive(coupon_id,obj.getUser_id());
+									break;
+								}
+								dialog.dismiss();
+							}
+						}, null);
+					}else{
+						ToastUtil.show(iCouponView.getContext(), obj.getMsg());
+					}
+					
+					break;
+				default:
+					SimpleHUD.showErrorMessage(iCouponView.getContext(), code+"");
+					break;
+				}
+			}
+
+		});
+	}
+	
+	/**
+	 * 提交优惠券
+	 * @param coupon_id
+	 * @param userid
+	 */
+	public void postGive(String coupon_id,Long userid){
+		iCouponView.showProgressDialog("优惠券正在转发给好友....");
+		
+		CouponDonationRequest t = new CouponDonationRequest();
+		t.setCoupon_no(coupon_id);
+		t.setAccpet_user_id(userid);
+		t.setUser_id_by(Member.getInstance().getUser_id());
+		t.setImei(Constant.IMEI);
+		System.out.println(gson.toJson(t));
+		iHwcBizMainImpl.coupondonation(t, iCouponView.getContext(), new IResult<ResponseBase>() {
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				// TODO Auto-generated method stub
+				iCouponView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					  if(obj.isSuccess()){
+						  iCouponView.doGive();
+					  }
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(iCouponView.getContext(), code+"");
+					break;
+				}
+			}
+			
+			
+		});
+	}
+	
+}

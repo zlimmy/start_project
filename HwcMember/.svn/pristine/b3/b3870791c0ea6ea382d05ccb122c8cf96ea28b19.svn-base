@@ -1,0 +1,133 @@
+package com.huimodel.api.request;
+
+import java.util.List;
+
+import com.huimodel.api.base.RequestBase;
+
+/**
+ * 订单记录查询
+ * 
+ * @author lxk
+ *
+ */
+public class OrderSearchRequest extends RequestBase {
+	//public static final String TID = "tid";
+//	public static final String BUY_SHOP_ID = "buy_shop_id";
+//	public static final String BUY_USER_ID = "buy_user_id";
+//	public static final String TRADE_TYPE = "trade_type";
+//	public static final String BEGIN = "begin";
+//	public static final String TRADE_STATUS = "trade_status";
+//	public static final String DISTRIBUTOR_ID = "distributor_id";
+//	public static final String SELLER_SHOP_ID = "seller_shop_id";
+//	public static final String SELLER_USER_ID = "seller_user_id";
+//	public static final String PRODUCT_ID = "product_id";
+//	public static final String END = "end";
+//	public static final String CID="cid";
+	/*
+	 * 校验订单号
+	 */
+	private Long tid;
+	private Long buy_shop_id;
+	private Long buy_user_id;
+	private String trade_type;
+	public String getBegin() {
+		return begin;
+	}
+	public void setBegin(String begin) {
+		this.begin = begin;
+	}
+	public String getEnd() {
+		return end;
+	}
+	public void setEnd(String end) {
+		this.end = end;
+	}
+	private String begin;
+	private String end;
+	private String[] trade_statues;
+	private Long distributor_id;
+	private Long seller_shop_id;
+	private Long seller_user_id;
+	private Long product_id;
+	private Long cid;
+	private List<Long>pids;
+	private Long saleid;
+	public Long getTid() {
+		return tid;
+	}
+	public void setTid(Long tid) {
+		this.tid = tid;
+	}
+	public Long getBuy_shop_id() {
+		return buy_shop_id;
+	}
+	public void setBuy_shop_id(Long buy_shop_id) {
+		this.buy_shop_id = buy_shop_id;
+	}
+	public Long getBuy_user_id() {
+		return buy_user_id;
+	}
+	public void setBuy_user_id(Long buy_user_id) {
+		this.buy_user_id = buy_user_id;
+	}
+	public String getTrade_type() {
+		return trade_type;
+	}
+	public void setTrade_type(String trade_type) {
+		this.trade_type = trade_type;
+	}
+
+	public String[] getTrade_statues() {
+		return trade_statues;
+	}
+
+	public void setTrade_statues(String[] trade_statues) {
+		this.trade_statues = trade_statues;
+	}
+	public Long getDistributor_id() {
+		return distributor_id;
+	}
+	public void setDistributor_id(Long distributor_id) {
+		this.distributor_id = distributor_id;
+	}
+	public Long getSeller_shop_id() {
+		return seller_shop_id;
+	}
+	public void setSeller_shop_id(Long seller_shop_id) {
+		this.seller_shop_id = seller_shop_id;
+	}
+	public Long getSeller_user_id() {
+		return seller_user_id;
+	}
+	public void setSeller_user_id(Long seller_user_id) {
+		this.seller_user_id = seller_user_id;
+	}
+	public Long getProduct_id() {
+		return product_id;
+	}
+	public void setProduct_id(Long product_id) {
+		this.product_id = product_id;
+	}
+	public Long getCid() {
+		return cid;
+	}
+	public void setCid(Long cid) {
+		this.cid = cid;
+	}
+	public List<Long> getPids() {
+		return pids;
+	}
+	public void setPids(List<Long> pids) {
+		this.pids = pids;
+	}
+	public Long getSaleid() {
+		return saleid;
+	}
+	public void setSaleid(Long saleid) {
+		this.saleid = saleid;
+	}
+	
+	 
+
+	
+}

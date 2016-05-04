@@ -1,0 +1,39 @@
+package com.hwc.member.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.widget.TextView;
+
+import com.huimodel.api.base.WithdrawApply;
+import com.hwc.member.R;
+import com.hwc.member.adapter.base.HolderEntity;
+import com.hwc.member.adapter.base.MirAdapter;
+import com.hwc.member.util.CommonUtil;
+import com.lidroid.xutils.BitmapUtils;
+
+public class WithdrawalsAdapter extends MirAdapter<WithdrawApply>{
+
+	
+	public WithdrawalsAdapter(Context context, List<WithdrawApply> mDatas,
+			int itemLayoutId, BitmapUtils bitmapUtils) {
+		super(context, mDatas, itemLayoutId, bitmapUtils);
+		
+	}
+
+	@Override
+	public void convert(HolderEntity helper, WithdrawApply item) {
+		// TODO Auto-generated method stub
+		helper.setText(R.id.time_tv,"申请时间："+item.getCreated());
+		helper.setText(R.id.amount_tv, CommonUtil.conversionDouble(item.getAmount())+"");
+		TextView flag_tv = helper.getView(R.id.flag_tv);
+		if(item.getStatus().equals("A")){
+			flag_tv.setText("等待审核");
+		}else if(item.getStatus().equals("O")){
+			flag_tv.setText("提现成功");
+		}else{
+			flag_tv.setText("提现失败");
+		}
+	}
+
+}

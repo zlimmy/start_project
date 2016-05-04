@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white" >
+
+    <LinearLayout
+        android:id="@+id/head_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <View
+            style="@style/divider_horizontal"
+            android:background="@color/gray2" />
+
+        <RadioGroup
+            android:id="@+id/rg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/comprehensive_rt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_radio"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="全部商品"
+                android:textColor="@drawable/button_radio"
+                android:textSize="@dimen/text_14" />
+
+            <RadioButton
+                android:id="@+id/salesvol_rt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_radio"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="销量"
+                android:textColor="@drawable/button_radio"
+                android:textSize="@dimen/text_14"
+                android:visibility="gone" />
+
+            <RadioButton
+                android:id="@+id/price_rt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_radio"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="价格"
+                android:textColor="@drawable/button_radio"
+                android:textSize="@dimen/text_14" />
+        </RadioGroup>
+
+        <View
+            style="@style/divider_horizontal"
+            android:background="@color/gray2" />
+    </LinearLayout>
+    
+    <com.hwc.member.widget.PullToRefreshLayout
+        android:id="@+id/refresh_view"
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	android:layout_below="@id/head_ll" >
+    
+    <include layout="@layout/refresh_head2" />
+    
+    <com.hwc.member.widget.PullableGridView
+        android:id="@+id/gridview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:numColumns="2"
+        android:background="@color/gray1"
+        android:horizontalSpacing="4dp"
+        android:verticalSpacing="4dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:scrollbars="none" />
+    
+    <include layout="@layout/load_more" android:visibility="gone"/>
+    
+    </com.hwc.member.widget.PullToRefreshLayout>
+    
+    <Button 
+        android:id="@+id/top_bt"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"
+        android:textColor="@color/white"
+        android:text="100/100"
+        android:textSize="@dimen/text_12"
+        android:gravity="center"
+        android:background="@drawable/icon_goodstop"/>
+
+</RelativeLayout>

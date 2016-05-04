@@ -1,0 +1,18 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.hwc.member.adapter.HotGoodsAdapter;
+import com.hwc.member.adapter.ProductCategoryAdapter;
+
+/**
+ * @author FZ
+ */
+public interface INewProductCategoryView extends LoadDataView {
+
+	void setHotGridAdapter(HotGoodsAdapter adapter);
+	
+	void setGridAdapter(ProductCategoryAdapter adapter);
+
+}

@@ -1,0 +1,63 @@
+/**
+ * 
+ */
+package com.hwc.member.view.activity.view;
+
+import com.huimodel.api.base.Address;
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.response.OrderGetPayInfoResponse;
+import com.huimodel.api.response.ShopPostFeeStrategyResponse;
+import com.hwc.member.adapter.ConfirmOrderAdapter;
+
+/**
+ * @author FZ
+ */
+public interface IConfirmOrderView extends LoadDataView {
+	
+	void setList(ConfirmOrderAdapter adapter);
+
+	/**
+	 * 提交订单
+	 */
+	void sumbit();
+	
+	/**
+	 * 计算金额
+	 */
+	void alculation();
+	
+	/**
+	 * 跳转订单详情
+	 * @param rid
+	 */
+	void doOrderInfo(ResponseBase obj);
+	
+	void setAddress(Address address);
+	
+	/**
+	 * 设置可支付的对象
+	 * @param payinfo
+	 */
+	void setPayInfo(OrderGetPayInfoResponse payinfo);
+	
+	/**
+	 * 没有收货地址
+	 * @param msg
+	 */
+	void noAddress(String msg);
+	
+	
+	/**
+	 * 订单状态出错
+	 * @param msg
+	 */
+	void wrongStatus(String msg);
+
+	/**
+	 * 设置订单配送方式
+	 * @param response
+     */
+	void setOrderInfo(ShopPostFeeStrategyResponse response);
+	
+}
+

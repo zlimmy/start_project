@@ -1,0 +1,201 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.google.gson.Gson;
+import com.huimodel.api.request.OrderSearchRequest;
+import com.huimodel.api.response.TradeSearchResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.adapter.NewOrderAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.common.Member;
+import com.hwc.member.view.activity.view.IAllOrderView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class AllOrderPresenter {
+
+	private IAllOrderView allOrderView;
+	private IHwcBizMain iHwcBizMainImpl;
+
+	public NewOrderAdapter adapter;
+
+	private int page_size = 10;
+
+	private Gson gson;
+
+	public AllOrderPresenter(IAllOrderView allOrderView) {
+		this.allOrderView = allOrderView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+		gson = new Gson();
+	}
+
+	// public void setData(int tag, final int page, final PullToRefreshLayout
+	// pullToRefreshLayout){
+	// OrderSearchRequest osr = new OrderSearchRequest();
+	// osr.setUser_id_by(Member.getInstance().getUser_id());
+	// if(tag == 2){
+	// osr.setTrade_statues(new String[]{"N","U"});//待付款
+	// }else if(tag == 3){
+	// osr.setTrade_statues(new String[]{"C","P"});//待发货
+	// }else if(tag == 4){
+	// osr.setTrade_statues(new String[]{"D"});//待收货
+	// }else if(tag == 5){
+	// osr.setTrade_statues(new String[]{"X","R","O"});//售后（包括取消，退款和完成的订单）
+	// }
+	//
+	// osr.setPage(page);
+	// osr.setPage_size(page_size);
+	// osr.setImei(Constant.IMEI);
+	//
+	// allOrderView.showProgressDialog(null);
+	// iHwcBizMainImpl.getMemberOrders(osr, allOrderView.getContext(), new
+	// IResult<TradeSearchResponse>() {
+	//
+	// @Override
+	// public void result(TradeSearchResponse obj, Code code) {
+	// allOrderView.dismissProgressDialog();
+	// if(pullToRefreshLayout != null){
+	// if(page == 1){
+	// pullToRefreshLayout.refreshFinish(PullToRefreshLayout.SUCCEED);
+	// }else{
+	// pullToRefreshLayout.loadmoreFinish(PullToRefreshLayout.SUCCEED);
+	// }
+	// }
+	// switch (code) {
+	// case OK:
+	// if(obj.isSuccess()){
+	// System.out.println("订单:"+gson.toJson(obj));
+	// if(page == 1){
+	// morelist.clear();
+	// }
+	// if(obj.getOrders() != null && obj.getOrders().size() > 0){
+	// if(morelist.size() > 0){
+	// morelist.addAll(obj.getOrders());
+	// adapter.notifyDataSetChanged();
+	// }else{
+	// morelist.addAll(obj.getOrders());
+	// adapter = new NewOrderAdapter(allOrderView.getContext(), morelist,
+	// R.layout.item_orderstyle, null);
+	// allOrderView.setList(adapter);
+	// }
+	//
+	// }else{
+	// if(morelist.size() > 0){
+	// SimpleHUD.showInfoMessage(allOrderView.getContext(), "没有更多了");
+	// }else{
+	// allOrderView.setNodataPage();
+	// }
+	// }
+	// }
+	// break;
+	//
+	// default:
+	// SimpleHUD.showErrorMessage(allOrderView.getContext(), code+"");
+	// break;
+	// }
+	// }
+	// });
+	// }
+
+
+	/**
+	 * 刷新
+	 */
+	public void refresh(int tag) {
+		OrderSearchRequest osr = new OrderSearchRequest();
+		osr.setUser_id_by(Member.getInstance().getUser_id());
+		if (tag == 0) {
+			osr.setTrade_statues(new String[] { "N", "U" });// 待付款
+		} else if (tag == 1) {
+			osr.setTrade_statues(new String[] { "C", "P" });// 待发货
+		} else if (tag == 2) {
+			osr.setTrade_statues(new String[] { "D" });// 待收货
+		} else if (tag == 3) {
+//			osr.setTrade_statues(new String[] { "X", "R", "O" });// 售后（包括取消，退款和完成的订单）
+			osr.setTrade_statues(new String[] {  "R"});
+		}
+
+		osr.setPage(1);
+		osr.setPage_size(page_size);
+		osr.setImei(Constant.IMEI);
+
+		iHwcBizMainImpl.getMemberOrders(osr, allOrderView.getContext(),
+				new IResult<TradeSearchResponse>() {
+
+					@Override
+					public void result(TradeSearchResponse obj, Code code) {
+						allOrderView.dismissProgressDialog();
+						switch (code) {
+						case OK:
+							if (obj.isSuccess()) {
+								System.out.println("订单:" + gson.toJson(obj));
+								allOrderView.refresh(obj.getOrders());
+							}
+							break;
+
+						default:
+							SimpleHUD.showErrorMessage(
+									allOrderView.getContext(), code + "");
+							break;
+						}
+					}
+				});
+	}
+
+	/**
+	 * 获取更多
+	 * 
+	 * @param mCurIndex
+	 */
+	public void more(int tag, int mCurIndex) {
+		OrderSearchRequest osr = new OrderSearchRequest();
+		osr.setUser_id_by(Member.getInstance().getUser_id());
+		if (tag == 0) {
+			osr.setTrade_statues(new String[] { "N", "U" });// 待付款
+		} else if (tag == 1) {
+			osr.setTrade_statues(new String[] { "C", "P" });// 待发货
+		} else if (tag == 2) {
+			osr.setTrade_statues(new String[] { "D" });// 待收货
+		} else if (tag == 3) {
+//			osr.setTrade_statues(new String[] { "X", "R", "O" });// 售后（包括取消，退款和完成的订单）
+			osr.setTrade_statues(new String[] {  "R"});
+		}
+
+		osr.setPage(mCurIndex);
+		osr.setPage_size(page_size);
+		osr.setImei(Constant.IMEI);
+
+		iHwcBizMainImpl.getMemberOrders(osr, allOrderView.getContext(),
+				new IResult<TradeSearchResponse>() {
+
+					@Override
+					public void result(TradeSearchResponse obj, Code code) {
+						boolean hasMore = true;
+						switch (code) {
+						case OK:
+							if (obj.isSuccess()) {
+								System.out.println("订单:" + gson.toJson(obj));
+								if (obj.getOrders().size() < page_size) {
+									hasMore = false;
+								}
+									allOrderView.more(obj.getOrders(), hasMore);
+							}
+							break;
+						default:
+							SimpleHUD.showErrorMessage(
+									allOrderView.getContext(), code + "");
+							break;
+						}
+					}
+				});
+	}
+
+}

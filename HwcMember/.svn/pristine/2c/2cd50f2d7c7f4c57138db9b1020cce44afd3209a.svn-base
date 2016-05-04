@@ -1,0 +1,255 @@
+package com.hwc.member.view.activity;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.telephony.SmsMessage;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
+
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.huimodel.api.response.SmsMessageResponse;
+import com.hwc.member.R;
+import com.hwc.member.bean.MLocation;
+import com.hwc.member.common.Constant;
+import com.hwc.member.presenter.RegistPresenter;
+import com.hwc.member.util.LocationUtil;
+import com.hwc.member.util.UtilPhone;
+import com.hwc.member.util.ViewTransformUtil;
+import com.hwc.member.view.activity.view.IRegistView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.EditDelText;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+@ContentView(R.layout.activity_new_regist)
+public class NewRegistActivity extends BaseActivity implements IRegistView {
+    @ViewInject(R.id.title_bar)
+    private RelativeLayout title_bar;
+    @ViewInject(R.id.mobile)
+    private EditDelText mobile;
+    @ViewInject(R.id.checkcode)
+    private EditDelText checkcode;
+    @ViewInject(R.id.pwd)
+    private EditText pwd;
+    @ViewInject(R.id.nick)
+    private EditText nick;
+    @ViewInject(R.id.showpwd)
+    private CheckBox showpwd;
+    @ViewInject(R.id.goregist)
+    private Button goregist;
+    @ViewInject(R.id.getcode)
+    private Button getcode;
+    private String smsCode = "-1";
+    private String mobileNUmber = "";
+    @ViewInject(R.id.yqm_et)
+    private EditDelText yqm_et;
+    private RegistPresenter presenter = new RegistPresenter(this);
+    private MLocation mLocation = null;
+
+
+    @Override
+    protected void initView() {
+        registSmsReciver();
+        getPosition();
+        ViewTransformUtil.layoutParams(title_bar, title_bar.getLayoutParams(), RelativeLayout.LayoutParams.MATCH_PARENT, 90);
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @OnClick(R.id.back_btn)
+    public void back_btn(View v){
+        finish();
+    }
+
+
+    @OnClick(R.id.getcode)
+    public void getCode(View v){
+        if(isEmpty(getViewValue(mobile))){
+            mobile.startAnimation(shake);
+        }else if(!UtilPhone.isMobileNO(getViewValue(mobile))){
+            T("手机号码输入错误");
+        }
+        else{
+            //调取发送验证码接口
+            presenter.checkRegister(getViewValue(mobile));
+
+        }
+    }
+
+    @OnClick(R.id.showpwd)
+    public void showPwd(View v){
+        if(showpwd.isChecked()){
+            //设置成明文
+            pwd.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+        }else{
+            //设置成密文
+            pwd.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        }
+    }
+
+    @Override
+    public void clearLoadPage() {
+    }
+
+    @Override
+    public void showErrorPage() {
+    }
+
+
+    @Override
+    public void sendSmssuccee(SmsMessageResponse smsMessageResponse) {
+        T("验证码已发送");
+        smsCode = smsMessageResponse.getCode();
+        mobileNUmber = smsMessageResponse.getMobile();
+        goregist.setBackgroundColor(getResources().getColor(R.color.main_color));
+        goregist.setText("注册");
+    }
+
+    @Override
+    public void validPhone(boolean isValid, String phone) {
+        if(isValid){
+            presenter.sendSms(phone);
+            setDownTime(getcode);
+            goregist.setText("等待短信接收...");
+            goregist.setFocusable(false);
+            goregist.setBackgroundColor(getResources().getColor(R.color.gray6));
+            timer.start();
+        }else {
+        }
+
+    }
+
+    @OnClick(R.id.goregist)
+    public void goregist(View view){
+        if(isEmpty(getViewValue(mobile))){
+            mobile.startAnimation(shake);
+        }else if(isEmpty(getViewValue(checkcode))){
+            checkcode.startAnimation(shake);
+        }else if(isEmpty(getViewValue(pwd))){
+            pwd.startAnimation(shake);
+        }else if(!getViewValue(checkcode).equals(smsCode)){
+            T("验证码不正确 ");
+        }else if(!getViewValue(mobile).equals(mobileNUmber)){
+            T("请勿更改手机号");
+        }
+        else{
+            presenter.goRegist(Constant.OSSURL + "user/man.png",getViewValue(nick),getViewValue(pwd),getViewValue(yqm_et),getViewValue(mobile),mLocation);
+        }
+    }
+
+
+
+    // 定位
+    public void getPosition() {
+        LocationUtil.requestLocation(new BDLocationListener() {
+            @Override
+            public void onReceiveLocation(BDLocation arg0) {
+                LocationUtil.stop();
+                mLocation = new MLocation();
+                mLocation.setId(1);
+                mLocation.setAddress(arg0.getAddress().address);
+                mLocation.setCity(arg0.getAddress().city);
+                mLocation.setCityCode(arg0.getAddress().cityCode);
+                mLocation.setCountry(arg0.getAddress().country);
+                mLocation.setCountryCode(arg0.getAddress().countryCode);
+                mLocation.setDistrict(arg0.getAddress().district);
+                mLocation.setProvince(arg0.getAddress().province);
+                mLocation.setStreet(arg0.getAddress().street);
+                mLocation.setStreetNumber(arg0.getAddress().streetNumber);
+                mLocation.setLatitude(arg0.getLatitude() + "");
+                mLocation.setLongitude(arg0.getLongitude() + "");
+            }
+
+        });
+    }
+
+
+    private SmsReciver smsReciver = new SmsReciver();
+    /**
+     * 收到短信Action
+     **/
+    String ACTION_SMS_RECIVER = "android.provider.Telephony.SMS_RECEIVED";
+
+    /**
+     * 注册广播接受者监听短信验证码自动回写  可在onCreate()中进行注册;
+     */
+    private void registSmsReciver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_SMS_RECIVER);
+        // 设置优先级 不然监听不到短信
+        filter.setPriority(1000);
+        registerReceiver(smsReciver, filter);
+    }
+
+    /**
+     * 短信广播接受者 用户监听短信，自动填写验证码
+     */
+    private class SmsReciver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Object[] objs = (Object[]) intent.getExtras().get("pdus");
+            for (Object obj : objs) {
+                byte[] pdu = (byte[]) obj;
+                SmsMessage sms = SmsMessage.createFromPdu(pdu);
+                // 短信的内容
+                String message = sms.getMessageBody();
+                Log.d("log", "message     " + message);
+                // 短息的手机号，如果你们公司发送验证码的号码是固定的这里可以进行一个号码的校验
+                String from = sms.getOriginatingAddress();
+                Log.d("log", "from     " + from);
+                analysisVerify(message);
+
+            }
+        }
+
+    }
+
+    /**
+     * 解析短信并且回写
+     *
+     * @param message
+     */
+    private void analysisVerify(String message) {
+        Pattern continuousNumberPattern = Pattern.compile("[0-9\\.]+");
+        Matcher m = continuousNumberPattern.matcher(message);
+        String dynamicPassword = "";
+        while(m.find()){
+            if(m.group().length() == 4) {
+                System.out.print(m.group());
+                dynamicPassword = m.group();
+            }
+        }
+
+        checkcode.setText(dynamicPassword);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 取消短信广播注册
+        if (smsReciver != null) {
+            unregisterReceiver(smsReciver);
+            smsReciver = null;
+        }
+    }
+
+
+
+}

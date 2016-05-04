@@ -1,0 +1,21 @@
+package com.huimodel.api.request;
+
+import com.huimodel.api.base.RequestBase;
+
+public class CouponDonationRequest  extends RequestBase{
+	private Long accpet_user_id;
+	private String coupon_no;
+	public Long getAccpet_user_id() {
+		return accpet_user_id;
+	}
+	public void setAccpet_user_id(Long accpet_user_id) {
+		this.accpet_user_id = accpet_user_id;
+	}
+	public String getCoupon_no() {
+		return coupon_no;
+	}
+	public void setCoupon_no(String coupon_no) {
+		this.coupon_no = coupon_no;
+	}
+	
+}

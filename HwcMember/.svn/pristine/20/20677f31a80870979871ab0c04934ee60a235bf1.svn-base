@@ -1,0 +1,129 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.base.ResponseBase;
+import com.huimodel.api.request.SmsMessageRequest;
+import com.huimodel.api.request.UserRegisterRequest;
+import com.huimodel.api.response.SmsMessageResponse;
+import com.huimodel.api.response.UserRegisterResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.application.App;
+import com.hwc.member.bean.MLocation;
+import com.hwc.member.common.Constant;
+import com.hwc.member.util.PreferenceUtils;
+import com.hwc.member.util.ToastUtil;
+import com.hwc.member.util.UtilActivity;
+import com.hwc.member.view.activity.view.IRegistView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class RegistPresenter {
+
+	private IHwcBizMain iHwcBizMainImpl;
+	private IRegistView registView;
+	
+	public RegistPresenter(IRegistView registView){
+		this.registView = registView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void goRegist(String path, String nick, String pwd, String invitation, String phone,MLocation mLocation){
+		UserRegisterRequest ur = new UserRegisterRequest();
+		ur.setAvatar(path);
+		ur.setMobile(phone);
+		ur.setPwd(pwd);
+		ur.setNick(nick);
+		ur.setRole("SALER");
+		ur.setImei(Constant.IMEI);
+		ur.setLatitude(Constant.latitude);
+		ur.setLongitude(Constant.longitude);
+		ur.setAddress(mLocation.getAddress());
+		ur.setCity(mLocation.getCity());
+		ur.setCountry(mLocation.getCountry());
+		ur.setDistrict(mLocation.getDistrict());
+		ur.setDevice_number(Constant.device_number);
+		ur.setOs_version(Constant.os_version);
+		if(!invitation.equals("")){
+			ur.setRecommendcode(invitation);
+		}	
+
+		
+		registView.showProgressDialog("注册中。。。");
+		iHwcBizMainImpl.regist(ur, registView.getContext(), new IResult<UserRegisterResponse>() {
+			
+			@Override
+			public void result(UserRegisterResponse obj, Code code) {
+				registView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						ToastUtil.show("注册成功");
+						PreferenceUtils.setPrefString(registView.getContext().getApplicationContext(), "pwd","");
+						UtilActivity.finishNum(2);
+					}else{
+						SimpleHUD.showErrorMessage(registView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showErrorMessage(registView.getContext(), code+"");
+					break;
+				}
+			}
+		});
+	}
+
+
+	public void checkRegister(final String phone){
+		UserRegisterRequest ur = new UserRegisterRequest();
+		ur.setMobile(phone);
+		iHwcBizMainImpl.checkRegister(ur, registView.getContext(), new IResult<ResponseBase>() {
+
+			@Override
+			public void result(ResponseBase obj, Code code) {
+				registView.dismissProgressDialog();
+				switch (code) {
+					case OK:
+						if(obj.isSuccess()){
+							registView.validPhone(true,phone);
+						}else{
+							SimpleHUD.showErrorMessage(registView.getContext(), obj.getMsg());
+						}
+						break;
+
+					default:
+						SimpleHUD.showErrorMessage(registView.getContext(), code+"");
+						break;
+				}
+			}
+		});
+	}
+
+	public void sendSms(String mobile){
+		SmsMessageRequest sms = new  SmsMessageRequest();
+		sms.setMobile(mobile);
+		sms.setNotify_type("member_register");
+		iHwcBizMainImpl.smsMessageNotify(sms, registView.getContext(), new IResult<SmsMessageResponse>() {
+			@Override
+			public void result(SmsMessageResponse obj, Code code) {
+				switch (code){
+					case OK:
+							registView.sendSmssuccee(obj);
+						break;
+					default:
+						break;
+
+				}
+			}
+		});
+
+	}
+	
+}

@@ -1,0 +1,59 @@
+package com.hwc.member.view.activity.order;
+
+import android.support.v4.view.ViewPager;
+
+import com.hwc.member.R;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.view.fragment.AfterSaleFragment;
+import com.hwc.member.view.fragment.AllOrderFragment;
+import com.hwc.member.view.fragment.WaitDeliveryFragment;
+import com.hwc.member.view.fragment.WaitPayFragment;
+import com.hwc.member.view.fragment.WaitReceiptFragment;
+import com.hwc.member.widget.smarttablaout.SmartTabLayout;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
+
+@ContentView(R.layout.activity_order)
+public class OrderActivity extends BaseActivity {
+
+	@ViewInject(R.id.viewpager)
+	private ViewPager viewPager;
+	@ViewInject(R.id.viewpagertab)
+	private SmartTabLayout viewPagerTab;
+	public static OrderActivity instance = null;
+	private int position;
+	
+	@Override
+	public void beforeOnCreate() {
+		// TODO Auto-generated method stub
+		super.beforeOnCreate();
+		instance = this;
+	}
+	
+	@Override
+	protected void initView() {
+		position = getIntent().getIntExtra("0", 0);
+		
+		FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
+		        getSupportFragmentManager(), FragmentPagerItems.with(this)
+		        .add("全部", AllOrderFragment.class)
+		        .add("待付款", WaitPayFragment.class)
+		        .add("待发货", WaitDeliveryFragment.class)
+		        .add("待收货", WaitReceiptFragment.class)
+		        .add("售后", AfterSaleFragment.class)
+		        .create());
+		 
+		viewPager.setAdapter(adapter);
+		viewPager.setCurrentItem(position);
+		viewPagerTab.setViewPager(viewPager);
+	}
+
+	@Override
+	protected void initListener() {
+		setBack();
+	}
+
+	
+}

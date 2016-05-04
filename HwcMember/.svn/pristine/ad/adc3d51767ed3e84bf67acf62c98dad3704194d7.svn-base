@@ -1,0 +1,71 @@
+/**
+ * 
+ */
+package com.hwc.member.presenter;
+
+import com.huimodel.api.request.ShopInfoRequest;
+import com.huimodel.api.response.ShopInfoResponse;
+import com.huimodel.biz.IHwcBizMain;
+import com.huimodel.biz.IHwcBizMainImpl;
+import com.huimodel.net.Code;
+import com.huimodel.net.IResult;
+import com.hwc.member.R;
+import com.hwc.member.adapter.HorizontalListViewAdapter;
+import com.hwc.member.application.App;
+import com.hwc.member.common.Constant;
+import com.hwc.member.view.activity.view.IMoreShopIndexView;
+import com.hwc.member.widget.SimpleHUD;
+
+/**
+ * @author FZ
+ */
+public class MoreShopIndexPresenter {
+
+	private IMoreShopIndexView moreShopIndexView;
+	private IHwcBizMain iHwcBizMainImpl;
+	
+	public HorizontalListViewAdapter adapter;
+	
+	public MoreShopIndexPresenter(IMoreShopIndexView moreShopIndexView){
+		this.moreShopIndexView = moreShopIndexView;
+		this.iHwcBizMainImpl = IHwcBizMainImpl.getInstance(App.mContext);
+	}
+	
+	public void setData(Long sid){
+		if(sid == -1){
+			SimpleHUD.showErrorMessage(moreShopIndexView.getContext(), "获取门店信息失败");
+			return;
+		}
+		ShopInfoRequest sir = new ShopInfoRequest();
+		sir.setShop_id(sid);
+		sir.setNum(6);
+		sir.setImei(Constant.IMEI);
+		moreShopIndexView.showProgressDialog(null);
+		iHwcBizMainImpl.searchShopInfo(sir, moreShopIndexView.getContext(), new IResult<ShopInfoResponse>() {
+			
+			@Override
+			public void result(ShopInfoResponse obj, Code code) {
+				moreShopIndexView.dismissProgressDialog();
+				switch (code) {
+				case OK:
+					if(obj.isSuccess()){
+						moreShopIndexView.setShopMsg(obj.getShopInfo().getNick());
+						if(obj.getShopInfo().getProducts() != null && obj.getShopInfo().getProducts().size() > 0){
+							adapter = new HorizontalListViewAdapter(moreShopIndexView.getContext(), obj.getShopInfo().getProducts(), R.layout.item_horizontallist, null);
+							moreShopIndexView.setGridAdapter(adapter);
+						}
+					}else{
+						SimpleHUD.showErrorMessage(moreShopIndexView.getContext(), obj.getMsg());
+					}
+					break;
+
+				default:
+					SimpleHUD.showInfoMessage(moreShopIndexView.getContext(), code+"");
+					break;
+				}							
+			}
+		});
+
+	}
+
+}

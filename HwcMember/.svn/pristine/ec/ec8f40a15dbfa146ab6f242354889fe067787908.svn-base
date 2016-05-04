@@ -1,0 +1,113 @@
+/**
+ * 
+ */
+package com.huimodel.net;
+
+import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
+
+import org.apache.http.entity.StringEntity;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.huimodel.log.UtilLog;
+import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.RequestParams;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.callback.RequestCallBack;
+import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
+
+/**
+ * @author FZ
+ * @date 2015年9月9日
+ */
+public class HttpUtil {
+
+	private static HttpUtils utils;
+	
+	/** 请求线程池大小 **/
+	private static final int threadPoolSize = 5;
+	/** 响应编码 **/
+	private static final String responseCharsetName = "UTF-8";
+	/** 请求重试次数 **/
+	private static final int retryTime = 3;
+	/** 连接超时时间 **/
+	private static final int connectTimeout = 10 * 1000;
+	/** 连接成功后等待响应超时时间 **/
+	private static final int waitTimeout = 20 * 1000;	
+	/** 设置请求的缓存时间 **/
+//	private static final int httpCacheExpiry = 60 * 1000;
+	
+	static {
+		utils = new HttpUtils()
+				.configRequestRetryCount(retryTime)//设置请求重试次数
+				.configRequestThreadPoolSize(threadPoolSize)//设置请求线程池大小
+				.configResponseTextCharset(responseCharsetName)//设置响应编码
+				.configSoTimeout(connectTimeout)//设置连接超时时间
+//				.configCurrentHttpCacheExpiry(httpCacheExpiry)//设置当前请求的缓存时间
+//				.configDefaultHttpCacheExpiry(httpCacheExpiry)//设置默认请求的缓存时间
+				.configTimeout(waitTimeout);//连接成功后等待响应超时时间
+		HttpUtils.sHttpCache.setEnabled(HttpMethod.GET, false);
+		HttpUtils.sHttpCache.setEnabled(HttpMethod.POST, false);
+	}
+	
+	private static HttpUtil httpUtil;
+	
+	private static Gson gson;
+	
+	private HttpUtil(){
+		
+	}
+	
+	public static HttpUtil getInstance() {
+		if (httpUtil == null) {
+			httpUtil = new HttpUtil();
+		}
+		return httpUtil;
+	}
+	
+	public <T, R> void postSend(String url, T object ,final IResult<R> result, final Class<R> cls){
+		RequestParams params = new RequestParams();
+		params.addHeader("Content-Type", "application/json");
+		
+		if(gson == null){
+			gson =  new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
+		}
+		String str = gson.toJson(object).toString();
+		UtilLog.i("Request", str);
+ 
+		try {
+			params.setBodyEntity(new StringEntity(str,"utf-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		utils.send(HttpMethod.POST, url, params, new RequestCallBack<String>() {
+
+			@Override
+			public void onSuccess(ResponseInfo<String> responseInfo) {
+				UtilLog.i("Response", responseInfo.result);
+				R r = null;
+				r = gson.fromJson(responseInfo.result, cls);
+				result.result(r, Code.OK);			
+			}
+
+			@Override
+			public void onFailure(HttpException error, String msg) {
+				System.out.println(error);				
+				if (InterruptedException.class.isInstance(error)) {
+					result.result(null, Code.TIME_OUT);
+				} else if (UnsupportedEncodingException.class.isInstance(error)) {
+					result.result(null, Code.ENCODE_ERROR);
+				} else if (SocketTimeoutException.class.isInstance(error)) {
+					result.result(null, Code.TIME_OUT);
+				} else {
+					result.result(null, Code.ERROR);
+				}
+			}
+		});
+	}
+
+
+}

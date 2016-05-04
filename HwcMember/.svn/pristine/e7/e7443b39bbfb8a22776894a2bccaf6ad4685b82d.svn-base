@@ -1,0 +1,28 @@
+package com.huimodel.api.base;
+
+import java.math.BigDecimal;
+
+public class ShopDebt {
+  private long shop_id;
+  private String shop_name;
+  private BigDecimal debt;
+public long getShop_id() {
+	return shop_id;
+}
+public void setShop_id(long shop_id) {
+	this.shop_id = shop_id;
+}
+public String getShop_name() {
+	return shop_name;
+}
+public void setShop_name(String shop_name) {
+	this.shop_name = shop_name;
+}
+public BigDecimal getDebt() {
+	return debt;
+}
+public void setDebt(BigDecimal debt) {
+	this.debt = debt;
+}
+  
+}

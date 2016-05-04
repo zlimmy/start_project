@@ -1,0 +1,206 @@
+package com.hwc.member.view.activity.my;
+
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.huimodel.api.base.DProduct;
+import com.hwc.member.R;
+import com.hwc.member.adapter.FollowProductAdapter;
+import com.hwc.member.adapter.FollowProductAdapter.Callback;
+import com.hwc.member.presenter.FollowProductPresenter;
+import com.hwc.member.view.activity.product.NewProductCategoryActivity;
+import com.hwc.member.view.activity.product.NewProductInfoActivity;
+import com.hwc.member.view.activity.view.IFollowProductView;
+import com.hwc.member.view.base.BaseActivity;
+import com.hwc.member.widget.PullToRefreshFooter;
+import com.hwc.member.widget.PullToRefreshHeadView;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import in.srain.cube.views.loadmore.LoadMoreContainer;
+import in.srain.cube.views.loadmore.LoadMoreHandler;
+import in.srain.cube.views.loadmore.LoadMoreListViewContainer;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
+
+/**
+ * 我的关注 商品
+ *
+ * @author Administrator
+ */
+
+@ContentView(R.layout.activity_follow_product)
+public class FollowProductActivity extends BaseActivity implements IFollowProductView {
+
+    @ViewInject(R.id.load_more_list_view_ptr_frame)
+    private PtrFrameLayout mPtrFrameLayout;
+
+    @ViewInject(R.id.load_more_container)
+    LoadMoreListViewContainer load_more_container;
+
+    @ViewInject(R.id.listview)
+    private ListView mListView;
+
+
+    private FollowProductAdapter followProductAdapter;
+    private List<DProduct> productList;
+    private int mIndex = 1;
+
+    private FollowProductPresenter presenter = new FollowProductPresenter(this);
+
+    @ViewInject(R.id.nodata_page)
+    private View nodata_page;
+    @ViewInject(R.id.nodata_tv)
+    private TextView nodata_tv;
+    @ViewInject(R.id.nodata_but)
+    private Button nodata_but;
+
+    @Override
+    protected void initView() {
+        productList = new ArrayList<DProduct>();
+        followProductAdapter = new FollowProductAdapter(getContext(), productList, R.layout.item_follow_product_list,
+                null);
+        mListView.setAdapter(followProductAdapter);
+
+        mListView.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // TODO Auto-generated method stub
+                goTo(NewProductInfoActivity.class, productList.get(position).getPid(), productList.get(position)
+                        .getShop_id(), productList.get(position).getName());
+            }
+        });
+    }
+
+    @Override
+    protected void initListener() {
+        // TODO Auto-generated method stub
+        setBack();
+
+        PullToRefreshHeadView headView = new PullToRefreshHeadView(getContext());
+        headView.setLastUpdateTimeKey(this.getClass().getSimpleName());
+        mPtrFrameLayout.setHeaderView(headView);
+        mPtrFrameLayout.addPtrUIHandler(headView);
+        mPtrFrameLayout.setPtrHandler(new PtrHandler() {
+            @Override
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+
+                return PtrDefaultHandler.checkContentCanBePulledDown(frame, mListView, header);
+            }
+
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                presenter.refresh();
+            }
+        });
+
+        load_more_container.setAutoLoadMore(true);
+        final PullToRefreshFooter footer = new PullToRefreshFooter(getContext());
+        load_more_container.setLoadMoreView(footer);
+        load_more_container.setLoadMoreUIHandler(footer);
+
+        // binding view and data
+        load_more_container.setLoadMoreHandler(new LoadMoreHandler() {
+            @Override
+            public void onLoadMore(LoadMoreContainer loadMoreContainer) {
+                mIndex++;
+                presenter.more(mIndex);
+            }
+        });
+
+
+        presenter.refresh();
+        showProgressDialog(null);
+
+        followProductAdapter.registerCallback(new Callback() {
+
+            @Override
+            public void delGoods(DProduct item, int position) {
+                // TODO Auto-generated method stub
+                presenter.delCollection(item, position);
+            }
+        });
+    }
+
+
+    @Override
+    public void clearLoadPage() {
+    }
+
+    @Override
+    public void showErrorPage() {
+        // TODO Auto-generated method stub
+        productList.clear();
+        GONE(load_more_container);
+        followProductAdapter.notifyDataSetChanged();
+        VISIBLE(nodata_page);
+        nodata_tv.setText("没有关注过商品呢!");
+        nodata_but.setText("马上去看看");
+        INVISIBLE(nodata_but);
+
+    }
+
+    @OnClick(R.id.nodata_but)
+    public void nodata_but(View v) {
+        goTo(NewProductCategoryActivity.class);
+    }
+
+    @Override
+    public void refresh(List<DProduct> list) {
+        // TODO Auto-generated method stub
+
+
+        GONE(nodata_page);
+        VISIBLE(load_more_container);
+        productList.clear();
+        productList.addAll(list);
+        followProductAdapter.notifyDataSetChanged();
+        mPtrFrameLayout.refreshComplete();
+        // load more
+        if (productList.size() <= 0) {
+            showErrorPage();
+        } else if (productList.size() < 10) {
+            load_more_container.loadMoreFinish(true, false);
+        } else {
+            load_more_container.loadMoreFinish(false, true);
+        }
+        mIndex = 1;
+
+    }
+
+    @Override
+    public void more(List<DProduct> list, boolean isEnd) {
+        // TODO Auto-generated method stub
+
+
+        productList.addAll(list);
+        mPtrFrameLayout.refreshComplete();
+        // load more
+        load_more_container.loadMoreFinish(false, isEnd);
+        followProductAdapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    public void delItem(int position) {
+        // TODO Auto-generated method stub
+        if (position < productList.size()) {
+            productList.remove(position);
+        }
+        if (productList.size() <= 0) {
+            showErrorPage();
+        }
+        followProductAdapter.notifyDataSetChanged();
+    }
+
+}

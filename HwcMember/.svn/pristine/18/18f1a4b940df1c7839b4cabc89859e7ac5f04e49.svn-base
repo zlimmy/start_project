@@ -1,0 +1,79 @@
+package com.hwc.member.view.activity.my;
+
+
+import android.view.View;
+import android.widget.ExpandableListView;
+import android.widget.TextView;
+
+import com.huimodel.api.response.AccountItemsGroupSearchResponse;
+import com.hwc.member.R;
+import com.hwc.member.adapter.WalletAdapter;
+import com.hwc.member.common.Member;
+import com.hwc.member.presenter.WalletPresenter;
+import com.hwc.member.util.CommonUtil;
+import com.hwc.member.view.activity.view.IWalletView;
+import com.hwc.member.view.base.BaseActivity;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+/**
+ * 返利记录
+ * @author fzh
+ * @date 2016年3月7日
+ */
+@ContentView(R.layout.activity_rebate)
+public class RebateActivity extends BaseActivity implements IWalletView {
+
+	@ViewInject(R.id.listview)
+	private ExpandableListView listview;
+	@ViewInject(R.id.money_tv)
+	private TextView money_tv;
+	private WalletAdapter adapter;
+	
+	@ViewInject(R.id.nodata_tv)
+	private TextView nodata_tv;
+	private AccountItemsGroupSearchResponse response = null;
+
+	private WalletPresenter presenter = new WalletPresenter(this);
+
+	@Override
+	protected void initView() {
+		presenter.getData("RB", Member.getInstance().getUser_id());
+	}
+
+	@Override
+	protected void initListener() {
+		setBack();
+		listview.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+			@Override
+			public boolean onGroupClick(ExpandableListView expandableListView,
+					View view, int i, long l) {
+				return true;
+			}
+		});
+	}
+
+	@Override
+	public void clearLoadPage() {
+		VISIBLE(nodata_tv);
+	}
+
+	@Override
+	public void showErrorPage() {
+	}
+
+	@Override
+	public void postSuccsee(AccountItemsGroupSearchResponse obj) {
+		response = obj;
+		money_tv.setText(CommonUtil.conversionDouble(obj.getBalance())+"");
+		adapter = new WalletAdapter(this, response.getItems());
+		listview.setAdapter(adapter);
+		for (int i = 0; i < adapter.getGroupCount(); i++) {
+			listview.expandGroup(i);
+		}
+		listview.setGroupIndicator(null);
+		
+	}
+
+
+}

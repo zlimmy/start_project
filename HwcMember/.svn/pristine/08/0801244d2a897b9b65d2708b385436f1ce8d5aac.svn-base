@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/make_money_rl"
+    android:layout_width="match_parent"
+    android:layout_height="114dp"
+    android:background="@color/white"
+    android:descendantFocusability="blocksDescendants"
+	>
+
+    <ImageView
+        android:id="@+id/ad_iv"
+        android:layout_width="125dp"
+        android:layout_height="94dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/default_pic" />
+
+    <TextView
+        android:id="@+id/title_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ad_iv"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
+        android:layout_toRightOf="@id/ad_iv"
+        android:text="00000"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/text_important"
+        android:textSize="@dimen/text_14" />
+        <!--  android:minHeight="30dp" -->
+
+    <TextView
+        android:id="@+id/time_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ad_iv"
+        android:layout_alignRight="@id/title_tv"
+        android:text="还有三天"
+        android:textColor="@color/text_less_main"
+        android:textSize="@dimen/text_12" />
+
+    <TextView
+        android:id="@+id/amount_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ad_iv"
+        android:layout_alignLeft="@id/title_tv"
+        android:layout_toRightOf="@id/ad_iv"
+        android:text="参与：1582人"
+        android:textColor="@color/text_less_important"
+        android:textSize="@dimen/text_12" />
+
+    <ImageView
+        android:id="@+id/acquired_iv"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignBottom="@id/ad_iv"
+        android:layout_alignRight="@id/time_tv"
+        android:src="@drawable/icon_acquired"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/content_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/title_tv"
+        android:layout_marginTop="6dp"
+        android:layout_marginRight="18dp"
+        android:layout_below="@+id/title_tv"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="12314"
+        android:textColor="@color/make_money"
+        android:textSize="@dimen/text_12"
+        android:visibility="visible" />
+
+</RelativeLayout>

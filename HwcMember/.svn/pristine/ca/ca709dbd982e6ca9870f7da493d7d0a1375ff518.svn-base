@@ -1,0 +1,117 @@
+package com.huimodel.api.base;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class ProductProperty implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private Long pid;
+	private Long vid;
+	private String name;
+	private String status;
+	private Integer sort_order;
+	private String property_type;
+	private int is_sale_prop;
+	private String value;
+	private Long id;
+	private List<ProductPropertyVal> pvalues;
+	private String value_name;
+
+	public Long getPid() {
+		return pid;
+	}
+
+	public void setPid(Long pid) {
+		this.pid = pid;
+	}
+
+	public Long getVid() {
+		return vid;
+	}
+
+	public void setVid(Long vid) {
+		this.vid = vid;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public Integer getSort_order() {
+		return sort_order;
+	}
+
+	public void setSort_order(Integer sort_order) {
+		this.sort_order = sort_order;
+	}
+
+	public String getProperty_type() {
+		return property_type;
+	}
+
+	public void setProperty_type(String property_type) {
+		this.property_type = property_type;
+	}
+
+	public int getIs_sale_prop() {
+		return is_sale_prop;
+	}
+
+	public void setIs_sale_prop(int is_sale_prop) {
+		this.is_sale_prop = is_sale_prop;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public List<ProductPropertyVal> getPvalues() {
+		return pvalues;
+	}
+
+	public void setPvalues(List<ProductPropertyVal> pvalues) {
+		this.pvalues = pvalues;
+	}
+
+	public String getValue_name() {
+		return value_name;
+	}
+
+	public void setValue_name(String value_name) {
+		this.value_name = value_name;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+}

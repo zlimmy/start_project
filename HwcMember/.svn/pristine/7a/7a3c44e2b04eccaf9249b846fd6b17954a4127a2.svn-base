@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray0"
+    android:orientation="vertical" >
+
+    <com.hwc.member.widget.header.LXHeadView
+        xmlns:my="http://schemas.android.com/apk/res/com.hwc.member"
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        my:centertitle="降价促销"
+        my:rightImage="@drawable/icon_clear" />
+
+    <include
+        android:id="@+id/load_page"
+        layout="@layout/load_page" />
+
+    <include
+        android:id="@+id/nodata_page"
+        layout="@layout/load_nodata_page"
+        android:visibility="gone" />
+
+    <ListView
+        android:id="@+id/message_lv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/gray0"
+        android:dividerHeight="10dp" />
+
+</LinearLayout>

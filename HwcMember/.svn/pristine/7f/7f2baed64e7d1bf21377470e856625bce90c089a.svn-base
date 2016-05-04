@@ -1,0 +1,43 @@
+/**
+ * 
+ */
+package com.hwc.member.view.fragment;
+
+import com.hwc.member.R;
+import com.hwc.member.view.base.FormBaseFragment;
+import com.hwc.member.widget.NoScrollViewPager;
+import com.hwc.member.widget.smarttablaout.SmartTabLayout;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
+
+/**
+ * @author FZ
+ */
+public class ProductInfoDownFragment extends FormBaseFragment {
+
+	@ViewInject(R.id.viewpager)
+    private NoScrollViewPager viewPager;
+    @ViewInject(R.id.viewpagertab)
+    private SmartTabLayout viewPagerTab;
+	
+	@Override
+	protected void init() {
+		FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
+                getChildFragmentManager(), FragmentPagerItems.with(mContext)
+                .add("图文详情", ProductPicFragment.class)
+                .add("商品参数", ProductParamFragment.class)
+                .create());
+
+        viewPager.setAdapter(adapter);
+        viewPager.setNoScroll(true);
+
+        viewPagerTab.setViewPager(viewPager);
+	}
+
+	@Override
+	public int getLayoutId() {
+		return R.layout.fragment_productinfodown;
+	}
+
+}
